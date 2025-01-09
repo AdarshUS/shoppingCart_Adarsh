@@ -1,0 +1,121 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+
+header{
+   display: flex;
+   justify-content: space-between;
+   background-color: #e8eefa;
+   padding: 12px;
+}
+
+.headerLeftItem{
+   display: flex;
+   align-items: center;
+   gap: 10px;
+}
+
+.headerRightItem{
+   display: flex;
+   align-items: center;
+   gap: 7px;
+}
+
+.headerLeftItem-2{
+   font-size: 30px;
+}
+
+main{
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   height: 35vw;
+}
+
+.loginContainer{
+   width: 22%;
+   background-color: #e8eefa;
+   border-radius: 13px;
+}
+
+
+main{
+  display: flex;
+  justify-content: center;
+}
+
+input{
+  border: 0;
+  outline: 0;
+  background-color: #e8eefa;
+  width: 100%;
+  height: 30px;
+  font-size: 16px;
+}
+
+.loginContainer-heading{
+  text-align: center;
+  color: #337ab9;
+  font-size: 22px;
+  padding: 15px;
+}
+
+.userName,.password{
+  padding-top: 20px;
+  border-bottom: 1px solid #ccc;
+  width: 87%;
+  margin: 0 25px;
+}
+
+.password{
+  padding-top: 60px;
+}
+
+
+.bottomContainer .loginBtn{
+  text-decoration: none;
+  padding: 8px 24px;
+  border: 2px solid #337ab9;
+  border-radius: 16px;
+  margin: 30px auto;
+  display: block;
+  width: 63%;
+  text-align: center;
+}
+
+.bottomContainer{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.bottomContainerText,.imageContainer,.registerContainer{
+  text-align: center;
+  padding: 8px;
+}
+
+.inputArea:has(input:focus) {
+  border-bottom: 1.5px solid #6984e6;
+}
+
+.exportOption button{
+  background-color: transparent;
+  border: none;  
+}
+
+.error{
+  font-size: 12px;
+  color: red;
+  margin-left: 15px;
+  padding: 5px;
+}
+
+.headerRightItem button{
+  text-decoration: none;
+  color: #000000;
+}
+
