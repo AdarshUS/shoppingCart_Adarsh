@@ -1,3 +1,4 @@
+<cfoutput >
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,6 +6,7 @@
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>AdminLogin</title>
    <link rel="stylesheet" href="./Style/bootstrap.css">
+   <link rel="stylesheet" href="./Style/all.min.css">
    <link rel="stylesheet" href="./Style/categoryStyle.css">
 </head>
 <body>
@@ -16,40 +18,56 @@
       <div class="headerRightItem">
          <button class="logout">
             <span class="headerRightItem-1">LogOut</span>
-            <img src="./Assets/Images/logout.png" alt="logout" width="25">
+            <i class="fa-solid fa-right-from-bracket"></i>
          </button>        
       </div>
    </header>
    <main>
+      <cfset categories = application.objShoppingCart.fetchAllCategories()>
       <div class="categoryContainer">
          <div class="categoryheader">
-            <h3>Electronics</h3>
-            <button data-bs-toggle="modal" data-bs-target="#exampleModal">Add</button>         
-         </div>         
+            <h5>Categories</h5>
+            <button data-bs-toggle="modal" data-bs-target="##categoryModal" class="categoryAddbtn" onclick="createCategory()"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>         
+         </div>
+         <div class="categoryBody">
+            <cfloop query="categories">
+               <div class="categoryItem" id="#categories.fldCategory_Id#">
+                  <div class="categoryItemText">#categories.fldCategoryName#</div>               
+                  <div class="categoryItemRight">
+                     <button data-bs-toggle="modal" data-bs-target="##categoryModal" onclick="editCategory(this)" value = #categories.fldCategory_Id# class="categoryBtn"><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
+                     <button class="categoryBtn" onclick="deleteCategory(this)" value = #categories.fldCategory_Id#><i class="fa-solid fa-trash categoryfns"></i></button>
+                     <a class="categoryBtn" href="./subcategory.cfm?categoryId=#categories.fldCategory_Id#"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></a>
+                  </div>              
+               </div>
+            </cfloop>
+         </div>
       </div>   
-   </main>
-   <script src="./Script/jquery-3.7.1.min.js"></script>
-   <script src="./Script/script.js"></script>
-   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   </main>  
+   <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
       <div class="modal-dialog">
          <div class="modal-content">
             <div class="modal-header">
-               <h5 class="modal-title" id="exampleModalLabel">Add Category</h5>
+               <h5 class="modal-title" id="categoryModalLabel">Add Category</h5>
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                <div class="mb-3">
-                  <label for="exampleInputText" class="form-label">Email Category Name</label>
-                  <input type="text" class="form-control" id="exampleInputText">    
+                  <label for="exampleInputText" class="form-label">Enter Category Name</label>
+                  <input type="text" class="form-control" id="categoryInput">                  
+                  <input type="hidden" id="distinguishCreateEdit">
                </div>
             </div>
             <div class="modal-footer">
                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-               <button type="button" class="btn btn-primary">Save changes</button>
+               <button type="button" class="btn btn-primary" class="insertBtn" onclick="insertEditCategory()">Save changes</button>
             </div>
          </div>
       </div>
    </div>
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+   <script src="./Script/bootstrapScript.js"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>    
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>	   
+   <script src="./Script/script.js"></script>   
 </body>
 </html>
+</cfoutput>

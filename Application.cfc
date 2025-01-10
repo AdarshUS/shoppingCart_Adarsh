@@ -13,7 +13,7 @@
    <cffunction name="onRequestStart" returnType="void">
       <cfargument name="requestname" required="true">
       <cfset local.pages = ["admin.cfm"]>
-      <cfif NOT structKeyExists(session,"username") AND NOT arrayFindNoCase(local.pages, ListLast(CGI.SCRIPT_NAME,'/'))>
+      <cfif NOT structKeyExists(session,"userId") AND NOT arrayFindNoCase(local.pages, ListLast(CGI.SCRIPT_NAME,'/'))>
 		 <cflocation url="admin.cfm" addToken="no">
 	   </cfif>
    </cffunction>
