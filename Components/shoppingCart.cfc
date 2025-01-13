@@ -1,0 +1,135 @@
+<cfcomponent >
+   <cffunction name="validateAdminLogin" access="public" returntype="struct">
+      <cfargument name="userName" required="true" type="string">
+      <cfargument name="password" required="true"  type="string">
+      <cfset local.result ={}>
+      <cfquery name="local.getAdminDetails">
+         SELECT
+             u.*, r.*
+         FROM
+             tbluser u
+         INNER JOIN
+             tblrole r
+         ON
+             u.fldRoleId = r.fldRole_Id
+         WHERE (u.fldemail = <cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">
+         OR u.fldPhone = <cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">)
+         AND r.fldRoleName = <cfqueryparam value="Admin" cfsqltype="cf_sql_varchar">
+      </cfquery>      
+      <cfif local.getAdminDetails.RecordCount>        
+         <cfset local.saltString = local.getAdminDetails.fldUserSaltString>
+         <cfset local.password = arguments.password>
+         <cfset local.saltedPassword = local.password & local.saltString>         
+         <cfset hashedPassword = hash(local.saltedPassword, "SHA-384")>
+         <cfif hashedPassword EQ local.getAdminDetails.fldHashedPassword>            
+           <cfset local.result.success = true>
+           <cfset local.result.userId = local.getAdminDetails.fldUser_Id>
+         <cfelse>
+             <cfset local.result.success = false>
+         </cfif>
+      </cfif>
+      <cfreturn local.result>
+   </cffunction>
+
+   <cffunction name="logoutAdmin" access="remote" returntype="void">
+      <cfset StructClear(Session)>         
+   </cffunction>
+
+   <cffunction name="insertCategories"  access="remote" returntype="void">
+      <cfargument name="categoryName" type="string">
+      <cfquery name = local.insertCategory>
+        INSERT
+        INTO
+            tblcategory(
+                fldCategoryName
+                ,fldCreatedBy
+            )
+        VALUES(
+            <cfqueryparam value="#arguments.categoryName#" cfsqltype="cf_sql_varchar">
+            ,<cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">
+        )
+     </cfquery>     
+    </cffunction>
+
+    <cffunction name="fetchAllCategories"  access="public" returntype="query">
+        <cfquery  name="local.fetchCategories">
+            SELECT 
+                fldCategory_Id
+                ,fldCategoryName
+                ,fldCreatedBy
+            FROM
+                tblcategory
+            WHERE   
+                fldCreatedBy = <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">
+                AND
+                fldActive = <cfqueryparam value="1" cfsqltype="cf_sql_integer">
+        </cfquery>
+        <cfreturn local.fetchCategories>
+    </cffunction>
+
+    <cffunction name="editCategory" access="remote">
+        <cfargument name="categoryId" required="true" type="integer" >
+        <cfargument name="newCategory" required="true" type="string" >
+        <cfquery name = local.editCategory>
+            UPDATE
+                tblcategory
+            SET
+                fldCategoryName = <cfqueryparam value="#arguments.newCategory#" cfsqltype="cf_sql_varchar">
+                ,  fldUpdatedBy = <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">
+            WHERE
+                fldCategory_Id 
+                =  <cfqueryparam value="#arguments.categoryId#" cfsqltype="cf_sql_integer">
+        </cfquery>            
+    </cffunction>
+
+    <cffunction name="fetchSingleCategory" access="remote" returntype="struct" returnformat="JSON">
+        <cfargument name="categoryId" type="integer" required="true">
+        <cfset  local.structCategory={}>
+        <cfquery name="local.fetchCategory">
+            SELECT
+                fldCategory_Id
+                ,fldCategoryName
+                ,fldCreatedBy
+            FROM
+                tblcategory
+            WHERE
+                fldCategory_Id
+                = <cfqueryparam value="#arguments.categoryId#" cfsqltype="cf_sql_integer">
+        </cfquery>
+         <cfloop list="#local.fetchCategory.columnList#" index="colname">
+            <cfset local.structCategory[colname] = local.fetchCategory[colname][1]>
+        </cfloop>
+        <cfreturn local.structCategory>
+    </cffunction>
+
+    <cffunction name="deleteCategory" access="remote">
+        <cfargument name="categoryId" required="true" type="integer">
+        <cfquery name = local.deleteCategory>
+            UPDATE
+                tblcategory
+            SET
+                fldActive 
+                = <cfqueryparam value="0" cfsqltype="cf_sql_integer">
+            WHERE
+                fldCategory_Id 
+                =  <cfqueryparam value="#arguments.categoryId#" cfsqltype="cf_sql_integer">
+        </cfquery>    
+    </cffunction>
+
+    <cffunction name="insertSubCategory">
+        <cfargument name="categoryId" type="integer" required="true">
+        <cfargument name="subcategoryName"  type="string" required="true">
+        <cfquery name = local.insertSubCategory>
+            INSERT
+            INTO
+                tblsubcategory(
+                    fldCategoryId
+                    ,fldSubCategoryName
+                    ,fldCreatedBy
+                )
+            VALUES(
+                
+            )                    
+        </cfquery>
+    </cffunction>
+</cfcomponent>
