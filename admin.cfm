@@ -1,3 +1,4 @@
+<cfoutput>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,12 +39,12 @@
             </div>
          </form>
          <cfif structKeyExists(form,"submit")>
-            <cfset result = application.objShoppingCart.validateAdminLogin(userName = form.userName,password = form.password)>            
+            <cfset result = application.objShoppingCart.validateAdminLogin(userName = form.userName,password = form.password)>
             <cfif result.success>
                <cfset session.userId = result.userId>
                <cflocation url="./category.cfm"  addtoken="no">
             <cfelse>
-               <p class="error">Invalid UserName or Password</p>
+               <p class="error">#result.message#</p>
             </cfif>
          </cfif>
       </div>
@@ -51,3 +52,5 @@
    <script src="./Script/script.js"></script>
 </body>
 </html>
+</cfoutput>
+

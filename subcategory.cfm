@@ -1,3 +1,13 @@
+<cfoutput>
+<cfset categories = application.objShoppingCart.fetchAllCategories()>
+<cfif structKeyExists(form,"submit")>
+   <cfif LEN(form.distinguishSubCreateEdit) GT 0>
+      <cfset application.objShoppingCart.updateSubCategory(subCategoryId = form.distinguishSubCreateEdit,newCategoryName = form.subCategoryName,categoryId = form.selectCategory)>      
+   <cfelse>     
+      <cfset application.objShoppingCart.insertSubCategory(categoryId = form.selectCategory,subcategoryName = form.subCategoryName)>
+   </cfif>            
+</cfif>
+<cfset subcategories = application.objShoppingCart.fetchSubCategories(categoryId = url.categoryId)>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,20 +32,22 @@
       </div>
    </header>
    <main>      
-      <div class="categoryContainer">
+      <div class="categoryContainer">           
          <div class="categoryheader">
             <h5>Sub Categories</h5>
-            <button data-bs-toggle="modal" data-bs-target="#subCategoryModal" class="categoryAddbtn"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>         
+            <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="subcategoryAddbtn"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>         
          </div>
-         <div class="categoryBody">           
-               <div class="categoryItem" id="">
-                  <div class="categoryItemText"></div>               
+         <div class="categoryBody">
+            <cfloop query="#subcategories#">
+                <div class="categoryItem" id="#subcategories.fldSubCategory_Id#">
+                  <div class="categoryItemText">#subcategories.fldSubCategoryName#</div>               
                   <div class="categoryItemRight">
-                     <button data-bs-toggle="modal" data-bs-target="#subCategoryModal" class="categoryBtn"><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
-                     <button class="categoryBtn"><i class="fa-solid fa-trash categoryfns"></i></button>
-                     <button class="categoryBtn"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></button>
+                     <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="categoryBtn" value="#subcategories.fldSubCategory_Id#" onclick=editSubCategory({categoryId:#url.categoryId#,subCategoryName:"#subcategories.fldSubCategoryName#",subCategoryId:#subcategories.fldSubCategory_Id#})><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
+                     <button class="categoryBtn" onclick="deleteSubCategory(#subcategories.fldSubCategory_Id#)"><i class="fa-solid fa-trash categoryfns"></i></button>
+                     <a class="categoryBtn" href = "./product.cfm"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></a>
                   </div>              
-               </div>            
+               </div>                                  
+            </cfloop>                   
          </div>
       </div>   
    </main>  
@@ -46,26 +58,34 @@
                <h5 class="modal-title" id="subCategoryModalLabel">Add Subcategory</h5>
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-               <div class="mb-3">
-                  <label for="categoryName" class="form-label">Enter Subcategory Name</label>
-                  <input type="text" class="form-control" id="categoryName">                  
+            <form method="POST">
+               <div class="modal-body">              
+                  <div class="mb-3">                      
+                        <label for="categoryNameSelect" class="form-label">Select Category Name</label>
+                        <select class="form-control" id="categoryNameSelect" name = "selectCategory">
+                           <option>--</option>
+                           <cfloop query="categories">
+                              <option value="#categories.fldCategory_Id#">#categories.fldCategoryName#</option>
+                           </cfloop>                    
+                        </select>                  
+                  </div>
+                  <div class="mb-3">
+                     <label for="subCategoryName" class="form-label">Enter SubCategory Name</label>
+                     <input type="text" class="form-control" id="subCategoryName" name="subCategoryName">
+                     <input type="hidden" id="distinguishSubCreateEdit" name = "distinguishSubCreateEdit" >
+                  </div>                            
                </div>
-               <div class="mb-3">
-                  <label for="subCategoryName" class="form-label">Enter Category Name</label>
-                  <input type="text" class="form-control" id="subCategoryName">
-               </div>               
-            </div>
-            <div class="modal-footer">
-               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-               <button type="button" class="btn btn-primary" class="insertBtn">Save changes</button>
-            </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary" class="insertSubCategoryBtn" name="submit">Save changes</button>
+               </div>
+            </form>            
          </div>
       </div>
    </div>
-   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>    
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>	   
+   <script src="./Script/bootstrapScript.js"></script>
+   <script src="./Script/jquery-3.7.1.min.js"></script>     
    <script src="./Script/script.js"></script>   
 </body>
 </html>
+</cfoutput>
