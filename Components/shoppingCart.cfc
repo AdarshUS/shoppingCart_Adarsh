@@ -1,36 +1,52 @@
 <cfcomponent >
-   <cffunction name="validateAdminLogin" access="public" returntype="struct">
-      <cfargument name="userName" required="true" type="string">
-      <cfargument name="password" required="true"  type="string">
-      <cfset local.result ={}>
-      <cfquery name="local.getAdminDetails">
-         SELECT
-             u.*, r.*
-         FROM
-             tbluser u
-         INNER JOIN
-             tblrole r
-         ON
-             u.fldRoleId = r.fldRole_Id
-         WHERE (u.fldemail = <cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">
-         OR u.fldPhone = <cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">)
-         AND r.fldRoleName = <cfqueryparam value="Admin" cfsqltype="cf_sql_varchar">
-      </cfquery>      
-      <cfif local.getAdminDetails.RecordCount>        
-         <cfset local.saltString = local.getAdminDetails.fldUserSaltString>
-         <cfset local.password = arguments.password>
-         <cfset local.saltedPassword = local.password & local.saltString>         
-         <cfset hashedPassword = hash(local.saltedPassword, "SHA-384")>
-         <cfif hashedPassword EQ local.getAdminDetails.fldHashedPassword>            
-           <cfset local.result.success = true>
-           <cfset local.result.userId = local.getAdminDetails.fldUser_Id>
-         <cfelse>
-             <cfset local.result.success = false>
-         </cfif>
-      </cfif>
-      <cfreturn local.result>
-   </cffunction>
-
+    <cffunction name="validateAdminLogin" access="public" returntype="struct">
+        <cfargument name="userName" required="true" type="string">
+        <cfargument name="password" required="true" type="string">
+        <cfset local.result = {success = false}>
+    
+        <cftry>
+            <cfquery name="local.getAdminDetails">
+                SELECT 
+                    u.fldUser_Id, 
+                    u.fldHashedPassword, 
+                    u.fldUserSaltString, 
+                    r.fldRoleName
+                FROM 
+                    tbluser u
+                INNER JOIN 
+                    tblrole r
+                ON 
+                    u.fldRoleId = r.fldRole_Id
+                WHERE 
+                    (u.fldemail = <cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">
+                    OR u.fldPhone = <cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">)
+                    AND r.fldRoleName = <cfqueryparam value="Admin" cfsqltype="cf_sql_varchar">
+            </cfquery>
+    
+            <cfif local.getAdminDetails.RecordCount>
+                <cfset local.saltString = local.getAdminDetails.fldUserSaltString>
+                <cfset local.password = arguments.password>
+                <cfset local.saltedPassword = local.password & local.saltString>
+                <cfset local.hashedPassword = hash(local.saltedPassword, "SHA-384")>
+    
+                <cfif local.hashedPassword EQ local.getAdminDetails.fldHashedPassword>
+                    <cfset local.result.success = true>
+                    <cfset local.result.userId = local.getAdminDetails.fldUser_Id>
+                    <cfset local.result.message = "Login successful.">
+                <cfelse>
+                    <cfset local.result.message = "Invalid password.">
+                </cfif>
+            <cfelse>
+                <cfset local.result.message = "User not found.">
+            </cfif>
+        <cfcatch>
+            <cfset local.result.message = "Database error: " & cfcatch.message>
+        </cfcatch>
+        </cftry>
+    
+        <cfreturn local.result>
+    </cffunction>
+    
    <cffunction name="logoutAdmin" access="remote" returntype="void">
       <cfset StructClear(Session)>         
    </cffunction>
@@ -128,8 +144,27 @@
                     ,fldCreatedBy
                 )
             VALUES(
-                
+                <cfqueryparam value="url.categoryId" cfsqltype="cf_sql_integer">
+                ,<cfqueryparam value="#arguments.subcategoryName#" cfsqltype="cf_sql_varchar">
+                ,<cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">
             )                    
         </cfquery>
+    </cffunction>
+
+    <cffunction name="fetchCategories"  access="remote" returntype="struct" returnformat="JSON">
+        <cfset local.categoriesStruct = {}>
+        <cfquery name="local.categories">
+            SELECT
+                fldCategoryName
+            FROM
+                tblcategory
+            WHERE
+                fldCreatedBy
+                = <cfqueryparam value="#session.userId#">
+        </cfquery>
+        <cfloop list="#local.categories.columnList#" index="colname">
+            <cfset local.categoriesStruct[colname] = local.categories[colname][1]>
+        </cfloop>
+        <cfreturn local.categoriesStruct>
     </cffunction>
 </cfcomponent>

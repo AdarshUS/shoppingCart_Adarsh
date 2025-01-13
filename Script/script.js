@@ -115,3 +115,63 @@ function createCategory()
    document.getElementById("categoryModalLabel").textContent = "Create Category";
     document.getElementById("categoryInput").value = "";
 }
+
+// function insertEditSubCategory()
+// {
+//    let inputCategoryName = $("#categoryName").val();
+//    let inputSubCategoryName = $("#subCategoryName").val();
+//    let hiddenValue = $("#distinguishCreateEdit").val();
+//    const queryString = window.location.search;
+//    const urlParams = new URLSearchParams(queryString);
+//    const categoryId = urlParams.get('categoryId');   
+//       if(hiddenValue.trim() === "")
+//       {
+//          $.ajax({
+//           url: 'components/shoppingCart.cfc?method=insertSubCategories',
+//           data: {categoryId:categoryId,subCategoryName:},
+//           type: 'POST',
+//           success: function() {
+//             $('#categoryModal').modal('hide')
+//           },
+//           error: function() {              
+//           }
+//          });
+//       }
+//       else
+//       {
+//           $.ajax({
+//           url: 'components/shoppingCart.cfc?method=editCategory',
+//           data: {categoryId:hiddenValue,newcategory:inputValue},
+//           type: 'POST',
+//           success: function() {
+//             $('#categoryModal').modal('hide')
+//           },
+//           error: function() {
+              
+//           }
+//       });        
+//       }
+// }
+
+$(".subcategoryAddbtn").click(function() {
+   let select = document.getElementById('categoryNameSelect');
+       $.ajax({
+           url: 'components/shoppingCart.cfc?method=fetchCategories',
+           type: 'POST',
+           success: function(result) {
+             let categories = JSON.parse(result);
+             console.log(categories)
+             console.log(categories.length)
+             for(let i=0;i<categories.length;i++)
+             {
+               let opt = document.createElement('option');
+               opt.value = i;
+               opt.innerHTML = categories[i].FLDCATEGORYNAME;
+               select.appendChild(opt);
+             }
+           },
+           error: function() {
+               
+           }
+       });   
+});

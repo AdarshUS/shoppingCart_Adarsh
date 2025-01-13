@@ -4,9 +4,10 @@
    <cfset this.datasource = "shopping_cart">
    <cfset this.sessionManagement = true>
    <cfset this.sessionTimeout = createTimeSpan(0, 0, 30, 0)>
+   <cfset application.objShoppingCart = createObject("component","Components.ShoppingCart")>
 
    <cffunction name="onApplicationStart" returnType="boolean">
-		<cfset application.objShoppingCart = createObject("component","Components.ShoppingCart")>		
+		<!--- <cfset application.objShoppingCart = createObject("component","Components.ShoppingCart")> --->		
         	<cfreturn true>
    </cffunction>
 

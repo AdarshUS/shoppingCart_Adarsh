@@ -22,10 +22,10 @@
       </div>
    </header>
    <main>      
-      <div class="categoryContainer">
+      <div class="categoryContainer">           
          <div class="categoryheader">
             <h5>Sub Categories</h5>
-            <button data-bs-toggle="modal" data-bs-target="#subCategoryModal" class="categoryAddbtn"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>         
+            <button data-bs-toggle="modal" data-bs-target="#subCategoryModal" class="subcategoryAddbtn"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>         
          </div>
          <div class="categoryBody">           
                <div class="categoryItem" id="">
@@ -48,17 +48,20 @@
             </div>
             <div class="modal-body">
                <div class="mb-3">
-                  <label for="categoryName" class="form-label">Enter Subcategory Name</label>
-                  <input type="text" class="form-control" id="categoryName">                  
+                  <label for="categoryNameSelect" class="form-label">Select Category Name</label>
+                  <select class="form-control" id="categoryNameSelect">
+                     <option></option>                   
+                  </select>                  
                </div>
                <div class="mb-3">
                   <label for="subCategoryName" class="form-label">Enter Category Name</label>
                   <input type="text" class="form-control" id="subCategoryName">
+                  <input type="hidden" id="distinguishSubCreateEdit">
                </div>               
             </div>
             <div class="modal-footer">
                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-               <button type="button" class="btn btn-primary" class="insertBtn">Save changes</button>
+               <button type="button" class="btn btn-primary" class="insertSubCategoryBtn">Save changes</button>
             </div>
          </div>
       </div>

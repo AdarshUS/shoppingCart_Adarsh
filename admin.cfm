@@ -38,7 +38,7 @@
             </div>
          </form>
          <cfif structKeyExists(form,"submit")>
-            <cfset result = application.objShoppingCart.validateAdminLogin(userName = form.userName,password = form.password)>            
+            <cfset result = application.objShoppingCart.validateAdminLogin(userName = form.userName,password = form.password)>
             <cfif result.success>
                <cfset session.userId = result.userId>
                <cflocation url="./category.cfm"  addtoken="no">
