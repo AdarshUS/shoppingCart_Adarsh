@@ -149,6 +149,7 @@ function deleteSubCategory(subCategoryId)
 
 $("#categoryNameSelectPr").change(function() {
     let categorySelected = $('#categoryNameSelectPr').val();
+    let subCategoryElement  = document.getElementById("selectSubCategory")
     if(categorySelected.trim() != "")
     {
       $.ajax({		
@@ -157,14 +158,17 @@ $("#categoryNameSelectPr").change(function() {
    	 data: {categoryId:categorySelected},
    	 success: function(result) {
       let subCategories = JSON.parse(result);
+      console.log(subCategories);
       const subcategoryIndex = subCategories.COLUMNS.indexOf("FLDSUBCATEGORYNAME");
+      const subcategoryId  =   subCategories.COLUMNS.indexOf("FLDSUBCATEGORY_ID");
       const subcategoryNames = subCategories.DATA.map((row) => row[subcategoryIndex]);
-      for(let i = 0;i<subcategoryNames.length;i++)
+      const subcategoryIdArray = subCategories.DATA.map((row) => row[subcategoryId]);
+      for(let i = 0;i<subcategoryIdArray.length;i++)
       {
         let opt = document.createElement('option');
-        opt.value = i;
+        opt.value = subcategoryIdArray[i];
         opt.innerHTML = subcategoryNames[i];
-        select.appendChild(opt); 
+        subCategoryElement.appendChild(opt); 
       }
    	 },
    	 error: function() {		

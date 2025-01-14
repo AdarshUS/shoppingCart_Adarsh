@@ -148,8 +148,7 @@
     </cffunction>
 
     <cffunction name="fetchSubCategories" access="remote" returntype="query" returnformat="JSON">
-        <cfargument name="categoryId" type="integer" required="true">
-        <cfset  local.structSubCategory={}>
+        <cfargument name="categoryId" type="integer" required="true">        
         <cfquery  name="local.fetchSubCategories">
             SELECT 
                 fldSubCategory_Id

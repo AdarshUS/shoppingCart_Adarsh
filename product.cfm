@@ -1,5 +1,8 @@
 <cfoutput>
 <cfset categories = application.objShoppingCart.fetchAllCategories()>
+<cfif structKeyExists(form,"submit")>
+      
+</cfif>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,39 +41,45 @@
                <h5 class="modal-title" id="productModalLabel">Add product</h5>
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-               <div class="mb-3">                      
-                  <label for="categoryNameSelectPr" class="form-label">Select Category Name</label>
-                  <select class="form-control" id="categoryNameSelectPr" name = "categoryNameSelectPr">
-                     <option>--</option> 
-                     <cfloop query="categories">
-                        <option value="#categories.fldCategory_Id#">#categories.fldCategoryName#</option>
-                     </cfloop>                                                   
-                  </select>                  
+            <form method="POST" enctype="multipart/form-data">
+               <div class="modal-body">
+                  <div class="mb-3">                      
+                     <label for="categoryNameSelectPr" class="form-label">Select Category Name</label>
+                     <select class="form-control" id="categoryNameSelectPr" name = "categoryNameSelectPr">
+                        <option>--</option> 
+                        <cfloop query="categories">
+                           <option value="#categories.fldCategory_Id#">#categories.fldCategoryName#</option>
+                        </cfloop>                                                   
+                     </select>                  
+                  </div>
+                  <div class="mb-3">                      
+                     <label for="selectSubCategory" class="form-label">Select SubCategory Name</label>
+                     <select class="form-control" id="selectSubCategory" name = "selectSubCategory">
+                        <option>--</option>                                             
+                     </select>                  
+                  </div>
+                  <div class="mb-3">
+                     <label for="productName" class="form-label">Enter Product Name</label>
+                     <input type="text" class="form-control" id="productName" name="productName">                  
+                  </div>
+                  <div class="mb-3">
+                     <label for="productBrand" class="form-label">Enter Product Brand</label>
+                     <input type="text" class="form-control" id="productBrand" name="productBrand">                  
+                  </div> 
+                  <div class="mb-3">
+                     <label for="productDesc" class="form-label">Enter Product Description</label>
+                     <input type="text" class="form-control" id="productDesc" name="productDesc">                  
+                  </div>
+                  <div class="mb-3">
+                     <label for="productImages">Select Product Images</label>
+                     <input type="file" class="form-control-file" id="productImages" multiple>            
+                  </div>
                </div>
-               <div class="mb-3">                      
-                  <label for="selectSubCategory" class="form-label">Select SubCategory Name</label>
-                  <select class="form-control" id="selectSubCategory" name = "selectSubCategory">
-                     <option>--</option>                                             
-                  </select>                  
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary" class="insertBtn" onclick="insertEditproduct()" id="submit" name="submit">Save changes</button>
                </div>
-               <div class="mb-3">
-                  <label for="productName" class="form-label">Enter SubCategory Name</label>
-                  <input type="text" class="form-control" id="productName" name="productName">                  
-               </div>
-               <div class="mb-3">
-                  <label for="productBrand" class="form-label">Enter Product Brand</label>
-                  <input type="text" class="form-control" id="productBrand" name="productBrand">                  
-               </div> 
-               <div class="mb-3">
-                  <label for="productDesc" class="form-label">Enter Product Description</label>
-                  <input type="text" class="form-control" id="productDesc" name="productDesc">                  
-               </div> 
-            </div>
-            <div class="modal-footer">
-               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-               <button type="button" class="btn btn-primary" class="insertBtn" onclick="insertEditproduct()">Save changes</button>
-            </div>
+            </form>            
          </div>
       </div>
    </div>
