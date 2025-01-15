@@ -4,7 +4,7 @@
 <cfset products = application.objProductManagement.fetchProducts(subCategoryId =url.subCategoryId)>
 <cfif structKeyExists(form,"submit")>
    <cfif LEN(form.hiddenValue) GT 0>      
-      <cfset application.objProductManagement.updateProduct(productId = form.hiddenValue,subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,productDescription = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax)>      
+      <cfset application.objProductManagement.updateProduct(productId = form.hiddenValue,subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,productDescription = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>      
    <cfelse>      
       <cfset application.objProductManagement.insertProduct(subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,description = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>
    </cfif>      
@@ -46,7 +46,7 @@
                      <h6 class="productBrand">#products.fldBrandName#</h6>
                      <div class="productprice"><i class="fa-solid fa-indian-rupee-sign">#products.fldUnitPrice#</i></div>
                   </div>
-                  <div class="productItemImage" data-bs-toggle="modal" data-bs-target="##imageModal">
+                  <div class="productItemImage" data-bs-toggle="modal" data-bs-target="##imageModal" onclick="editImages(#products.fldProduct_Id#)">
                      <img src="./Assets/uploads/#products.fldImageFilePath#" alt="">
                   </div>
                   <div class="productItemRight">
@@ -129,14 +129,23 @@
          </div>
       </div>
    </div>
-
    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
          <div class="modal-content">
             <div class="modal-header">              
             </div>            
                <div class="modal-body">
-                  <img src="" alt="">                 
+                  <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                     <div class="carousel-inner" id="carouselContainer">                      
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="##carouselExampleControls" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                      </button>
+                      <button class="carousel-control-next" type="button" data-bs-target="##carouselExampleControls" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                      </button>
                </div>
                <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

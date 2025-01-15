@@ -92,7 +92,7 @@ function insertEditCategory() {
           data: {categoryName:inputValue},
           type: 'POST',
           success: function() {
-            $('#categoryModal').modal('hide')
+            location.reload();
           },
           error: function() {              
           }
@@ -105,7 +105,7 @@ function insertEditCategory() {
           data: {categoryId:hiddenValue,newcategory:inputValue},
           type: 'POST',
           success: function() {
-            $('#categoryModal').modal('hide')
+            location.reload();
           },
           error: function() {
               
@@ -391,17 +391,79 @@ function deleteProduct(productId)
     }	
 }
 
-$(".productItemImage").click(function() {
-  alert("zzz")
-      $.ajax({
-          url: 'components/productManagement.cfc?method=fetchProductImages',
-          type: 'POST',
-          success: function(result) {
-            location.reload();
-          },
-          error: function() {
-              
-          }
-      });  
-});
+function editImages(productId) {   
+    $.ajax({
+        url: 'components/productManagement.cfc?method=fetchProductImages',
+        data: { productId: productId },
+        type: 'POST',
+        success: function(result) {
+            console.log(result)
+            let productImages = JSON.parse(result).IMAGES;
+            let productImagesId = JSON.parse(result).PRODUCTIMAGESID;
+            let defaultImageId = JSON.parse(result).DEFAULTIMAGEID;
+            console.log(productImages);          
+            let carouselContainer = document.getElementById("carouselContainer");            
+            carouselContainer.innerHTML = '';
+           
+            for (let i = 0; i < productImages.length; i++) {
+                console.log(productImages[i]);
+                console.log(productImagesId[i]);
+                let div = document.createElement("div");
+                div.setAttribute('class', i === 0 ? 'carousel-item active' : 'carousel-item'); 
+                const img = document.createElement('img');
+                img.src = "./Assets/uploads/"+productImages[i]; 
+                img.alt = `Product Image ${i + 1}`;
+
+                if(productImagesId[i] != defaultImageId)
+                {
+                  let setThumbnailBtn = document.createElement('button');
+                  setThumbnailBtn.innerHTML = "setThumbnail"
+                  setThumbnailBtn.setAttribute('class','thumbnailBtn btn btn-success'); 
+                  setThumbnailBtn.setAttribute('onclick', `setThumbnail(${productImagesId[i]},${productId})`);              
+                  let deleteImageBtn = document.createElement('button');
+                  deleteImageBtn.innerHTML = "deleteImage"
+                  deleteImageBtn.setAttribute('class','deleteImageBtn btn btn-danger');
+                  deleteImageBtn.setAttribute('onclick', `deleteProductImage(${productImagesId[i]},${productId})`);
+                  div.appendChild(setThumbnailBtn);
+                  div.appendChild(deleteImageBtn);  
+                }                
+                div.appendChild(img);
+                             
+                carouselContainer.appendChild(div);
+            }
+        },
+        error: function() {
+            alert("Failed to fetch product images.");
+        }
+    });
+}
+function setThumbnail(productImageId,productId)
+{
+  $.ajax({		
+        url: 'components/productManagement.cfc?method=updateThumbnail',
+        type: 'POST',
+        data: {productImageId:productImageId,productId:productId},
+        success: function() {			
+          editImages(productId);
+        },
+        error: function() {		
+        }
+        });
+}
+
+function deleteProductImage(productImageId,productId)
+{
+  $.ajax({		
+     url: 'components/productManagement.cfc?method=deleteProductImage',
+     type: 'POST',
+     data: {productImageId:productImageId},
+     success: function() {			
+       editImages(productId);
+     },
+     error: function() {		
+     }
+     });
+}
+
+
 

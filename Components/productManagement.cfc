@@ -346,6 +346,15 @@
     <cfargument name="productDescription" required="true" type="string">
     <cfargument name="unitPrice" required="true" type="numeric">
     <cfargument name="unitTax" required="true" type="numeric">
+    <cfargument name="productImages" required="true">
+
+            <cffile
+			action="uploadall"
+			destination="#expandpath("./Assets/Uploads/")#"
+			nameconflict="MakeUnique"
+			strict="true"
+			result="local.newPath"
+		   >       
 
     <cfquery name="local.updateProduct">
         UPDATE
@@ -360,7 +369,26 @@
             fldUpdatedBy = <cfqueryparam value = #session.userId# cfsqltype="integer">
         WHERE
             fldProduct_Id = <cfqueryparam value="#arguments.productId#">
-    </cfquery>
+    </cfquery>    
+           <cfloop array="#local.newPath#" index="i"  item="image">
+                <cfquery name="local.insertProductImages">
+                   INSERT
+                   INTO
+                      tblproductimages(
+                          fldProductId
+                          ,fldImageFilePath
+                          ,fldCreatedBy
+                          ,fldDefaultImage
+                      )
+                   VALUES(
+                      <cfqueryparam value="#arguments.productId#" cfsqltype="integer">,
+                      <cfqueryparam value="#image.serverFile#" cfsqltype="varchar">,
+                      <cfqueryparam value="#session.userId#" cfsqltype="varchar">,                      
+                      <cfqueryparam value=0 cfsqltype="integer">                      
+                   )           
+                </cfquery>                           
+         </cfloop>          
+   
 </cffunction>
 
 <cffunction name="deleteProduct" access="remote" returntype="void">
@@ -375,11 +403,15 @@
     </cfquery>    
 </cffunction>
 
-<cffunction name="fetchProductImages" access="remote" returntype="struct"  returnformat="JSON">
-    <cfargument name="productId" required="true" type="numeric" >
+<cffunction name="fetchProductImages" access="remote" returntype="struct" returnformat="JSON">
+    <cfargument name="productId" required="true" type="numeric">
+    <cfset var local = structNew()>
+
     <cfquery name="local.fetchImages">
         SELECT
-            PI.fldImageFilePath
+            PI.fldImageFilePath,
+            PI.fldProductImage_Id,
+            PI.fldDefaultImage
         FROM
             tblproductimages PI
         INNER JOIN
@@ -387,7 +419,52 @@
         ON
             PI.fldProductId = P.fldProduct_Id
         WHERE
-            P.P.fldProduct_Id = <cfqueryparam value="#arguments.productId#">
+            P.fldProduct_Id = <cfqueryparam value="#arguments.productId#" cfsqltype="integer">
+            AND
+            PI.fldActive = <cfqueryparam value="1" cfsqltype="integer">
     </cfquery>
-    <cfreturn local.fetchImages>
+    
+    <cfset var result = { images = [],productImagesId=[]}>
+    <cfloop query="local.fetchImages">
+        <cfif local.fetchImages.fldDefaultImage EQ 1>
+            <cfset result.defaultImageId = local.fetchImages.fldProductImage_Id >                    
+        </cfif>
+        <cfset arrayAppend(result.images, local.fetchImages.fldImageFilePath)>
+        <cfset arrayAppend(result.productImagesId, local.fetchImages.fldProductImage_Id)>
+    </cfloop>
+    <cfreturn result>
 </cffunction>
+
+<cffunction name="updateThumbnail" access="remote" returntype="void">
+    <cfargument name="productImageId" required="true" type="numeric">
+    <cfargument name="productId" required="true" type="numeric" >       
+    <cfquery name=local.resetAllThumbnail>
+         UPDATE
+            tblproductimages
+        SET
+            fldDefaultImage = <cfqueryparam value = "0" cfsqltype="integer">
+        WHERE
+            fldProductId = <cfqueryparam  value="#arguments.productId#">        
+    </cfquery>
+    <cfquery name = updateThumbnail>
+        UPDATE
+            tblproductimages
+        SET
+            fldDefaultImage = <cfqueryparam value = 1>
+        WHERE
+            fldProductImage_Id = <cfqueryparam value = #arguments.productImageId# cfsqltype="integer">
+    </cfquery>
+</cffunction>
+
+<cffunction name="deleteProductImage" access="remote" returntype="void" >
+    <cfargument name="productImageId" required="true" type="numeric">    
+    <cfquery name = local.softDeleteProductImage>
+        UPDATE
+            tblproductimages
+        SET
+            fldActive  = <cfqueryparam value='0' cfsqltype="integer">
+        WHERE
+            fldProductImage_Id = <cfqueryparam value="#arguments.productImageId#" cfsqltype="integer">
+    </cfquery>
+</cffunction>
+
