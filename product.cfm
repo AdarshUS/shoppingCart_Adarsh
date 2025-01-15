@@ -3,7 +3,11 @@
 <cfset brands = application.objProductManagement.fetchBrands()>
 <cfset products = application.objProductManagement.fetchProducts(subCategoryId =url.subCategoryId)>
 <cfif structKeyExists(form,"submit")>
-   <cfset application.objProductManagement.insertProduct(subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,description = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>   
+   <cfif LEN(form.hiddenValue) GT 0>      
+      <cfset application.objProductManagement.updateProduct(productId = form.hiddenValue,subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,productDescription = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax)>      
+   <cfelse>      
+      <cfset application.objProductManagement.insertProduct(subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,description = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>
+   </cfif>      
 </cfif>
 <!DOCTYPE html>
 <html lang="en">
@@ -35,22 +39,22 @@
             <button data-bs-toggle="modal" data-bs-target="##productModal" class="productAddbtn" onclick="createproduct()"><span>Add</span><i class="fa-solid fa-plus productPlus"></i></button>         
          </div>                                                                                                                                     
           <cfloop query = products>
-            <div class="productBody">           
+            <div class="productBody" id="#products.fldProduct_Id#">           
                <div class="productItem">
                   <div class="productItemLeft">
                      <h4 class="productName">#products.fldProductName#</h4>
                      <h6 class="productBrand">#products.fldBrandName#</h6>
                      <div class="productprice"><i class="fa-solid fa-indian-rupee-sign">#products.fldUnitPrice#</i></div>
                   </div>
-                  <div class="productItemImage">
+                  <div class="productItemImage" data-bs-toggle="modal" data-bs-target="##imageModal">
                      <img src="./Assets/uploads/#products.fldImageFilePath#" alt="">
                   </div>
                   <div class="productItemRight">
                      <button class="productfnBtn" data-bs-toggle="modal" data-bs-target="##productModal" id="editProductBtn" value="#products.fldProduct_Id#" onclick="editProduct({productId :#products.fldProduct_Id#,categoryId:#url.categoryId#,subCategoryId:#url.subCategoryId#})"><i class="fa-solid fa-pen-to-square productfns" ></i></button>
-                     <button class="productfnBtn"><i class="fa-solid fa-trash productfns"></i></button>                                                                            
+                     <button class="productfnBtn" onclick="deleteProduct(#products.fldProduct_Id#)"><i class="fa-solid fa-trash productfns"></i></button>                                                                            
                   </div>              
                </div>            
-         </div>
+            </div>
          </cfloop>
       </div>
    </main>
@@ -88,7 +92,7 @@
                   <div class="mb-3">
                      <label for="brandName" class="form-label">Enter Product Brand</label>
                      <select class="form-control" id="brandName" name = "brandName">
-                        <option>--</option> 
+                        <option id="0">--</option> 
                         <cfloop query="brands">
                            <option value="#brands.fldBrand_Id#">#brands.fldBrandName#</option>
                         </cfloop>
@@ -114,11 +118,29 @@
                      <label for="productImages">Select Product Images</label>
                      <input type="file" class="form-control-file" id="productImages" multiple name="productImages">
                      <div id="productImageError" class="error"></div>
+                     <input type="hidden" id="hiddenValue" name="hiddenValue">
                   </div>
                </div>
                <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                  <button type="submit" class="btn btn-primary" class="insertBtn" onclick="insertEditproduct()" id="submit" name="submit">Save changes</button>
+                  <button type="submit" class="btn btn-primary" class="insertBtn" id="submit" name="submit">Save changes</button>
+               </div>
+            </form>            
+         </div>
+      </div>
+   </div>
+
+   <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+         <div class="modal-content">
+            <div class="modal-header">              
+            </div>            
+               <div class="modal-body">
+                  <img src="" alt="">                 
+               </div>
+               <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary" class="insertBtn" id="submit" name="submit">Save changes</button>
                </div>
             </form>            
          </div>

@@ -258,7 +258,7 @@
     <cffunction name="fetchProducts" access="public" returntype="query" >
       <cfargument name="subCategoryId" type="integer" required="true">
       <cfquery name="local.fetchProducts">
-          SELECT
+        SELECT
             P.fldProduct_Id,
             P.fldSubCategoryId,
             P.fldProductName,
@@ -267,22 +267,22 @@
             P.fldUnitPrice,
             P.fldUnitTax,
             PI.fldImageFilePath
-         FROM
-             tblproduct P
-         INNER JOIN
-             tblproductimages PI
-         ON
-             P.fldProduct_Id = PI.fldProductId
-             AND PI.fldDefaultImage = 1 
-         INNER JOIN
-             tblbrand B
-         ON
-             P.fldBrandId = B.fldBrand_Id
-         WHERE
-             P.fldSubCategoryId = <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="integer">
-             AND 
-             PI.fldDefaultImage = 1;
-      </cfquery>
+        FROM
+            tblproduct P
+        INNER JOIN
+            tblproductimages PI
+        ON
+            P.fldProduct_Id = PI.fldProductId
+            AND PI.fldDefaultImage = 1
+        INNER JOIN
+            tblbrand B
+        ON
+            P.fldBrandId = B.fldBrand_Id
+        WHERE
+            P.fldSubCategoryId = <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="integer">
+            AND P.fldActive = 1;
+    </cfquery>
+    
       <cfreturn local.fetchProducts>
    </cffunction>
 
@@ -336,4 +336,58 @@
         </cfcatch>
     </cftry>    
     <cfreturn local.structProduct>
+</cffunction>
+
+<cffunction name="updateProduct" access="public" returntype="void">
+    <cfargument name="productId" required="true" type="numeric">    
+    <cfargument name="subCategoryId" required="true" type="numeric">
+    <cfargument name="productName" required="true" type="string">
+    <cfargument name="brandId" required="true" type="numeric">
+    <cfargument name="productDescription" required="true" type="string">
+    <cfargument name="unitPrice" required="true" type="numeric">
+    <cfargument name="unitTax" required="true" type="numeric">
+
+    <cfquery name="local.updateProduct">
+        UPDATE
+            tblproduct
+        SET
+            fldSubCategoryId = <cfqueryparam value = #arguments.subCategoryId# cfsqltype="integer">,
+            fldProductName = <cfqueryparam value = #arguments.productName# cfsqltype="varchar">,
+            fldBrandId = <cfqueryparam value = #arguments.brandId# cfsqltype="integer">,
+            fldDescription = <cfqueryparam value = #arguments.productDescription# cfsqltype="varchar">,
+            fldUnitPrice = <cfqueryparam value = #arguments.unitPrice# cfsqltype="integer">,
+            fldUnitTax = <cfqueryparam value = #arguments.unitTax# cfsqltype="integer">,
+            fldUpdatedBy = <cfqueryparam value = #session.userId# cfsqltype="integer">
+        WHERE
+            fldProduct_Id = <cfqueryparam value="#arguments.productId#">
+    </cfquery>
+</cffunction>
+
+<cffunction name="deleteProduct" access="remote" returntype="void">
+    <cfargument name="productId" required="true" type="numeric" >
+    <cfquery name="local.deleteProduct">
+        UPDATE
+            tblproduct
+        SET
+            fldActive = <cfqueryparam value="0" cfsqltype="integer">
+        WHERE
+            fldProduct_Id  = <cfqueryparam value="#arguments.productId#" cfsqltype="integer">                    
+    </cfquery>    
+</cffunction>
+
+<cffunction name="fetchProductImages" access="remote" returntype="struct"  returnformat="JSON">
+    <cfargument name="productId" required="true" type="numeric" >
+    <cfquery name="local.fetchImages">
+        SELECT
+            PI.fldImageFilePath
+        FROM
+            tblproductimages PI
+        INNER JOIN
+            tblproduct P
+        ON
+            PI.fldProductId = P.fldProduct_Id
+        WHERE
+            P.P.fldProduct_Id = <cfqueryparam value="#arguments.productId#">
+    </cfquery>
+    <cfreturn local.fetchImages>
 </cffunction>
