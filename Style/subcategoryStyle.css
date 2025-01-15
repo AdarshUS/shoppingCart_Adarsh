@@ -73,7 +73,7 @@ main{
    cursor: pointer;
 }
 
-.categoryAddbtn{
+.subcategoryAddbtn{
    border: 1px solid blue;
     border-radius: 10px;
     padding: 4px;
@@ -82,4 +82,10 @@ main{
 .categoryBtn{
    border: none;
    background-color: #79d1d2;
+}
+
+.error{
+   color: #ff0000;
+   padding: 5px;
+   font-size: 12px;
 }

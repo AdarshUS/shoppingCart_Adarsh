@@ -1,3 +1,4 @@
+ <cfset categories = application.objProductManagement.fetchAllCategories()>
 <cfoutput >
 <!DOCTYPE html>
 <html lang="en">
@@ -22,8 +23,7 @@
          </button>        
       </div>
    </header>
-   <main>
-      <cfset categories = application.objShoppingCart.fetchAllCategories()>
+   <main>     
       <div class="categoryContainer">
          <div class="categoryheader">
             <h5>Categories</h5>
@@ -53,7 +53,8 @@
             <div class="modal-body">
                <div class="mb-3">
                   <label for="exampleInputText" class="form-label">Enter Category Name</label>
-                  <input type="text" class="form-control" id="categoryInput">                  
+                  <input type="text" class="form-control" id="categoryInput">
+                  <div class="error" id="categoryError"></div>
                   <input type="hidden" id="distinguishCreateEdit">
                </div>
             </div>
@@ -65,8 +66,7 @@
       </div>
    </div>
    <script src="./Script/bootstrapScript.js"></script>
-   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>    
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>	   
+   <script src="./Script/jquery-3.7.1.min.js"></script>   	   
    <script src="./Script/script.js"></script>   
 </body>
 </html>
