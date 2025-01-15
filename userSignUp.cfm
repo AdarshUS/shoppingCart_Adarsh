@@ -1,6 +1,4 @@
-<cfif structKeyExists(form,"submitBtn")>
-   <cfset result = application.objUserLogin.registerUser(firstName)>
-</cfif>
+<cfoutput>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,7 +23,7 @@
    </header>
    <main>      
       <div class="signupContainer">
-         <form>
+         <form method="POST" onsubmit="return validateUserDetails()">
             <div class="mb-3">                      
                <label for="firstName" class="form-label">FirstName</label>
                <input type="text" class="form-control" placeholder="Enter the FirstName" id="firstName" name="firstName">              
@@ -44,18 +42,27 @@
             <div class="mb-3">                      
                <label for="userPhone" class="form-label">Phone</label>
                <input type="text" class="form-control" placeholder="Enter the Phone" id="userPhone" name="userPhone">              
-               <div id="userEmailError" class="error"></div>
+               <div id="userPhoneError" class="error"></div>
             </div>
             <div class="mb-3">                      
                <label for="userPhone" class="form-label">Password</label>
                <input type="password" class="form-control" placeholder="Enter the Password" id="userPassword" name="userPassword">              
                <div id="userPasswordError" class="error"></div>
-            </div>
+            </div>-
             <div class="mb-3">              
                <input type="submit" class="form-control submitBtn btn btn-primary" placeholder="submit" id="submitBtn" name="submitBtn">               
-            </div>
+            </div>            
          </form>
+         <cfif structKeyExists(form,"submitBtn")>              
+            <cfif result.success>
+               <p class="text-primary">successfully Registered</p>
+            <cfelse>
+               <p class="text-danger">registration Failed</p>
+            </cfif>
+         </cfif>
       </div>
    </main>
+   <script src="./Script/userPageScript.js"></script>
 </body>
 </html>
+</cfoutput>

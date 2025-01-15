@@ -54,3 +54,8 @@ main{
    border-radius: 40px;
 }
 
+.error{
+   color: #ff0000;
+   padding: 4px;
+}
+

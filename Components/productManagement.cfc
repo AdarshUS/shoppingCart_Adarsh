@@ -1,22 +1,20 @@
-<cffunction name="insertCategories"  access="remote" returntype="void">
+<cfcomponent >
+  <cffunction name="insertCategories"  access="remote" returntype="void">
       <cfargument name="categoryName" type="string">
       <cfset local.result = {success = false}>
       <cftry>
-          <cfquery name = local.insertCategory>
-               INSERT
-               INTO
-                   tblcategory(
-                       fldCategoryName
-                       ,fldCreatedBy
-                   )
-               VALUES(
+          <cfquery>
+               INSERT INTO tblcategory(
+                    fldCategoryName
+                    ,fldCreatedBy
+                ) VALUES(
                    <cfqueryparam value="#arguments.categoryName#" cfsqltype="cf_sql_varchar">
                    ,<cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">
                )
          </cfquery>
-      <cfcatch>
-         <cfset local.result.message = "Database error: " & cfcatch.message>
-      </cfcatch>
+        <cfcatch>
+            <cfset local.result.message = "Database error: " & cfcatch.message>
+        </cfcatch>
       </cftry>      
     </cffunction>
 
@@ -32,21 +30,20 @@
                 tblcategory
             WHERE   
                 fldCreatedBy = <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">
-                AND
-                fldActive = <cfqueryparam value="1" cfsqltype="cf_sql_integer">
+                AND fldActive = 1
         </cfquery>
-      <cfcatch >
-         <cfset local.result.message = "Database error: " & cfcatch.message>
-      </cfcatch>               
+        <cfcatch >
+            <cfset local.result.message = "Database error: " & cfcatch.message>
+        </cfcatch>               
       </cftry>        
-        <cfreturn local.fetchCategories>
+      <cfreturn local.fetchCategories>
     </cffunction>
 
     <cffunction name="editCategory" access="remote">
         <cfargument name="categoryId" required="true" type="integer" >
         <cfargument name="newCategory" required="true" type="string" >
         <cftry>
-             <cfquery name = local.editCategory>
+             <cfquery>
                   UPDATE
                       tblcategory
                   SET
@@ -79,9 +76,10 @@
             <cfset local.structCategory.message = "Database error: " & cfcatch.message>
         </cfcatch>
         </cftry>        
-         <cfloop list="#local.fetchCategory.columnList#" index="colname">
-            <cfset local.structCategory[colname] = local.fetchCategory[colname][1]>
-        </cfloop>
+        <cfset local.structCategory['categoryId'] = local.fetchCategory.fldCategory_Id>
+        <cfset local.structCategory['name'] = local.fetchCategory.fldCategoryName>
+        <cfset local.structCategory['createdBy'] = local.fetchCategory.fldCreatedBy>
+        <cfset local.structCategory['createdDate'] = local.fetchCategory.fldCreatedBy>
         <cfreturn local.structCategory>
     </cffunction>
 
@@ -93,9 +91,10 @@
             UPDATE
                 tblcategory
             SET
-                fldActive = <cfqueryparam value="0" cfsqltype="integer">
+                fldActive = 0
             WHERE
                 fldCategory_Id = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
+                AND fldActive = 1
         </cfquery>
         <cfcatch type="any">
             <cfset local.result.message = "Database error: " & cfcatch.message>
@@ -165,13 +164,10 @@
                 UPDATE
                      tblsubcategory
                 SET
-                    fldSubCategoryName = 
-                    <cfqueryparam value="#arguments.newCategoryName#" cfsqltype="cf_sql_varchar">,
-                    fldCategoryId = 
-                    <cfqueryparam value="#arguments.categoryId#" cfsqltype="cf_sql_integer">
+                    fldSubCategoryName = <cfqueryparam value="#arguments.newCategoryName#" cfsqltype="cf_sql_varchar">,
+                    fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="cf_sql_integer">
                 WHERE
-                    fldSubCategory_Id = 
-                    <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="cf_sql_integer">                
+                    fldSubCategory_Id = <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="cf_sql_integer">                
             </cfquery>
         <cfcatch >
              <cfset local.result.message = "Database error: " & cfcatch.message>       
@@ -283,16 +279,10 @@
             P.fldUnitTax,
             PI.fldImageFilePath
         FROM
-            tblproduct P
-        INNER JOIN
-            tblproductimages PI
-        ON
-            P.fldProduct_Id = PI.fldProductId
+          tblproduct P
+          INNER JOIN tblproductimages PI ON PI.fldProductId = P.fldProduct_Id
             AND PI.fldDefaultImage = 1
-        INNER JOIN
-            tblbrand B
-        ON
-            P.fldBrandId = B.fldBrand_Id
+          INNER JOIN tblbrand B ON P.fldBrandId = B.fldBrand_Id
         WHERE
             P.fldSubCategoryId = <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="integer">
             AND P.fldActive = 1;
@@ -481,5 +471,7 @@
         WHERE
             fldProductImage_Id = <cfqueryparam value="#arguments.productImageId#" cfsqltype="integer">
     </cfquery>
-</cffunction>
+  </cffunction>  
+</cfcomponent>
+
 
