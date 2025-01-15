@@ -14,7 +14,7 @@
                    ,<cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">
                )
          </cfquery>
-      <cfcatch >
+      <cfcatch>
          <cfset local.result.message = "Database error: " & cfcatch.message>
       </cfcatch>
       </cftry>      
@@ -38,8 +38,7 @@
       <cfcatch >
          <cfset local.result.message = "Database error: " & cfcatch.message>
       </cfcatch>               
-      </cftry>
-        
+      </cftry>        
         <cfreturn local.fetchCategories>
     </cffunction>
 
@@ -86,23 +85,29 @@
         <cfreturn local.structCategory>
     </cffunction>
 
-    <cffunction name="deleteCategory" access="remote">
+    <cffunction name="deleteCategory" access="remote">       
         <cfargument name="categoryId" required="true" type="integer">
-        <cfquery name = local.deleteCategory>
+         <cfset local.result = {success = false}>
+        <cftry>
+            <cfquery name = local.deleteCategory>
             UPDATE
                 tblcategory
             SET
-                fldActive 
-                = <cfqueryparam value="0" cfsqltype="cf_sql_integer">
+                fldActive = <cfqueryparam value="0" cfsqltype="integer">
             WHERE
-                fldCategory_Id 
-                =  <cfqueryparam value="#arguments.categoryId#" cfsqltype="cf_sql_integer">
-        </cfquery>    
+                fldCategory_Id = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
+        </cfquery>
+        <cfcatch type="any">
+            <cfset local.result.message = "Database error: " & cfcatch.message>
+        </cfcatch>                    
+        </cftry>
+            
     </cffunction>
 
     <cffunction name="insertSubCategory" access="public">        
         <cfargument name="categoryId" type="string" required="true">
         <cfargument name="subcategoryName"  type="string" required="true">
+        <cfset local.result = {success = false}>
         <cftry>
             <cfquery name = local.insertSubCategory>
                INSERT
@@ -119,7 +124,7 @@
                )                    
         </cfquery>
         <cfcatch >
-
+            <cfset local.result.message = "Database error: " & cfcatch.message>
         </cfcatch>                  
         </cftry>
         
@@ -154,32 +159,42 @@
         <cfargument name="subCategoryId" type="integer" required="true">
         <cfargument name="newCategoryName" type="string" required="true" >
         <cfargument name="categoryId" type="integer" required="true">
-        <cfquery name="local.updateSubCategory">
-            UPDATE
-                 tblsubcategory
-            SET
-                fldSubCategoryName = 
-                <cfqueryparam value="#arguments.newCategoryName#" cfsqltype="cf_sql_varchar">,
-                fldCategoryId = 
-                <cfqueryparam value="#arguments.categoryId#" cfsqltype="cf_sql_integer">
-            WHERE
-                fldSubCategory_Id = 
-                <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="cf_sql_integer">                
-        </cfquery>
+        <cfset local.result = {success = false}>
+        <cftry>
+            <cfquery name="local.updateSubCategory">
+                UPDATE
+                     tblsubcategory
+                SET
+                    fldSubCategoryName = 
+                    <cfqueryparam value="#arguments.newCategoryName#" cfsqltype="cf_sql_varchar">,
+                    fldCategoryId = 
+                    <cfqueryparam value="#arguments.categoryId#" cfsqltype="cf_sql_integer">
+                WHERE
+                    fldSubCategory_Id = 
+                    <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="cf_sql_integer">                
+            </cfquery>
+        <cfcatch >
+             <cfset local.result.message = "Database error: " & cfcatch.message>       
+        </cfcatch>                    
+        </cftry>        
     </cffunction>
 
-    <cffunction name="softDeleteSubCategory" access="remote" returntype="void" >
-        <cfargument name="subCategoryId" type="integer" required="true" >
-        <cfquery name = local.Deactivate>
-             UPDATE
-                tblsubcategory
-            SET
-                fldActive 
-                = <cfqueryparam value="0" cfsqltype="cf_sql_integer">
-            WHERE
-                fldSubCategory_Id 
-                =  <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="cf_sql_integer">                       
-        </cfquery>            
+    <cffunction name="softDeleteSubCategory" access="remote" returntype="void">
+        <cfargument name="subCategoryId" type="integer" required="true">
+        <cfset local.result = {success = false}>
+        <cftry>
+             <cfquery name = local.Deactivate>
+                UPDATE
+                    tblsubcategory
+                SET
+                    fldActive = <cfqueryparam value="0" cfsqltype="integer">
+                WHERE
+                    fldSubCategory_Id = <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="integer">                       
+        </cfquery>
+        <cfcatch>
+            <cfset local.result.message = "Database error: " & cfcatch.message>        
+        </cfcatch>                    
+        </cftry>                    
     </cffunction>
 
     <cffunction  name="insertProduct" access="public" returntype="void">        

@@ -10,7 +10,7 @@
       <cfreturn true>
    </cffunction>
 
-   <cffunction name="onRequestStart" returnType="void">
+   <!--- <cffunction name="onRequestStart" returnType="void">
       <cfargument name="requestname" required="true">
        <cfif structKeyExists(url,"reload") AND url.reload EQ true>
          <cfset onApplicationStart()>         
@@ -19,5 +19,5 @@
       <cfif NOT structKeyExists(session,"userId") AND NOT arrayFindNoCase(local.pages, ListLast(CGI.SCRIPT_NAME,'/'))>
 		 <cflocation url="admin.cfm" addToken="no">
 	   </cfif>
-   </cffunction>
+   </cffunction> --->
 </cfcomponent>

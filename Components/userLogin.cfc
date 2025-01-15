@@ -45,6 +45,47 @@
     
    <cffunction name="logoutAdmin" access="remote" returntype="void">
       <cfset StructClear(Session)>         
-   </cffunction>  
-    
+   </cffunction>
+
+   <cffunction name="registerUser" access="public" returntype="struct">
+        <cfargument name="firstName" required="true" type="string" >
+        <cfargument name="lastName" required="true" type="string" >
+        <cfargument name="email" required="true" type="string" >
+        <cfargument name="phone" required="true" type="string" >
+        <cfargument name="password" required="true" type="string" >
+        <cfset local.result = {success = false}>
+        <cfset local.saltString = generateSecretKey("AES")>
+        <cfset local.saltedPassword = arguments.password&local.saltString>
+        <cfset local.hashedPassword = hash( local.saltedPassword,"SHA-256","UTF-8")>
+        <cftry>
+            <cfquery name="local.registerUser">
+                INSERT
+                INTO
+                    tbluser(
+                        fldFirstName,
+                        fldLastName,
+                        fldRoleId,
+                        fldEmail,
+                        fldPhone,
+                        fldHashedPassword,
+                        fldUserSaltString
+                    )
+                VALUES(
+                    <cfqueryparam value="#arguments.firstName#" cfsqltype="varchar">,
+                    <cfqueryparam value="#arguments.lastName#" cfsqltype="varchar">,
+                    <cfqueryparam value="2" cfsqltype="integer">,
+                    <cfqueryparam value="#arguments.email#" cfsqltype="varchar">,
+                    <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">,
+                    <cfqueryparam value="#local.hashedPassword#" cfsqltype="varchar">,
+                    <cfqueryparam value="#local.saltString#" cfsqltype="varchar">
+                )
+            </cfquery>
+            <cfset local.result.success = true>
+        <cfcatch>
+           <cfset local.result.message = "Database error: " & cfcatch.message> 
+        </cfcatch>
+        </cftry>
+        <cfreturn local.result>
+   </cffunction>
+
 </cfcomponent>
