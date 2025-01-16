@@ -1,11 +1,11 @@
 <cfoutput>
-<cfset categories = application.objProductManagement.fetchAllCategories()>
+<cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfif structKeyExists(form,"submit")>
    <cfif LEN(form.distinguishSubCreateEdit) GT 0>
-      <cfset application.objShoppingCart.updateSubCategory(subCategoryId = form.distinguishSubCreateEdit,newCategoryName = form.subCategoryName,categoryId = form.selectCategory)>      
-   <cfelse>     
-      <cfset application.objShoppingCart.insertSubCategory(categoryId = form.selectCategory,subcategoryName = form.subCategoryName)>
-   </cfif>            
+      <cfset application.objProductManagement.updateSubCategory(subCategoryId = form.distinguishSubCreateEdit,newCategoryName = form.subCategoryName,categoryId = form.selectCategory)>      
+   <cfelse>
+      <cfset application.objProductManagement.insertSubCategory(categoryId = form.selectCategory,subcategoryName = form.subCategoryName)>
+   </cfif>
 </cfif>
 <cfset subcategories = application.objProductManagement.fetchSubCategories(categoryId = url.categoryId)>
 <!DOCTYPE html>
@@ -28,11 +28,11 @@
          <button class="logout">
             <span class="headerRightItem-1">LogOut</span>
             <i class="fa-solid fa-right-from-bracket"></i>
-         </button>        
+         </button>
       </div>
    </header>
    <main>      
-      <div class="categoryContainer">           
+      <div class="categoryContainer">
          <div class="categoryheader">
             <h5>Sub Categories</h5>
             <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="subcategoryAddbtn"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>         
@@ -40,7 +40,7 @@
          <div class="categoryBody">
             <cfloop query="#subcategories#">
                 <div class="categoryItem" id="#subcategories.fldSubCategory_Id#">
-                  <div class="categoryItemText">#subcategories.fldSubCategoryName#</div>               
+                  <div class="categoryItemText">#subcategories.fldSubCategoryName#</div>
                   <div class="categoryItemRight">
                      <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="categoryBtn" value="#subcategories.fldSubCategory_Id#" onclick=editSubCategory({categoryId:#url.categoryId#,subCategoryName:"#subcategories.fldSubCategoryName#",subCategoryId:#subcategories.fldSubCategory_Id#})><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
                      <button class="categoryBtn" onclick="deleteSubCategory(#subcategories.fldSubCategory_Id#)"><i class="fa-solid fa-trash categoryfns"></i></button>
@@ -66,9 +66,9 @@
                         <label for="categoryNameSelect" class="form-label">Select Category Name</label>
                         <select class="form-control" id="categoryNameSelect" name = "selectCategory">
                            <option>--</option>
-                           <cfloop query="categories">
-                              <option value="#categories.fldCategory_Id#">#categories.fldCategoryName#</option>
-                           </cfloop>                    
+                           <cfloop array ="#categoriesResult.categories#" index = i item = category>
+                              <option value="#categoriesResult.categoryId[i]#">#categoriesResult.categories[i]#</option>
+                           </cfloop>
                         </select>
                         <div id = "categorySelectError" class = "error"></div>
                   </div>

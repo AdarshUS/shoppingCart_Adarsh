@@ -1,13 +1,13 @@
 <cfoutput>
-<cfset categories = application.objProductManagement.fetchAllCategories()>
+<cfset categoriesStruct = application.objProductManagement.fetchAllCategories()>
 <cfset brands = application.objProductManagement.fetchBrands()>
 <cfset products = application.objProductManagement.fetchProducts(subCategoryId =url.subCategoryId)>
 <cfif structKeyExists(form,"submit")>
-   <cfif LEN(form.hiddenValue) GT 0>      
-      <cfset application.objProductManagement.updateProduct(productId = form.hiddenValue,subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,productDescription = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax)>      
-   <cfelse>      
+   <cfif LEN(form.hiddenValue) GT 0>
+      <cfset application.objProductManagement.updateProduct(productId = form.hiddenValue,subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,productDescription = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>      
+   <cfelse>
       <cfset application.objProductManagement.insertProduct(subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,description = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>
-   </cfif>      
+   </cfif>
 </cfif>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,24 +36,24 @@
       <div class="productContainer">
          <div class="productheader">
             <h5>products</h5>
-            <button data-bs-toggle="modal" data-bs-target="##productModal" class="productAddbtn" onclick="createproduct()"><span>Add</span><i class="fa-solid fa-plus productPlus"></i></button>         
-         </div>                                                                                                                                     
+            <button data-bs-toggle="modal" data-bs-target="##productModal" class="productAddbtn" onclick="createproduct()"><span>Add</span><i class="fa-solid fa-plus productPlus"></i></button>
+         </div>
           <cfloop query = products>
-            <div class="productBody" id="#products.fldProduct_Id#">           
+            <div class="productBody" id="#products.fldProduct_Id#">
                <div class="productItem">
                   <div class="productItemLeft">
                      <h4 class="productName">#products.fldProductName#</h4>
                      <h6 class="productBrand">#products.fldBrandName#</h6>
                      <div class="productprice"><i class="fa-solid fa-indian-rupee-sign">#products.fldUnitPrice#</i></div>
                   </div>
-                  <div class="productItemImage" data-bs-toggle="modal" data-bs-target="##imageModal">
-                     <img src="./Assets/uploads/#products.fldImageFilePath#" alt="">
+                  <div class="productItemImage" data-bs-toggle="modal" data-bs-target="##imageModal" onclick="editImages(#products.fldProduct_Id#)">
+                     <img src="./Assets/uploads/product#products.fldProduct_Id#/#products.fldImageFilePath#" alt="productImage">
                   </div>
                   <div class="productItemRight">
                      <button class="productfnBtn" data-bs-toggle="modal" data-bs-target="##productModal" id="editProductBtn" value="#products.fldProduct_Id#" onclick="editProduct({productId :#products.fldProduct_Id#,categoryId:#url.categoryId#,subCategoryId:#url.subCategoryId#})"><i class="fa-solid fa-pen-to-square productfns" ></i></button>
-                     <button class="productfnBtn" onclick="deleteProduct(#products.fldProduct_Id#)"><i class="fa-solid fa-trash productfns"></i></button>                                                                            
-                  </div>              
-               </div>            
+                     <button class="productfnBtn" onclick="deleteProduct(#products.fldProduct_Id#)"><i class="fa-solid fa-trash productfns"></i></button>
+                  </div>
+               </div>
             </div>
          </cfloop>
       </div>
@@ -67,20 +67,20 @@
             </div>
             <form method="POST" enctype="multipart/form-data" onsubmit="return validateProduct()">
                <div class="modal-body">
-                  <div class="mb-3">                      
+                  <div class="mb-3">
                      <label for="categoryNameSelectPr" class="form-label">Select Category Name</label>
                      <select class="form-control" id="categoryNameSelectPr" name = "categoryNameSelectPr">
                         <option>--</option> 
-                        <cfloop query="categories">
-                           <option value="#categories.fldCategory_Id#">#categories.fldCategoryName#</option>
-                        </cfloop>                                                   
+                        <cfloop array="#categoriesStruct.categories#" index="i" item="category">
+                           <option value="#categoriesStruct.categoryId[i]#">#categoriesStruct.categories[i]#</option>
+                        </cfloop>
                      </select>
                      <div id="categorySelectError" class="error"></div>
                   </div>
-                  <div class="mb-3">                      
+                  <div class="mb-3">
                      <label for="selectSubCategory" class="form-label">Select SubCategory Name</label>
                      <select class="form-control" id="selectSubCategory" name = "selectSubCategory">
-                        <option>--</option>                                             
+                        <option>--</option>
                      </select>
                      <div id="subCategorySelectError" class="error"></div>
                   </div>
@@ -125,30 +125,39 @@
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                   <button type="submit" class="btn btn-primary" class="insertBtn" id="submit" name="submit">Save changes</button>
                </div>
-            </form>            
+            </form>
          </div>
       </div>
    </div>
-
    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
          <div class="modal-content">
-            <div class="modal-header">              
+            <div class="modal-header">
             </div>            
                <div class="modal-body">
-                  <img src="" alt="">                 
+                  <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+                     <div class="carousel-inner" id="carouselContainer">
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="##carouselExampleControls" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                      </button>
+                      <button class="carousel-control-next" type="button" data-bs-target="##carouselExampleControls" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                      </button>
                </div>
                <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                   <button type="submit" class="btn btn-primary" class="insertBtn" id="submit" name="submit">Save changes</button>
                </div>
-            </form>            
+            </form>
          </div>
       </div>
    </div>
    <script src="./Script/bootstrapScript.js"></script>
-   <script src="./Script/jquery-3.7.1.min.js"></script>     
-   <script src="./Script/script.js"></script>   
+   <script src="./Script/jquery-3.7.1.min.js"></script>
+   <script src="./Script/script.js"></script>
 </body>
 </html>
 </cfoutput>
