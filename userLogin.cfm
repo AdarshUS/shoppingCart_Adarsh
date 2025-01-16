@@ -35,7 +35,7 @@
             </div>            
          </form>
          <cfif structKeyExists(form,"submitBtn")>
-            <cfset result = application.objUserLogin.registerUser(firstName = form.firstName,lastName = form.lastName,email = form.userEmail,phone = form.userPhone,password = form.userPassword)>   
+            <cfset result = application.objUser.registerUser(firstName = form.firstName,lastName = form.lastName,email = form.userEmail,phone = form.userPhone,password = form.userPassword)>   
             <cfif result.success>
                <p class="text-primary">successfully Registered</p>
             <cfelse>

@@ -55,7 +55,7 @@ function validateSubCategory()
 $(".logout").click(function() {
     if (confirm("Are you sure you want to Logout")) {
         $.ajax({
-            url: 'components/userLogin.cfc?method=logoutAdmin',
+            url: 'components/User.cfc?method=logoutAdmin',
             type: 'POST',
             success: function(result) {
               location.reload();
@@ -88,7 +88,7 @@ function insertEditCategory() {
       if(hiddenValue.trim() === "")
       {
          $.ajax({
-          url: 'components/productManagement.cfc?method=insertCategories',
+          url: 'components/ProductManagement.cfc?method=addCategory',
           data: {categoryName:inputValue},
           type: 'POST',
           success: function() {
@@ -101,7 +101,7 @@ function insertEditCategory() {
       else
       {
           $.ajax({
-          url: 'components/productManagement.cfc?method=editCategory',
+          url: 'components/ProductManagement.cfc?method=editCategory',
           data: {categoryId:hiddenValue,newcategory:inputValue},
           type: 'POST',
           success: function() {
@@ -119,7 +119,7 @@ function editCategory(editBtn)
    console.log(editBtn.value)
    document.getElementById("categoryModalLabel").textContent = "Edit Category";   
    $.ajax({
-          url: 'components/productManagement.cfc?method=fetchSingleCategory',
+          url: 'components/ProductManagement.cfc?method=fetchSingleCategory',
           data: {categoryId:editBtn.value},
           type: 'POST',
           success: function(result) {
@@ -139,7 +139,7 @@ function deleteCategory(dltBtn)
    if (confirm("Are you sure you want to delete"))
 	{
 		$.ajax({		
-   	 url: 'components/productManagement.cfc?method=deleteCategory',
+   	 url: 'components/ProductManagement.cfc?method=deleteCategory',
    	 type: 'POST',
    	 data: {categoryId:dltBtn.value},
    	 success: function() {			
@@ -176,7 +176,7 @@ function deleteSubCategory(subCategoryId)
   if (confirm("Are you sure you want to delete"))
 	{
 		$.ajax({		
-   	 url: 'components/productManagement.cfc?method=softDeleteSubCategory',
+   	 url: 'components/ProductManagement.cfc?method=softDeleteSubCategory',
    	 type: 'POST',
    	 data: {subCategoryId:subCategoryId},
    	 success: function() {			
@@ -198,7 +198,7 @@ $("#categoryNameSelectPr").change(function() {
     if(categorySelected.trim() != "")
     {
       $.ajax({		
-   	 url: 'components/productManagement.cfc?method=fetchSubCategories',
+   	 url: 'components/ProductManagement.cfc?method=fetchSubCategories',
    	 type: 'POST',
    	 data: {categoryId:categorySelected},
    	 success: function(result) {
@@ -329,7 +329,7 @@ function editProduct(editObj) {
    console.log(editObj);
    let subCategoryElement  = document.getElementById("selectSubCategory");
    $.ajax({
-     url: 'components/productManagement.cfc?method=fetchSingleProduct',
+     url: 'components/ProductManagement.cfc?method=fetchSingleProduct',
      data:{productId:editObj.productId},
      type: 'POST',
      success: function(result) {
@@ -343,7 +343,7 @@ function editProduct(editObj) {
       document.getElementById("categoryNameSelectPr").value = editObj.categoryId;
       document.getElementById("hiddenValue").value = editObj.productId;
       $.ajax({		
-        url: 'components/productManagement.cfc?method=fetchSubCategories',
+        url: 'components/ProductManagement.cfc?method=fetchSubCategories',
         type: 'POST',
         data: {categoryId:editObj.categoryId},
         success: function(result) {
@@ -379,7 +379,7 @@ function deleteProduct(productId)
   if (confirm("Are you sure you want to delete"))
     {
       $.ajax({		
-        url: 'components/productManagement.cfc?method=deleteProduct',
+        url: 'components/ProductManagement.cfc?method=deleteProduct',
         type: 'POST',
         data: {productId:productId},
         success: function() {			
@@ -393,7 +393,7 @@ function deleteProduct(productId)
 
 function editImages(productId) {   
     $.ajax({
-        url: 'components/productManagement.cfc?method=fetchProductImages',
+        url: 'components/ProductManagement.cfc?method=fetchProductImages',
         data: { productId: productId },
         type: 'POST',
         success: function(result) {
@@ -440,7 +440,7 @@ function editImages(productId) {
 function setThumbnail(productImageId,productId)
 {
   $.ajax({		
-        url: 'components/productManagement.cfc?method=updateThumbnail',
+        url: 'components/ProductManagement.cfc?method=updateThumbnail',
         type: 'POST',
         data: {productImageId:productImageId,productId:productId},
         success: function() {			
@@ -454,7 +454,7 @@ function setThumbnail(productImageId,productId)
 function deleteProductImage(productImageId,productId)
 {
   $.ajax({		
-     url: 'components/productManagement.cfc?method=deleteProductImage',
+     url: 'components/ProductManagement.cfc?method=deleteProductImage',
      type: 'POST',
      data: {productImageId:productImageId},
      success: function() {			

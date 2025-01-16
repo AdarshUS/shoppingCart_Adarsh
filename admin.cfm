@@ -39,9 +39,9 @@
             </div>
          </form>
          <cfif structKeyExists(form,"submit")>
-            <cfset result = application.objUserLogin.validateAdminLogin(userName = form.userName,password = form.password)>
+            <cfset result = application.objUser.validateAdminLogin(userName = form.userName,password = form.password)>
             <cfif result.success>
-               <cfset session.userId = result.userId>
+               <cfset session.loginuserId = result.userId>
                <cflocation url="./category.cfm"  addtoken="no">
             <cfelse>
                <p class="error" id="user_error">#result.message#</p>

@@ -5,8 +5,8 @@
    <cfset this.sessionManagement = true>
    <cfset this.sessionTimeout = createTimeSpan(0, 0, 30, 0)>     
    <cffunction name="onApplicationStart" returnType="boolean">
-		<cfset application.objProductManagement = createObject("component","Components.productManagement")>
-      <cfset application.objUserLogin = createObject("component","Components.userLogin")>
+		<cfset application.objProductManagement = createObject("component","Components.ProductManagement")>
+      <cfset application.objUser = createObject("component","Components.User")>
       <cfreturn true>
    </cffunction>
 
@@ -16,7 +16,7 @@
          <cfset onApplicationStart()>         
       </cfif>
       <cfset local.pages = ["admin.cfm"]>
-      <cfif NOT structKeyExists(session,"userId") AND NOT arrayFindNoCase(local.pages, ListLast(CGI.SCRIPT_NAME,'/'))>
+      <cfif NOT structKeyExists(session,"loginuserId") AND NOT arrayFindNoCase(local.pages, ListLast(CGI.SCRIPT_NAME,'/'))>
 		 <cflocation url="admin.cfm" addToken="no">
 	   </cfif>
    </cffunction> --->

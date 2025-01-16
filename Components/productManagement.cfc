@@ -1,6 +1,6 @@
 <cfcomponent >
-  <cffunction name="insertCategories"  access="remote" returntype="void">
-      <cfargument name="categoryName" type="string">
+  <cffunction name="addCategory"  access="remote" returntype="void">
+      <cfargument name="categoryName" type="string" required="true">
       <cfset local.result = {success = false}>
       <cftry>
           <cfquery>
@@ -8,8 +8,8 @@
                     fldCategoryName
                     ,fldCreatedBy
                 ) VALUES(
-                   <cfqueryparam value="#arguments.categoryName#" cfsqltype="cf_sql_varchar">
-                   ,<cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">
+                   <cfqueryparam value="#arguments.categoryName#" cfsqltype="varchar">
+                   ,<cfqueryparam value="#session.loginuserId#" cfsqltype="integer">
                )
          </cfquery>
         <cfcatch>
@@ -29,7 +29,7 @@
             FROM
                 tblcategory
             WHERE   
-                fldCreatedBy = <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">
+                fldCreatedBy = <cfqueryparam value="#session.loginuserId#" cfsqltype="integer">
                 AND fldActive = 1
         </cfquery>
         <cfcatch >
@@ -48,7 +48,7 @@
                       tblcategory
                   SET
                       fldCategoryName = <cfqueryparam value="#arguments.newCategory#" cfsqltype="varchar">,
-                      fldUpdatedBy = <cfqueryparam value="#session.userId#" cfsqltype="integer">
+                      fldUpdatedBy = <cfqueryparam value="#session.loginuserId#" cfsqltype="integer">
                   WHERE
                       fldCategory_Id = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
             </cfquery>
@@ -87,7 +87,7 @@
         <cfargument name="categoryId" required="true" type="integer">
          <cfset local.result = {success = false}>
         <cftry>
-            <cfquery name = local.deleteCategory>
+            <cfquery>
             UPDATE
                 tblcategory
             SET
@@ -108,7 +108,7 @@
         <cfargument name="subcategoryName"  type="string" required="true">
         <cfset local.result = {success = false}>
         <cftry>
-            <cfquery name = local.insertSubCategory>
+            <cfquery>
                INSERT
                INTO
                    tblsubcategory(
@@ -119,7 +119,7 @@
                VALUES(
                    <cfqueryparam value="#arguments.categoryId#">
                    ,<cfqueryparam value="#arguments.subcategoryName#">
-                   ,<cfqueryparam value="#session.userId#">
+                   ,<cfqueryparam value="#session.loginuserId#">
                )                    
         </cfquery>
         <cfcatch >
@@ -141,11 +141,9 @@
                FROM
                    tblsubcategory
                WHERE   
-                   fldCreatedBy = <cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">
-                   AND
-                   fldActive = <cfqueryparam value="1" cfsqltype="cf_sql_integer">
-                   AND
-                   fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="cf_sql_integer">
+                   fldCreatedBy = <cfqueryparam value="#session.loginuserId#" cfsqltype="integer">
+                   AND fldActive = 1
+                   AND fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
             </cfquery>
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
@@ -160,14 +158,14 @@
         <cfargument name="categoryId" type="integer" required="true">
         <cfset local.result = {success = false}>
         <cftry>
-            <cfquery name="local.updateSubCategory">
+            <cfquery>
                 UPDATE
                      tblsubcategory
                 SET
-                    fldSubCategoryName = <cfqueryparam value="#arguments.newCategoryName#" cfsqltype="cf_sql_varchar">,
-                    fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="cf_sql_integer">
+                    fldSubCategoryName = <cfqueryparam value="#arguments.newCategoryName#" cfsqltype="varchar">,
+                    fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
                 WHERE
-                    fldSubCategory_Id = <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="cf_sql_integer">                
+                    fldSubCategory_Id = <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="integer">                
             </cfquery>
         <cfcatch >
              <cfset local.result.message = "Database error: " & cfcatch.message>       
@@ -179,13 +177,14 @@
         <cfargument name="subCategoryId" type="integer" required="true">
         <cfset local.result = {success = false}>
         <cftry>
-             <cfquery name = local.Deactivate>
+             <cfquery>
                 UPDATE
                     tblsubcategory
                 SET
-                    fldActive = <cfqueryparam value="0" cfsqltype="integer">
+                    fldActive = 0
                 WHERE
-                    fldSubCategory_Id = <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="integer">                       
+                    fldSubCategory_Id = <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="integer">
+                    AND fldActive = 1
         </cfquery>
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>        
@@ -194,22 +193,22 @@
     </cffunction>
 
     <cffunction  name="insertProduct" access="public" returntype="void">        
-        <cfargument name="subCategoryId" required="true" type="string">
+        <cfargument name="subCategoryId" required="true" type="integer">
         <cfargument name="productName" required="true" type="string">
-        <cfargument name="brandId" required="true" type="string">
+        <cfargument name="brandId" required="true" type="integer">
         <cfargument name="description" required="true" type="string">
-        <cfargument  name="unitPrice" required="true" type="string">
-        <cfargument name="unitTax" required="true" type="string" >
-        <cfargument name="productImages" required="true">
+        <cfargument  name="unitPrice" required="true" type="integer">
+        <cfargument name="unitTax" required="true" type="integer" >
+        <cfargument name="productImages" required="true" type="struct">
         
-        	<cffile
-			action="uploadall"
-			destination="#expandpath("./Assets/Uploads/")#"
-			nameconflict="MakeUnique"
-			strict="true"
-			result="local.newPath"
-		   >       
-        <cfquery name="local.insertProduct" result="product">
+        <cffile
+		action="uploadall"
+		destination="#expandpath("./Assets/Uploads/")#"
+		nameconflict="MakeUnique"
+		strict="true"
+		result="local.newPath"
+		>       
+        <cfquery>
         INSERT
         INTO
             tblproduct(
@@ -222,17 +221,17 @@
               ,fldCreatedBy
             )
         VALUES(
-            <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="cf_sql_integer">
-            ,<cfqueryparam value="#arguments.productName#" cfsqltype="cf_sql_varchar">
-            ,<cfqueryparam value="#arguments.brandId#" cfsqltype="cf_sql_integer">
-            ,<cfqueryparam value="#arguments.description#" cfsqltype="cf_sql_varchar">
-            ,<cfqueryparam value="#arguments.unitPrice#" cfsqltype="cf_sql_varchar">
-            ,<cfqueryparam value="#arguments.unitTax#" cfsqltype="cf_sql_varchar">  
-            ,<cfqueryparam value="#session.userId#" cfsqltype="cf_sql_integer">          
+            <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="integer">
+            ,<cfqueryparam value="#arguments.productName#" cfsqltype="varchar">
+            ,<cfqueryparam value="#arguments.brandId#" cfsqltype="integer">
+            ,<cfqueryparam value="#arguments.description#" cfsqltype="varchar">
+            ,<cfqueryparam value="#arguments.unitPrice#" cfsqltype="varchar">
+            ,<cfqueryparam value="#arguments.unitTax#" cfsqltype="varchar">  
+            ,<cfqueryparam value="#session.loginuserId#" cfsqltype="integer">          
         )
         </cfquery>        
          <cfloop array="#local.newPath#" index="i"  item="image">
-            <cfquery name="local.insertProductImages">
+            <cfquery>
                INSERT
                INTO
                   tblproductimages(
@@ -244,7 +243,7 @@
                VALUES(
                   <cfqueryparam value="#product.GENERATEDKEY#" cfsqltype="integer">,
                   <cfqueryparam value="#image.serverFile#" cfsqltype="varchar">,
-                  <cfqueryparam value="#session.userId#" cfsqltype="varchar">,
+                  <cfqueryparam value="#session.loginuserId#" cfsqltype="varchar">,
                   <cfif i EQ 1>
                      <cfqueryparam value=1 cfsqltype="integer">
                   <cfelse>
@@ -292,37 +291,37 @@
    </cffunction>
 
    <cffunction name="fetchSingleProduct" access="remote" returntype="struct" returnformat="JSON">
-    <cfargument name="productId" required="true" type="numeric">   
+    <cfargument name="productId" required="true" type="integer">   
     <cfset local.structProduct = {}>
     <cftry>        
         <cfquery name="local.fetchProduct">
             SELECT
-                tp.fldProduct_Id,
-                tp.fldProductName,
-                tp.fldDescription,
-                tp.fldUnitPrice,
-                tp.fldUnitTax,                
-                tpi.fldImageFilePath,
-                tb.fldBrandName,
-                tp.fldBrandId
+                TP.fldProduct_Id,
+                TP.fldProductName,
+                TP.fldDescription,
+                TP.fldUnitPrice,
+                TP.fldUnitTax,                
+                TPI.fldImageFilePath,
+                TB.fldBrandName,
+                TB.fldBrandId
             FROM
-                tblbrand AS tb
+                tblbrand AS TB
             INNER JOIN 
-                tblproduct AS tp
+                tblproduct AS TP
             ON
-                tb.fldBrand_Id = tp.fldBrandId
+                TB.fldBrand_Id = TP.fldBrandId
             INNER JOIN
-                tblProductImages AS tpi
+                tblProductImages AS TPI
             ON
-                tp.fldProduct_Id = tpi.fldProductId
+                TP.fldProduct_Id = TPI.fldProductId
             WHERE
-                tp.fldProduct_Id = <cfqueryparam value="#arguments.productId#" cfsqltype="cf_sql_integer">
+                TP.fldProduct_Id = <cfqueryparam value="#arguments.productId#" cfsqltype="integer">
             AND
-                tp.fldActive = 1
+                TP.fldActive = 1
             AND
-                tpi.fldActive = 1
+                TPI.fldActive = 1
             AND
-                tpi.fldDefaultImage = 1
+                TPI.fldDefaultImage = 1
         </cfquery>       
         <cfif local.fetchProduct.recordCount gt 0>            
             <cfset local.structProduct = {
@@ -344,13 +343,13 @@
 </cffunction>
 
 <cffunction name="updateProduct" access="public" returntype="void">
-    <cfargument name="productId" required="true" type="numeric">    
-    <cfargument name="subCategoryId" required="true" type="numeric">
+    <cfargument name="productId" required="true" type="integer">    
+    <cfargument name="subCategoryId" required="true" type="integer">
     <cfargument name="productName" required="true" type="string">
-    <cfargument name="brandId" required="true" type="numeric">
+    <cfargument name="brandId" required="true" type="integer">
     <cfargument name="productDescription" required="true" type="string">
-    <cfargument name="unitPrice" required="true" type="numeric">
-    <cfargument name="unitTax" required="true" type="numeric">
+    <cfargument name="unitPrice" required="true" type="integer">
+    <cfargument name="unitTax" required="true" type="integer">
     <cfargument name="productImages" required="true">
 
             <cffile
@@ -361,7 +360,7 @@
 			result="local.newPath"
 		   >       
 
-    <cfquery name="local.updateProduct">
+    <cfquery>
         UPDATE
             tblproduct
         SET
@@ -371,7 +370,7 @@
             fldDescription = <cfqueryparam value = #arguments.productDescription# cfsqltype="varchar">,
             fldUnitPrice = <cfqueryparam value = #arguments.unitPrice# cfsqltype="integer">,
             fldUnitTax = <cfqueryparam value = #arguments.unitTax# cfsqltype="integer">,
-            fldUpdatedBy = <cfqueryparam value = #session.userId# cfsqltype="integer">
+            fldUpdatedBy = <cfqueryparam value = #session.loginuserId# cfsqltype="integer">
         WHERE
             fldProduct_Id = <cfqueryparam value="#arguments.productId#">
     </cfquery>    
@@ -388,7 +387,7 @@
                    VALUES(
                       <cfqueryparam value="#arguments.productId#" cfsqltype="integer">,
                       <cfqueryparam value="#image.serverFile#" cfsqltype="varchar">,
-                      <cfqueryparam value="#session.userId#" cfsqltype="varchar">,                      
+                      <cfqueryparam value="#session.loginuserId#" cfsqltype="varchar">,                      
                       <cfqueryparam value=0 cfsqltype="integer">                      
                    )           
                 </cfquery>                           
@@ -398,21 +397,21 @@
 
 <cffunction name="deleteProduct" access="remote" returntype="void">
     <cfargument name="productId" required="true" type="numeric" >
-    <cfquery name="local.deleteProduct">
+    <cfquery>
         UPDATE
             tblproduct
         SET
-            fldActive = <cfqueryparam value="0" cfsqltype="integer">
+            fldActive = 0
         WHERE
-            fldProduct_Id  = <cfqueryparam value="#arguments.productId#" cfsqltype="integer">                    
+            fldProduct_Id  = <cfqueryparam value="#arguments.productId#" cfsqltype="integer">
+            AND fldActive = 1
     </cfquery>    
 </cffunction>
 
 <cffunction name="fetchProductImages" access="remote" returntype="struct" returnformat="JSON">
     <cfargument name="productId" required="true" type="numeric">
     <cfset var local = structNew()>
-
-    <cfquery name="local.fetchImages">
+    <cfquery>
         SELECT
             PI.fldImageFilePath,
             PI.fldProductImage_Id,
@@ -443,7 +442,7 @@
 <cffunction name="updateThumbnail" access="remote" returntype="void">
     <cfargument name="productImageId" required="true" type="numeric">
     <cfargument name="productId" required="true" type="numeric" >       
-    <cfquery name=local.resetAllThumbnail>
+    <cfquery>
          UPDATE
             tblproductimages
         SET
@@ -451,7 +450,7 @@
         WHERE
             fldProductId = <cfqueryparam  value="#arguments.productId#">        
     </cfquery>
-    <cfquery name = updateThumbnail>
+    <cfquery>
         UPDATE
             tblproductimages
         SET
@@ -463,13 +462,14 @@
 
 <cffunction name="deleteProductImage" access="remote" returntype="void" >
     <cfargument name="productImageId" required="true" type="numeric">    
-    <cfquery name = local.softDeleteProductImage>
+    <cfquery>
         UPDATE
             tblproductimages
         SET
-            fldActive  = <cfqueryparam value='0' cfsqltype="integer">
+            fldActive = 0
         WHERE
             fldProductImage_Id = <cfqueryparam value="#arguments.productImageId#" cfsqltype="integer">
+            AND fldActive = 1
     </cfquery>
   </cffunction>  
 </cfcomponent>

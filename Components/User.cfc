@@ -9,17 +9,17 @@
                     U.fldUser_Id, 
                     U.fldHashedPassword, 
                     U.fldUserSaltString, 
-                    r.fldRoleName
+                    R.fldRoleName
                 FROM 
                     tbluser U
                 INNER JOIN 
-                    tblrole r
+                    tblrole R
                 ON 
-                    U.fldRoleId = r.fldRole_Id
+                    U.fldRoleId = R.fldRole_Id
                 WHERE 
-                    r.fldRoleName = <cfqueryparam value="Admin" cfsqltype="varchar">
-                    AND (u.fldEmail = <cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">
-                    OR u.fldPhone = <cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">)
+                    R.fldRoleName = <cfqueryparam value="Admin" cfsqltype="varchar">
+                    AND (U.fldEmail = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">
+                    OR U.fldPhone = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">)
             </cfquery>    
             <cfif local.getAdminDetails.RecordCount>
                 <cfset local.saltString = local.getAdminDetails.fldUserSaltString>
@@ -107,9 +107,9 @@
                 ON 
                     u.fldRoleId = r.fldRole_Id
                 WHERE 
-                    (u.fldemail = <cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">
-                    OR u.fldPhone = <cfqueryparam value="#arguments.userName#" cfsqltype="cf_sql_varchar">)
-                    AND r.fldRoleName = <cfqueryparam value="User" cfsqltype="cf_sql_varchar">
+                    (u.fldemail = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">
+                    OR u.fldPhone = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">)
+                    AND r.fldRoleName = <cfqueryparam value="User" cfsqltype="varchar">
             </cfquery>    
             <cfif local.getAdminDetails.RecordCount>
                 <cfset local.saltString = local.getAdminDetails.fldUserSaltString>
@@ -132,7 +132,4 @@
         </cftry>    
         <cfreturn local.result>
    </cffunction>
-
-   
-
 </cfcomponent>
