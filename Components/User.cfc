@@ -12,16 +12,14 @@
                 FROM 
                     tbluser U
                 WHERE 
-                    U.fldRoleId = 1
+                    U.fldRoleId = 2
                     AND (U.fldEmail = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">
                     OR U.fldPhone = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">)
             </cfquery>
             <cfif local.getAdminDetails.RecordCount>
-                <cfdump  var="found">
                 <cfset local.saltString = local.getAdminDetails.fldUserSaltString>
                 <cfset local.password = arguments.password>
-                <cfset local.hashedPassword = hmac(local.password,local.saltString,"hmacSHA256")>
-                <cfdump  var="#local.hashedPassword#">
+                <cfset local.hashedPassword = hmac(local.password,local.saltString,"hmacSHA256")>                
                 <cfif local.hashedPassword EQ local.getAdminDetails.fldHashedPassword>
                     <cfset local.result.success = true>
                     <cfset local.result.userId = local.getAdminDetails.fldUser_Id>
@@ -80,7 +78,7 @@
                 VALUES(
                     <cfqueryparam value="#arguments.firstName#" cfsqltype="varchar">,
                     <cfqueryparam value="#arguments.lastName#" cfsqltype="varchar">,
-                    <cfqueryparam value="2" cfsqltype="integer">,
+                    <cfqueryparam value="1" cfsqltype="integer">,
                     <cfqueryparam value="#arguments.email#" cfsqltype="varchar">,
                     <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">,
                     <cfqueryparam value="#local.hashedPassword#" cfsqltype="varchar">,
@@ -97,8 +95,41 @@
    </cffunction>
 
    <cffunction name="validateUser" access="public" returntype="struct" >
-        
-   </cffunction>
-
-   
+		<cfargument name="userName" required="true" type="string">
+      <cfargument name="password" required="true" type="string">		
+      <cfset local.result = {success = false}>
+      <cftry>
+          <cfquery name="local.getUserDetails">
+              SELECT 
+                  U.fldUser_Id, 
+                  U.fldHashedPassword, 
+                  U.fldUserSaltString
+              FROM 
+                  tbluser U
+              WHERE 
+                  U.fldRoleId = 1
+                  AND (U.fldEmail = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">
+                  OR U.fldPhone = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">)
+          </cfquery>
+			 
+          <cfif local.getUserDetails.RecordCount>
+              <cfset local.saltString = local.getUserDetails.fldUserSaltString>
+              <cfset local.password = arguments.password>
+              <cfset local.hashedPassword = hmac(local.password,local.saltString,"hmacSHA256")>              
+              <cfif local.hashedPassword EQ local.getUserDetails.fldHashedPassword>
+                  <cfset local.result.success = true>
+                  <cfset local.result.userId = local.getUserDetails.fldUser_Id>
+                  <cfset local.result.message = "Login successful.">
+              <cfelse>
+                  <cfset local.result.message = "Invalid password.">
+              </cfif>
+          <cfelse>
+              <cfset local.result.message = "User not Exist.">
+          </cfif>
+      <cfcatch>
+          <cfset local.result.message = "Database error: " & cfcatch.message>
+      </cfcatch>
+      </cftry>
+        <cfreturn local.result>		
+   </cffunction>   
 </cfcomponent>

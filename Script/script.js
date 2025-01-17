@@ -392,7 +392,7 @@ function editImages(productId) {
                 img.alt = `Product Image ${i + 1}`;
 
                 if(productImagesId[i] != defaultImageId)
-                {
+                {                 
                   let setThumbnailBtn = document.createElement('button');
                   setThumbnailBtn.innerHTML = "setThumbnail"
                   setThumbnailBtn.setAttribute('class','thumbnailBtn btn btn-success'); 
@@ -400,7 +400,7 @@ function editImages(productId) {
                   let deleteImageBtn = document.createElement('button');
                   deleteImageBtn.innerHTML = "deleteImage"
                   deleteImageBtn.setAttribute('class','deleteImageBtn btn btn-danger');
-                  deleteImageBtn.setAttribute('onclick', `deleteProductImage(${productImagesId[i]},${productId},${productImages[i]})`);
+                  deleteImageBtn.setAttribute('onclick', `deleteProductImage(${productImagesId[i]},${productId},"${productImages[i]}")`);
                   div.appendChild(setThumbnailBtn);
                   div.appendChild(deleteImageBtn);  
                 }
@@ -427,18 +427,24 @@ function setThumbnail(productImageId,productId)
         });
 }
 
-function deleteProductImage(productImageId,productId)
+function deleteProductImage(productImageId,productId,productImageFilename)
 {
+  alert(productImageFilename)
   $.ajax({		
      url: 'components/ProductManagement.cfc?method=deleteProductImage',
      type: 'POST',
-     data: {productImageId:productImageId,productId:productId},
+     data: {productImageId:productImageId,productId:productId,productFileName:productImageFilename},
      success: function() {			
        editImages(productId);
      },
      error: function() {		
      }
      });
+}
+
+function getSubCategoryies()
+{
+  
 }
 
 
