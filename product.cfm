@@ -38,20 +38,20 @@
             <h5>products</h5>
             <button data-bs-toggle="modal" data-bs-target="##productModal" class="productAddbtn" onclick="createproduct()"><span>Add</span><i class="fa-solid fa-plus productPlus"></i></button>
          </div>
-          <cfloop query = products>
-            <div class="productBody" id="#products.fldProduct_Id#">
+          <cfloop array = "#products.data#"  index="product">
+            <div class="productBody" id="#product.productId#">
                <div class="productItem">
                   <div class="productItemLeft">
-                     <h4 class="productName">#products.fldProductName#</h4>
-                     <h6 class="productBrand">#products.fldBrandName#</h6>
-                     <div class="productprice"><i class="fa-solid fa-indian-rupee-sign">#products.fldUnitPrice#</i></div>
+                     <h4 class="productName">#product.productName#</h4>
+                     <h6 class="productBrand">#product.brandName#</h6>
+                     <div class="productprice"><i class="fa-solid fa-indian-rupee-sign">#product.unitPrice#</i></div>
                   </div>
-                  <div class="productItemImage" data-bs-toggle="modal" data-bs-target="##imageModal" onclick="editImages(#products.fldProduct_Id#)">
-                     <img src="./Assets/uploads/product#products.fldProduct_Id#/#products.fldImageFilePath#" alt="productImage">
+                  <div class="productItemImage" data-bs-toggle="modal" data-bs-target="##imageModal" onclick="editImages(#product.productId#)">
+                     <img src="./Assets/uploads/product#product.productId#/#product.imageFilePath#" alt="productImage">
                   </div>
                   <div class="productItemRight">
-                     <button class="productfnBtn" data-bs-toggle="modal" data-bs-target="##productModal" id="editProductBtn" value="#products.fldProduct_Id#" onclick="editProduct({productId :#products.fldProduct_Id#,categoryId:#url.categoryId#,subCategoryId:#url.subCategoryId#})"><i class="fa-solid fa-pen-to-square productfns" ></i></button>
-                     <button class="productfnBtn" onclick="deleteProduct(#products.fldProduct_Id#)"><i class="fa-solid fa-trash productfns"></i></button>
+                     <button class="productfnBtn" data-bs-toggle="modal" data-bs-target="##productModal" id="editProductBtn" value="#product.productId#" onclick="editProduct({productId :#product.productId#,categoryId:#url.categoryId#,subCategoryId:#url.subCategoryId#})"><i class="fa-solid fa-pen-to-square productfns" ></i></button>
+                     <button class="productfnBtn" onclick="deleteProduct(#product.productId#)"><i class="fa-solid fa-trash productfns"></i></button>
                   </div>
                </div>
             </div>
@@ -93,8 +93,8 @@
                      <label for="brandName" class="form-label">Enter Product Brand</label>
                      <select class="form-control" id="brandName" name = "brandName">
                         <option id="0">--</option> 
-                        <cfloop query="brands">
-                           <option value="#brands.fldBrand_Id#">#brands.fldBrandName#</option>
+                        <cfloop  array="#brands.brandIds#" index="i" item="brand">
+                           <option value="#brands.brandIds[i]#">#brands.brandNames[i]#</option>
                         </cfloop>
                      </select>
                      <div id="brandNameError" class="error"></div>

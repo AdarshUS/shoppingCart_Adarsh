@@ -193,7 +193,7 @@
                    AND fldActive = 1
                    AND fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
             </cfquery>
-            <cfset local.result = true>
+            <cfset local.result.success = true>
             <cfloop query="local.fetchSubCategories">
                 <cfset arrayAppend(local.result.subcategoryIds,local.fetchSubCategories.fldSubCategory_Id)>
                 <cfset arrayAppend(local.result.subCategoryNames,local.fetchSubCategories.fldSubCategoryName)>
@@ -362,42 +362,60 @@
         <cfreturn local.result>
     </cffunction>
 
-    <cffunction name="fetchProducts" access="public" returntype="struct" >
-      <cfargument name="subCategoryId" type="integer" required="true">
-      <cftry>
-        <cfquery name="local.fetchProducts">
-            SELECT
-                P.fldProduct_Id,
-                P.fldSubCategoryId, 
-                P.fldProductName,
-                B.fldBrandName,
-                P.fldDescription,
-                P.fldUnitPrice,
-                P.fldUnitTax,
-                PI.fldImageFilePath
-            FROM
-              tblproduct P
-              LEFT JOIN tblproductimages PI ON PI.fldProductId = P.fldProduct_Id
-                AND PI.fldDefaultImage = 1
-              INNER JOIN tblbrand B ON P.fldBrandId = B.fldBrand_Id
-            WHERE
-                P.fldSubCategoryId = <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="integer">
-                AND P.fldActive = 1;
-        </cfquery>
-      <cfcatch >
-        <cfset local.currentFunction = getFunctionCalledName()>
-        <cfmail 
-            from = "adarshus1999@gmail.com" 
-            to = "adarshus123@gmail.com" 
-            subject = "Error in Function: #local.currentFunction#"
-            >
-            <h3>An error occurred in function: #functionName#</h3>
-            <p><strong>Error Message:</strong> #cfcatch.message#</p>
-        </cfmail>
-      </cfcatch>
-      </cftry>
-      <cfreturn local.fetchProducts>
-   </cffunction>
+    <cffunction name="fetchProducts" access="public" returntype="struct">
+        <cfargument name="subCategoryId" type="integer" required="true">
+        <cfset local.result = {"success": false, "data": []}>
+        <cftry>
+            <cfquery name="local.fetchProducts">
+                SELECT
+                    P.fldProduct_Id,
+                    P.fldSubCategoryId,
+                    P.fldProductName,
+                    B.fldBrandName,
+                    P.fldDescription,
+                    P.fldUnitPrice,
+                    P.fldUnitTax,
+                    PI.fldImageFilePath
+                FROM
+                    tblproduct P
+                LEFT JOIN 
+                    tblproductimages PI ON PI.fldProductId = P.fldProduct_Id
+                    AND PI.fldDefaultImage = 1
+                INNER JOIN 
+                    tblbrand B ON P.fldBrandId = B.fldBrand_Id
+                WHERE
+                    P.fldSubCategoryId = <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="integer">
+                    AND P.fldActive = 1;
+            </cfquery>
+    
+            <cfif local.fetchProducts.recordCount gt 0>
+                <cfloop query="local.fetchProducts">
+                    <cfset arrayAppend(local.result.data, {
+                        "productId": local.fetchProducts.fldProduct_Id,
+                        "subCategoryId": local.fetchProducts.fldSubCategoryId,
+                        "productName": local.fetchProducts.fldProductName,
+                        "brandName": local.fetchProducts.fldBrandName,
+                        "description": local.fetchProducts.fldDescription,
+                        "unitPrice": local.fetchProducts.fldUnitPrice,
+                        "unitTax": local.fetchProducts.fldUnitTax,
+                        "imageFilePath": local.fetchProducts.fldImageFilePath
+                    })>
+                </cfloop>
+            </cfif>
+    
+            <cfset local.result.success = true>
+        <cfcatch>            
+            <cfmail 
+                from="adarshus1999@gmail.com" 
+                to="adarshus123@gmail.com" 
+                subject="Error in Function: fetchProducts">
+                <h3>An error occurred in function: fetchProducts</h3>
+                <p><strong>Error Message:</strong> #cfcatch.message#</p>
+            </cfmail>
+        </cfcatch>
+        </cftry>        
+        <cfreturn local.result>
+    </cffunction>
 
    <cffunction name="fetchSingleProduct" access="remote" returntype="struct" returnformat="JSON">
     <cfargument name="productId" required="true" type="integer">

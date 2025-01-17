@@ -200,11 +200,8 @@ $("#categoryNameSelectPr").change(function() {
    	 type: 'POST',
    	 data: {categoryId:categorySelected},
    	 success: function(result) {
-      let subCategories = JSON.parse(result);      
-      const subcategoryIndex = subCategories.COLUMNS.indexOf("FLDSUBCATEGORYNAME");
-      const subcategoryId  =   subCategories.COLUMNS.indexOf("FLDSUBCATEGORY_ID");
-      const subcategoryNames = subCategories.DATA.map((row) => row[subcategoryIndex]);
-      const subcategoryIdArray = subCategories.DATA.map((row) => row[subcategoryId]);
+      let subcategoryIdArray = JSON.parse(result).SUBCATEGORYIDS;
+      let subcategoryNames = JSON.parse(result).SUBCATEGORYNAMES;      
       subCategoryElement.innerHTML = "";
       for(let i = 0;i<subcategoryIdArray.length;i++)
       {        
@@ -336,20 +333,16 @@ function editProduct(editObj) {
         type: 'POST',
         data: {categoryId:editObj.categoryId},
         success: function(result) {
-        let subCategories = JSON.parse(result);
-        const subcategoryIndex = subCategories.COLUMNS.indexOf("FLDSUBCATEGORYNAME");
-        const subcategoryId  =   subCategories.COLUMNS.indexOf("FLDSUBCATEGORY_ID");
-        const subcategoryNames = subCategories.DATA.map((row) => row[subcategoryIndex]);
-        const subcategoryIdArray = subCategories.DATA.map((row) => row[subcategoryId]);
+        let subcategoryIdArray = JSON.parse(result).SUBCATEGORYIDS;
+        let subcategoryNames = JSON.parse(result).SUBCATEGORYNAMES;      
         subCategoryElement.innerHTML = "";
         for(let i = 0;i<subcategoryIdArray.length;i++)
-        {
+        {        
           let opt = document.createElement('option');
           opt.value = subcategoryIdArray[i];
           opt.innerHTML = subcategoryNames[i];
           subCategoryElement.appendChild(opt); 
         }
-        document.getElementById("selectSubCategory").value = editObj.subCategoryId;
         },
         error: function() {		
         }

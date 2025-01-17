@@ -12,14 +12,16 @@
                 FROM 
                     tbluser U
                 WHERE 
-                    U.fldRoleId = 2
+                    U.fldRoleId = 1
                     AND (U.fldEmail = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">
                     OR U.fldPhone = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">)
             </cfquery>
             <cfif local.getAdminDetails.RecordCount>
+                <cfdump  var="found">
                 <cfset local.saltString = local.getAdminDetails.fldUserSaltString>
                 <cfset local.password = arguments.password>
                 <cfset local.hashedPassword = hmac(local.password,local.saltString,"hmacSHA256")>
+                <cfdump  var="#local.hashedPassword#">
                 <cfif local.hashedPassword EQ local.getAdminDetails.fldHashedPassword>
                     <cfset local.result.success = true>
                     <cfset local.result.userId = local.getAdminDetails.fldUser_Id>

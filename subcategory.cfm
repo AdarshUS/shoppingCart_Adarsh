@@ -8,6 +8,7 @@
    </cfif>
 </cfif>
 <cfset subcategories = application.objProductManagement.fetchSubCategories(categoryId = url.categoryId)>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,13 +39,13 @@
             <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="subcategoryAddbtn"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>         
          </div>
          <div class="categoryBody">
-            <cfloop query="#subcategories#">
-                <div class="categoryItem" id="#subcategories.fldSubCategory_Id#">
-                  <div class="categoryItemText">#subcategories.fldSubCategoryName#</div>
+            <cfloop array="#subcategories.subcategoryIds#" index="i" item="subCategory">
+                <div class="categoryItem" id="#subcategories.subcategoryIds[i]#">
+                  <div class="categoryItemText">#subcategories.subCategoryNames[i]#</div>
                   <div class="categoryItemRight">
-                     <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="categoryBtn" value="#subcategories.fldSubCategory_Id#" onclick=editSubCategory({categoryId:#url.categoryId#,subCategoryName:"#subcategories.fldSubCategoryName#",subCategoryId:#subcategories.fldSubCategory_Id#})><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
-                     <button class="categoryBtn" onclick="deleteSubCategory(#subcategories.fldSubCategory_Id#)"><i class="fa-solid fa-trash categoryfns"></i></button>
-                     <a class="categoryBtn" href="./product.cfm?subCategoryId=#subcategories.fldSubCategory_Id#&categoryId=#url.categoryId#">
+                     <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="categoryBtn" value="#subcategories.subcategoryIds[i]#" onclick=editSubCategory({categoryId:#url.categoryId#,subCategoryName:"#subcategories.subCategoryNames[i]#",subCategoryId:#subcategories.subcategoryIds[i]#})><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
+                     <button class="categoryBtn" onclick="deleteSubCategory(#subcategories.subcategoryIds[i]#)"><i class="fa-solid fa-trash categoryfns"></i></button>
+                     <a class="categoryBtn" href="./product.cfm?subCategoryId=#subcategories.subcategoryIds[i]#&categoryId=#url.categoryId#">
                         <i class="fa-solid fa-circle-arrow-right categoryfns"></i>
                      </a>
                   </div>              
