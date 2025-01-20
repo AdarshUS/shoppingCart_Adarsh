@@ -83,6 +83,7 @@ header {
 .category{
   color: #fff;
   background-color: #000000;
+  text-decoration: none;
 }
 
 .dropdown:hover .dropdown-menu{
@@ -96,11 +97,71 @@ header {
 
 .productBox{ 
   width: 286px;
-  height: 223px;
   border: 1px solid #dfdfdf;
   background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
 }
 
 .randomProducts{
+  gap: 40px;
+  padding: 30px 30px 0px 30px;
+}
+
+.productText{
+  padding: 30px;
+}
+
+.productPrice{
+  color: #ff9700;
+}
+
+.dropdown-toggle::after{
+  display: none;
+}
+
+.productContainer{
+  display: flex;
   gap: 30px;
+  padding: 30px;
+}
+
+.subcategoryName{
+  padding: 30px 30px 0 30px;
+}
+
+.prodimg{
+  width: 100%;
+}
+
+.subcategoryname{
+  padding: 15px
+}
+
+.priceSort{
+  display: flex;
+  gap: 40px;
+  padding: 10px;
+}
+
+.priceFilterContainer{
+  display: flex;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+.fa-filter{
+  margin: 0 5px;
+}
+
+.filterBtn{
+  display: inline-block;
+  margin: 0px 54px;
+}
+
+.dropdown-menu li{
+  display: flex;
+  align-items: center;
 }

@@ -31,7 +31,7 @@
     </cffunction>
 
     <cffunction name="fetchAllCategories"  access="public" returntype="struct">
-       <cfset local.result = {success = false,categories = [],categoryId = []}>       
+       <cfset local.result = {success = false,categories = [],categoryId = []}>
       <cftry>
          <cfquery  name="local.fetchCategories">
             SELECT 
@@ -47,7 +47,7 @@
         <cfset local.result.message = "successful operation">
         <cfcatch >
             <cfset local.result.message = "Database error: " & cfcatch.message>
-            <cfset local.currentFunction = getFunctionCalledName()>            
+            <cfset local.currentFunction = getFunctionCalledName()>
                 <cfmail 
                     from = "adarshus1999@gmail.com" 
                     to = "adarshus123@gmail.com" 
@@ -201,8 +201,8 @@
     </cffunction>
 
     <cffunction name="fetchSubCategories" access="remote" returntype="struct" returnformat="JSON">
-        <cfargument name="categoryId" type="integer" required="false">        
-        <cfset  local.result={success = false,subcategoryIds = [],subCategoryNames = []}>        
+        <cfargument name="categoryId" type="integer" required="false">
+        <cfset  local.result={success = false,subcategoryIds = [],subCategoryNames = []}>
         <cftry>
             <cfquery  name="local.fetchSubCategories">
                SELECT 
@@ -410,12 +410,12 @@
                 <p><strong>Error Message:</strong> #cfcatch.message#</p>
             </cfmail>
         </cfcatch>
-        </cftry>        
+        </cftry>
         <cfreturn local.result>
     </cffunction>
 
     <cffunction name="fetchProducts" access="public" returntype="struct">
-        <cfargument name="subCategoryId" type="integer" required="true">
+        <cfargument name="subCategoryId" type="integer" required="false">
         <cfset local.result = {"success": false, "data": []}>
         <cftry>
             <cfquery name="local.fetchProducts">
@@ -427,19 +427,29 @@
                     P.fldDescription,
                     P.fldUnitPrice,
                     P.fldUnitTax,
-                    PI.fldImageFilePath
+                    PI.fldImageFilePath,
+                    SC.fldSubCategoryName
                 FROM
                     tblproduct P
+                LEFT JOIN
+                    tblsubcategory SC ON P.fldSubCategoryId = SC.fldSubCategory_Id
                 LEFT JOIN 
                     tblproductimages PI ON PI.fldProductId = P.fldProduct_Id
                     AND PI.fldDefaultImage = 1
                 LEFT JOIN 
                     tblbrand B ON P.fldBrandId = B.fldBrand_Id
                 WHERE
-                    P.fldSubCategoryId = <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="integer">
-                    AND P.fldActive = 1;
+                    P.fldActive = 1
+                    <cfif structKeyExists(arguments, "subCategoryId") AND arguments.subCategoryId neq 0>
+                        AND P.fldSubCategoryId = <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="integer">
+                    </cfif>
+                    <cfif structKeyExists(url,"sort") AND url.sort EQ "ASC">
+                        ORDER BY fldUnitPrice ASC
+                    <cfelseif structKeyExists(url,"sort") AND url.sort EQ "DESC">
+                        ORDER BY fldUnitPrice DESC
+                    </cfif>
             </cfquery>
-    
+
             <cfif local.fetchProducts.recordCount gt 0>
                 <cfloop query="local.fetchProducts">
                     <cfset arrayAppend(local.result.data, {
@@ -450,13 +460,15 @@
                         "description": local.fetchProducts.fldDescription,
                         "unitPrice": local.fetchProducts.fldUnitPrice,
                         "unitTax": local.fetchProducts.fldUnitTax,
-                        "imageFilePath": local.fetchProducts.fldImageFilePath
+                        "imageFilePath": local.fetchProducts.fldImageFilePath,
+                        "subcategoryName": local.fetchProducts.fldSubCategoryName
                     })>
                 </cfloop>
             </cfif>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
         <cfcatch>
+            <cfdump var="#cfcatch#" >
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset local.currentFunction = getFunctionCalledName()>
             <cfmail 
@@ -775,7 +787,7 @@
                 tblbrand B ON P.fldBrandId = B.fldBrand_Id
             WHERE
                 P.fldActive = 1
-                ORDER BY RAND() LIMIT 8;
+                ORDER BY RAND() LIMIT 4;
         </cfquery>
         <cfif local.getRandomProducts.recordCount>
                 <cfloop query="local.getRandomProducts">
