@@ -65,7 +65,7 @@
                <h5 class="modal-title" id="productModalLabel">Add product</h5>
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="POST" enctype="multipart/form-data" onsubmit="return validateProduct()">
+            <form method="POST" enctype="multipart/form-data" onsubmit="return validateProduct()" id="productForm">
                <div class="modal-body">
                   <div class="mb-3">
                      <label for="categoryNameSelectPr" class="form-label">Select Category Name</label>

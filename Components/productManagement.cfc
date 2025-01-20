@@ -754,7 +754,7 @@
   </cffunction>
 
   <cffunction name="getRandomProducts" access="public" returntype="struct">
-    <cfset local.result = {success = false}>
+    <cfset local.result = {success = false,data = []}>
     <cftry>
         <cfquery name="local.getRandomProducts">
             SELECT
@@ -771,23 +771,23 @@
             LEFT JOIN 
                 tblproductimages PI ON PI.fldProductId = P.fldProduct_Id
                 AND PI.fldDefaultImage = 1
-            LEFT JOIN 
+            INNER JOIN 
                 tblbrand B ON P.fldBrandId = B.fldBrand_Id
             WHERE
                 P.fldActive = 1
                 ORDER BY RAND() LIMIT 8;
         </cfquery>
         <cfif local.getRandomProducts.recordCount>
-                <cfloop query="local.fetchProducts">
+                <cfloop query="local.getRandomProducts">
                     <cfset arrayAppend(local.result.data, {
-                        "productId": local.fetchProducts.fldProduct_Id,
-                        "subCategoryId": local.fetchProducts.fldSubCategoryId,
-                        "productName": local.fetchProducts.fldProductName,
-                        "brandName": local.fetchProducts.fldBrandName,
-                        "description": local.fetchProducts.fldDescription,
-                        "unitPrice": local.fetchProducts.fldUnitPrice,
-                        "unitTax": local.fetchProducts.fldUnitTax,
-                        "imageFilePath": local.fetchProducts.fldImageFilePath
+                        "productId": local.getRandomProducts.fldProduct_Id,
+                        "subCategoryId": local.getRandomProducts.fldSubCategoryId,
+                        "productName": local.getRandomProducts.fldProductName,
+                        "brandName": local.getRandomProducts.fldBrandName,
+                        "description": local.getRandomProducts.fldDescription,
+                        "unitPrice": local.getRandomProducts.fldUnitPrice,
+                        "unitTax": local.getRandomProducts.fldUnitTax,
+                        "imageFilePath": local.getRandomProducts.fldImageFilePath
                     })>
                 </cfloop>
             </cfif>
@@ -805,7 +805,7 @@
             <p><strong>Error Message:</strong> #cfcatch.message#</p>
         </cfmail>
     </cfcatch>
-    </cftry>
+    </cftry>    
     <cfreturn local.result>
   </cffunction>
 </cfcomponent>

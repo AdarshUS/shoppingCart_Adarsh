@@ -293,7 +293,7 @@ function validateProduct()
 }
 
 function createproduct()
-{
+{  
   let categorySelectError = document.getElementById("categorySelectError");
   let subCategorySelectError  = document.getElementById("subCategorySelectError");
   let productNameError = document.getElementById("productNameError");
@@ -311,6 +311,7 @@ function createproduct()
   unitPriceError.innerHTML = "";
   unitTaxError.innerHTML = "";
   productImageError.innerHTML = "";
+  document.getElementById('productForm').reset();
 }
 
 function editProduct(editObj) {   
