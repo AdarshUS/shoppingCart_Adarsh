@@ -1,13 +1,14 @@
 <cfoutput>
-<cfset categories = application.objProductManagement.fetchAllCategories()>
+<cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfif structKeyExists(form,"submit")>
    <cfif LEN(form.distinguishSubCreateEdit) GT 0>
-      <cfset application.objShoppingCart.updateSubCategory(subCategoryId = form.distinguishSubCreateEdit,newCategoryName = form.subCategoryName,categoryId = form.selectCategory)>      
-   <cfelse>     
-      <cfset application.objShoppingCart.insertSubCategory(categoryId = form.selectCategory,subcategoryName = form.subCategoryName)>
-   </cfif>            
+      <cfset application.objProductManagement.updateSubCategory(subCategoryId = form.distinguishSubCreateEdit,newCategoryName = form.subCategoryName,categoryId = form.selectCategory)>      
+   <cfelse>
+      <cfset application.objProductManagement.insertSubCategory(categoryId = form.selectCategory,subcategoryName = form.subCategoryName)>
+   </cfif>
 </cfif>
 <cfset subcategories = application.objProductManagement.fetchSubCategories(categoryId = url.categoryId)>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -28,23 +29,23 @@
          <button class="logout">
             <span class="headerRightItem-1">LogOut</span>
             <i class="fa-solid fa-right-from-bracket"></i>
-         </button>        
+         </button>
       </div>
    </header>
    <main>      
-      <div class="categoryContainer">           
+      <div class="categoryContainer">
          <div class="categoryheader">
             <h5>Sub Categories</h5>
             <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="subcategoryAddbtn"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>         
          </div>
          <div class="categoryBody">
-            <cfloop query="#subcategories#">
-                <div class="categoryItem" id="#subcategories.fldSubCategory_Id#">
-                  <div class="categoryItemText">#subcategories.fldSubCategoryName#</div>               
+            <cfloop array="#subcategories.subcategoryIds#" index="i" item="subCategory">
+                <div class="categoryItem" id="#subcategories.subcategoryIds[i]#">
+                  <div class="categoryItemText">#subcategories.subCategoryNames[i]#</div>
                   <div class="categoryItemRight">
-                     <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="categoryBtn" value="#subcategories.fldSubCategory_Id#" onclick=editSubCategory({categoryId:#url.categoryId#,subCategoryName:"#subcategories.fldSubCategoryName#",subCategoryId:#subcategories.fldSubCategory_Id#})><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
-                     <button class="categoryBtn" onclick="deleteSubCategory(#subcategories.fldSubCategory_Id#)"><i class="fa-solid fa-trash categoryfns"></i></button>
-                     <a class="categoryBtn" href="./product.cfm?subCategoryId=#subcategories.fldSubCategory_Id#&categoryId=#url.categoryId#">
+                     <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="categoryBtn" value="#subcategories.subcategoryIds[i]#" onclick=editSubCategory({categoryId:#url.categoryId#,subCategoryName:"#subcategories.subCategoryNames[i]#",subCategoryId:#subcategories.subcategoryIds[i]#})><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
+                     <button class="categoryBtn" onclick="deleteSubCategory(#subcategories.subcategoryIds[i]#)"><i class="fa-solid fa-trash categoryfns"></i></button>
+                     <a class="categoryBtn" href="./product.cfm?subCategoryId=#subcategories.subcategoryIds[i]#&categoryId=#url.categoryId#">
                         <i class="fa-solid fa-circle-arrow-right categoryfns"></i>
                      </a>
                   </div>              
@@ -66,9 +67,9 @@
                         <label for="categoryNameSelect" class="form-label">Select Category Name</label>
                         <select class="form-control" id="categoryNameSelect" name = "selectCategory">
                            <option>--</option>
-                           <cfloop query="categories">
-                              <option value="#categories.fldCategory_Id#">#categories.fldCategoryName#</option>
-                           </cfloop>                    
+                           <cfloop array ="#categoriesResult.categories#" index = i item = category>
+                              <option value="#categoriesResult.categoryId[i]#">#categoriesResult.categories[i]#</option>
+                           </cfloop>
                         </select>
                         <div id = "categorySelectError" class = "error"></div>
                   </div>

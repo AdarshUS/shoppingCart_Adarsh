@@ -55,7 +55,7 @@ function validateSubCategory()
 $(".logout").click(function() {
     if (confirm("Are you sure you want to Logout")) {
         $.ajax({
-            url: 'components/userLogin.cfc?method=logoutAdmin',
+            url: 'components/User.cfc?method=logoutAdmin',
             type: 'POST',
             success: function(result) {
               location.reload();
@@ -88,24 +88,24 @@ function insertEditCategory() {
       if(hiddenValue.trim() === "")
       {
          $.ajax({
-          url: 'components/productManagement.cfc?method=insertCategories',
+          url: 'components/ProductManagement.cfc?method=addCategory',
           data: {categoryName:inputValue},
           type: 'POST',
           success: function() {
-            $('#categoryModal').modal('hide')
+            location.reload();
           },
-          error: function() {              
+          error: function() {
           }
          });
       }
       else
       {
           $.ajax({
-          url: 'components/productManagement.cfc?method=editCategory',
+          url: 'components/ProductManagement.cfc?method=editCategory',
           data: {categoryId:hiddenValue,newcategory:inputValue},
           type: 'POST',
           success: function() {
-            $('#categoryModal').modal('hide')
+            location.reload();
           },
           error: function() {
               
@@ -115,18 +115,16 @@ function insertEditCategory() {
 }
 
 function editCategory(editBtn)
-{
-   console.log(editBtn.value)
+{   
    document.getElementById("categoryModalLabel").textContent = "Edit Category";   
    $.ajax({
-          url: 'components/productManagement.cfc?method=fetchSingleCategory',
+          url: 'components/ProductManagement.cfc?method=fetchSingleCategory',
           data: {categoryId:editBtn.value},
           type: 'POST',
           success: function(result) {
             let category = JSON.parse(result);
-            console.log(category)
-            document.getElementById("categoryInput").value = category.FLDCATEGORYNAME;
-            document.getElementById("distinguishCreateEdit").value = category.FLDCATEGORY_ID;
+            document.getElementById("categoryInput").value = category.name;
+            document.getElementById("distinguishCreateEdit").value = category.categoryId;
           },
           error: function() {
               
@@ -139,7 +137,7 @@ function deleteCategory(dltBtn)
    if (confirm("Are you sure you want to delete"))
 	{
 		$.ajax({		
-   	 url: 'components/productManagement.cfc?method=deleteCategory',
+   	 url: 'components/ProductManagement.cfc?method=deleteCategory',
    	 type: 'POST',
    	 data: {categoryId:dltBtn.value},
    	 success: function() {			
@@ -176,7 +174,7 @@ function deleteSubCategory(subCategoryId)
   if (confirm("Are you sure you want to delete"))
 	{
 		$.ajax({		
-   	 url: 'components/productManagement.cfc?method=softDeleteSubCategory',
+   	 url: 'components/ProductManagement.cfc?method=softDeleteSubCategory',
    	 type: 'POST',
    	 data: {subCategoryId:subCategoryId},
    	 success: function() {			
@@ -198,20 +196,15 @@ $("#categoryNameSelectPr").change(function() {
     if(categorySelected.trim() != "")
     {
       $.ajax({		
-   	 url: 'components/productManagement.cfc?method=fetchSubCategories',
+   	 url: 'components/ProductManagement.cfc?method=fetchSubCategories',
    	 type: 'POST',
    	 data: {categoryId:categorySelected},
    	 success: function(result) {
-      let subCategories = JSON.parse(result);
-      console.log(subCategories);
-      const subcategoryIndex = subCategories.COLUMNS.indexOf("FLDSUBCATEGORYNAME");
-      const subcategoryId  =   subCategories.COLUMNS.indexOf("FLDSUBCATEGORY_ID");
-      const subcategoryNames = subCategories.DATA.map((row) => row[subcategoryIndex]);
-      const subcategoryIdArray = subCategories.DATA.map((row) => row[subcategoryId]);
+      let subcategoryIdArray = JSON.parse(result).SUBCATEGORYIDS;
+      let subcategoryNames = JSON.parse(result).SUBCATEGORYNAMES;      
       subCategoryElement.innerHTML = "";
       for(let i = 0;i<subcategoryIdArray.length;i++)
-      {
-        console.log("hi")
+      {        
         let opt = document.createElement('option');
         opt.value = subcategoryIdArray[i];
         opt.innerHTML = subcategoryNames[i];
@@ -296,16 +289,11 @@ function validateProduct()
     validProduct = false;
   }
 
-  // if(!productImage.files || productImage.files.length === 0)
-  // {
-  //   productImageError.innerHTML = "Select a file";
-  //   validProduct = false;
-  // }
   return validProduct;
 }
 
 function createproduct()
-{
+{  
   let categorySelectError = document.getElementById("categorySelectError");
   let subCategorySelectError  = document.getElementById("subCategorySelectError");
   let productNameError = document.getElementById("productNameError");
@@ -323,18 +311,17 @@ function createproduct()
   unitPriceError.innerHTML = "";
   unitTaxError.innerHTML = "";
   productImageError.innerHTML = "";
+  document.getElementById('productForm').reset();
 }
 
-function editProduct(editObj) { 
-   console.log(editObj);
+function editProduct(editObj) {   
    let subCategoryElement  = document.getElementById("selectSubCategory");
    $.ajax({
-     url: 'components/productManagement.cfc?method=fetchSingleProduct',
+     url: 'components/ProductManagement.cfc?method=fetchSingleProduct',
      data:{productId:editObj.productId},
      type: 'POST',
      success: function(result) {
       let product = JSON.parse(result);
-      console.log(product);
       document.getElementById("productName").value = product.productName;
       document.getElementById("brandName").value = product.brandId;
       document.getElementById("productDesc").value = product.description;
@@ -343,30 +330,24 @@ function editProduct(editObj) {
       document.getElementById("categoryNameSelectPr").value = editObj.categoryId;
       document.getElementById("hiddenValue").value = editObj.productId;
       $.ajax({		
-        url: 'components/productManagement.cfc?method=fetchSubCategories',
+        url: 'components/ProductManagement.cfc?method=fetchSubCategories',
         type: 'POST',
         data: {categoryId:editObj.categoryId},
         success: function(result) {
-        let subCategories = JSON.parse(result);
-        console.log(subCategories);
-        const subcategoryIndex = subCategories.COLUMNS.indexOf("FLDSUBCATEGORYNAME");
-        const subcategoryId  =   subCategories.COLUMNS.indexOf("FLDSUBCATEGORY_ID");
-        const subcategoryNames = subCategories.DATA.map((row) => row[subcategoryIndex]);
-        const subcategoryIdArray = subCategories.DATA.map((row) => row[subcategoryId]);
+        let subcategoryIdArray = JSON.parse(result).SUBCATEGORYIDS;
+        let subcategoryNames = JSON.parse(result).SUBCATEGORYNAMES;      
         subCategoryElement.innerHTML = "";
         for(let i = 0;i<subcategoryIdArray.length;i++)
-        {
-          console.log("hi")
+        {        
           let opt = document.createElement('option');
           opt.value = subcategoryIdArray[i];
           opt.innerHTML = subcategoryNames[i];
           subCategoryElement.appendChild(opt); 
         }
-        document.getElementById("selectSubCategory").value = editObj.subCategoryId;
         },
         error: function() {		
         }
-        });      
+        });
      },
      error: function() {
          
@@ -379,7 +360,7 @@ function deleteProduct(productId)
   if (confirm("Are you sure you want to delete"))
     {
       $.ajax({		
-        url: 'components/productManagement.cfc?method=deleteProduct',
+        url: 'components/ProductManagement.cfc?method=deleteProduct',
         type: 'POST',
         data: {productId:productId},
         success: function() {			
@@ -391,17 +372,83 @@ function deleteProduct(productId)
     }	
 }
 
-$(".productItemImage").click(function() {
-  alert("zzz")
-      $.ajax({
-          url: 'components/productManagement.cfc?method=fetchProductImages',
-          type: 'POST',
-          success: function(result) {
-            location.reload();
-          },
-          error: function() {
-              
-          }
-      });  
-});
+function editImages(productId) {   
+    $.ajax({
+        url: 'components/ProductManagement.cfc?method=fetchProductImages',
+        data: { productId: productId },
+        type: 'POST',
+        success: function(result) {
+            console.log(result)
+            let productImages = JSON.parse(result).IMAGES;
+            let productImagesId = JSON.parse(result).PRODUCTIMAGESID;
+            let defaultImageId = JSON.parse(result).DEFAULTIMAGEID;
+            let carouselContainer = document.getElementById("carouselContainer");
+            carouselContainer.innerHTML = '';
+            for (let i = 0; i < productImages.length; i++) {
+                
+                let div = document.createElement("div");
+                div.setAttribute('class', i === 0 ? 'carousel-item active' : 'carousel-item'); 
+                const img = document.createElement('img');
+                img.src = "./Assets/uploads/product"+productId+"/"+productImages[i]; 
+                img.alt = `Product Image ${i + 1}`;
+
+                if(productImagesId[i] != defaultImageId)
+                {                 
+                  let setThumbnailBtn = document.createElement('button');
+                  setThumbnailBtn.innerHTML = "setThumbnail"
+                  setThumbnailBtn.setAttribute('class','thumbnailBtn btn btn-success'); 
+                  setThumbnailBtn.setAttribute('onclick', `setThumbnail(${productImagesId[i]},${productId})`);
+                  let deleteImageBtn = document.createElement('button');
+                  deleteImageBtn.innerHTML = "deleteImage"
+                  deleteImageBtn.setAttribute('class','deleteImageBtn btn btn-danger');
+                  deleteImageBtn.setAttribute('onclick', `deleteProductImage(${productImagesId[i]},${productId},"${productImages[i]}")`);
+                  div.appendChild(setThumbnailBtn);
+                  div.appendChild(deleteImageBtn);  
+                }
+                div.appendChild(img);
+                carouselContainer.appendChild(div);
+            }
+        },
+        error: function() {
+            alert("Failed to fetch product images.");
+        }
+    });
+}
+function setThumbnail(productImageId,productId)
+{
+  $.ajax({		
+        url: 'components/ProductManagement.cfc?method=updateThumbnail',
+        type: 'POST',
+        data: {productImageId:productImageId,productId:productId},
+        success: function() {			
+          editImages(productId);
+        },
+        error: function() {		
+        }
+        });
+}
+
+function deleteProductImage(productImageId,productId,productImageFilename)
+{
+  alert(productImageFilename)
+  $.ajax({		
+     url: 'components/ProductManagement.cfc?method=deleteProductImage',
+     type: 'POST',
+     data: {productImageId:productImageId,productId:productId,productFileName:productImageFilename},
+     success: function() {			
+       editImages(productId);
+     },
+     error: function() {		
+     }
+     });
+}
+
+function getSubCategoryies()
+{
+  
+}
+
+
+
+
 

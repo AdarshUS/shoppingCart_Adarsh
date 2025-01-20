@@ -1,4 +1,4 @@
- <cfset categories = application.objProductManagement.fetchAllCategories()>
+ <cfset result = application.objProductManagement.fetchAllCategories()>
 <cfoutput >
 <!DOCTYPE html>
 <html lang="en">
@@ -20,24 +20,25 @@
          <button class="logout">
             <span class="headerRightItem-1">LogOut</span>
             <i class="fa-solid fa-right-from-bracket"></i>
-         </button>        
+         </button>
       </div>
    </header>
-   <main>     
+   <main>
+   
       <div class="categoryContainer">
          <div class="categoryheader">
             <h5>Categories</h5>
             <button data-bs-toggle="modal" data-bs-target="##categoryModal" class="categoryAddbtn" onclick="createCategory()"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>         
          </div>
          <div class="categoryBody">
-            <cfloop query="categories">
-               <div class="categoryItem" id="#categories.fldCategory_Id#">
-                  <div class="categoryItemText">#categories.fldCategoryName#</div>               
+            <cfloop array="#result.categories#" index="i" item="category">
+               <div class="categoryItem" id="#result.categoryId[i]#">
+                  <div class="categoryItemText">#result.categories[i]#</div>
                   <div class="categoryItemRight">
-                     <button data-bs-toggle="modal" data-bs-target="##categoryModal" onclick="editCategory(this)" value = #categories.fldCategory_Id# class="categoryBtn"><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
-                     <button class="categoryBtn" onclick="deleteCategory(this)" value = #categories.fldCategory_Id#><i class="fa-solid fa-trash categoryfns"></i></button>
-                     <a class="categoryBtn" href="./subcategory.cfm?categoryId=#categories.fldCategory_Id#"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></a>
-                  </div>              
+                     <button data-bs-toggle="modal" data-bs-target="##categoryModal" onclick="editCategory(this)" value = #result.categoryId[i]# class="categoryBtn"><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
+                     <button class="categoryBtn" onclick="deleteCategory(this)" value = #result.categoryId[i]#><i class="fa-solid fa-trash categoryfns"></i></button>
+                     <a class="categoryBtn" href="./subcategory.cfm?categoryId=#result.categoryId[i]#"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></a>
+                  </div>
                </div>
             </cfloop>
          </div>
@@ -66,8 +67,8 @@
       </div>
    </div>
    <script src="./Script/bootstrapScript.js"></script>
-   <script src="./Script/jquery-3.7.1.min.js"></script>   	   
-   <script src="./Script/script.js"></script>   
+   <script src="./Script/jquery-3.7.1.min.js"></script>
+   <script src="./Script/script.js"></script>
 </body>
 </html>
 </cfoutput>
