@@ -1,5 +1,5 @@
  <cfset result = application.objProductManagement.fetchAllCategories()>
-<cfoutput >
+<cfoutput>
 <!DOCTYPE html>
 <html lang="en">
 <head>

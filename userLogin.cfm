@@ -40,7 +40,8 @@
          <cfif structKeyExists(form,"submitBtn")>
             <cfset result = application.objUser.validateUser(userName = form.userName,password = form.userPassword)>            
                <p class="text-primary">#result.message#</p>
-               <cfset session.loginuserId = result.userId>
+               <cfset encryptedUserId = application.objUser.encryptId(result.userId)>
+               <cfset session.loginuserId = result.encryptedUserId>
                <cflocation url="homePage.cfm" addtoken="no">
          </cfif>
       </div>

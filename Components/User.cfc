@@ -47,7 +47,7 @@
       <cfreturn local.encryptedId>
    </cffunction>
 
-   <cffunction name="decryptId" access="public" returntype="integer" >
+   <cffunction name="decryptId" access="public" returntype="string">
       <cfargument name="encryptedId" required="true" type="string">
       <cfset local.decryptedId =  decrypt(arguments.encryptedId,application.encryptionKey,'AES','Base64')>
       <cfreturn local.decryptedId>
