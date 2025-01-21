@@ -443,11 +443,6 @@ function deleteProductImage(productImageId,productId,productImageFilename)
      });
 }
 
-function getSubCategoryies()
-{
-  
-}
-
 
 
 

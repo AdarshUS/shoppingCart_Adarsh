@@ -36,10 +36,15 @@ function validateUserDetails()
      document.getElementById("userPhoneError").innerHTML  = "Please enter a valid 10-digit phone number";
      validDetails = false;
     }   
-   if (userPassword.trim() === "" || userPassword.search(/[a-z]/i) < 0 || userPassword.search(/[0-9]/) < 0 || userPassword.length<6)          
+   if (userPassword.trim() === "" || userPassword.search(/[a-z]/i) < 0 || userPassword.search(/[0-9]/) < 0 || userPassword.length<6)
     {
      document.getElementById("userPasswordError").innerHTML = "Password must be at least 6 characters long & should contain 1 letter and digit";
      validDetails = false;
     }
    return validDetails;
+}
+
+function filterPrices() {
+   let priceRange = document.getElementById("filterPrice").value;
+   console.log(priceRange);
 }
