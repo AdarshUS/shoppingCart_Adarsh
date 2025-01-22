@@ -24,7 +24,6 @@
       </div>
    </header>
    <main>
-   
       <div class="categoryContainer">
          <div class="categoryheader">
             <h5>Categories</h5>
@@ -37,13 +36,13 @@
                   <div class="categoryItemRight">
                      <button data-bs-toggle="modal" data-bs-target="##categoryModal" onclick="editCategory(this)" value = #result.categoryId[i]# class="categoryBtn"><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
                      <button class="categoryBtn" onclick="deleteCategory(this)" value = #result.categoryId[i]#><i class="fa-solid fa-trash categoryfns"></i></button>
-                     <a class="categoryBtn" href="./subcategory.cfm?categoryId=#result.categoryId[i]#"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></a>
+                     <a class="categoryBtn" href="./subcategory.cfm?categoryId=#application.objUser.encryptId(result.categoryId[i])#"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></a>
                   </div>
                </div>
             </cfloop>
          </div>
-      </div>   
-   </main>  
+      </div>
+   </main>
    <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
       <div class="modal-dialog">
          <div class="modal-content">

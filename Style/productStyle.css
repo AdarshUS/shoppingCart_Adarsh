@@ -95,5 +95,9 @@ main{
    font-size: 12px;
 }
 
+.carousel-item img{
+   width: 100%;
+}
+
 
 

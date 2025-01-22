@@ -1,6 +1,6 @@
-<cfoutput >
+<cfoutput>
 <cfset categories = application.objProductManagement.fetchAllCategories()>
-<cfset products = application.objProductManagement.fetchProducts(url.subcategoryId)>
+<cfset products = application.objProductManagement.getRandomProducts(url.subcategoryId)>
 <!Doctype html>
 <html>
    <head>
@@ -20,15 +20,18 @@
                <cfset subCategoriesList = application.objProductManagement.fetchSubCategories(categories.categoryId[i])>
                <ul class="dropdown-menu">
                   <cfloop array = #subCategoriesList.subCategoryNames# index = i item = subcategory>
-                     <li><a class="dropdown-item" href="">#subCategoriesList.subCategoryNames[i]#</a></li>
+                     <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#subCategoriesList.subCategoryIds[i]#">#subCategoriesList.subCategoryNames[i]#</a></li>
                   </cfloop>
                </ul>
             </div>
          </cfloop>
       </div>
       <main>
-         <h4 class="subcategoryname">#products.data[1].subcategoryName#</h4>
-         <div class="priceFilterContainer">
+         <cfif arrayIsEmpty(products.data)>
+            <h4 class="subcategoryname">No Items Found</h4>
+         <cfelse>
+            <h4 class="subcategoryname">#products.data[1].subcategoryName#</h4>
+             <div class="priceFilterContainer">
             <div class="priceSort">
                <a href="subCategoryList.cfm?subcategoryId=#url.subcategoryId#&sort=ASC">price: Low to High</a>
                <a href="subCategoryList.cfm?subcategoryId=#url.subcategoryId#&sort=DESC">price :High to Low</a>
@@ -51,6 +54,7 @@
                </div>
             </div>
          </div>
+         </cfif>
          <div class="productContainer" id="productContainer">
             <cfloop array = "#products.data#" item = product>
                <cfif product.subCategoryId EQ url.subcategoryId>

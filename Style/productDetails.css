@@ -95,7 +95,7 @@ header {
 }
 
 .productDetail{
-  width: 70%;
+  width: 55%;
 }
 
 .carousel-inner img{
@@ -104,5 +104,130 @@ header {
 
 .productContainer{
   display: flex;
+}
+
+.fa-angle-right{
+  margin: 0 5px;
+}
+
+.pathtext a{
+  color: #3d3b3b;
+}
+
+.productDetail{
+  padding: 30px;
+}
+
+.productImageBox{
+  padding: 30px;
+}
+
+.price{
+  color: #ffa64d;
+  font-size: 23px;
+  font-weight: 600;
+}
+
+footer ul{
+  margin: 0;
+}
+
+footer ul li {
+  list-style-type: none;
+}
+
+footer div div {
+  font-size: 13px;
+}
+
+.footerItem {
+  padding: 20px;
+  font-size: 13px;
+}
+
+.topstories {
+  font-weight: 600;
+  padding: 20px 20px 0 20px;
+  margin-top: 20px;
+}
+
+.most-search,
+.mobiles,
+.laptop,
+.tvs,
+.appliance,
+.footwear,
+.bgmh {
+  font-size: 14px;
+  padding: 4px 20px;
+}
+
+.flipDestination_cap,
+.flipplus_cap,
+.emi_cap,
+.emdebitcard_cap {
+  font-size: 18px;
+  font-weight: 600;
+  color: #8d8985;
+  padding: 5px 20px;
+}
+
+.flipDestination p,
+.flipplus p,
+.emi p,
+.emdebitcard p {
+  padding: 4px 20px;
+  font-size: 13px;
+}
+
+footer {
+  background-color: #172437;
+  color: #fff;
+  height: 351px;
+}
+
+.footerItem {
+  font-size: 13px;
+  width: 345px;
+  padding: 40px;
+}
+
+.footerItemCaption {
+  color: #606971;
+  padding: 10px 0px;
+}
+
+.footerItem ul li {
+  list-style-type: none;
+  line-height: 25px;
+}
+
+.footer_Container {
+  display: flex;
+}
+
+.contact {
+  line-height: 18px;
+}
+
+.footerBottom_container {
+  display: flex;
+  justify-content: space-around;
+  font-size: 13px;
+}
+
+.suitcase,
+.star,
+.gift-card,
+.Question,
+.cpright {
+  padding: 0 6px;
+}
+
+.suitcase,
+.star,
+.gift-card,
+.Question {
+  color: yellow;
 }
 

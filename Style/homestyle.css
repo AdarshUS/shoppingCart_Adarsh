@@ -9,7 +9,7 @@ body {
 }
 
 header {
-  display: flex;  
+  display: flex;
   background-color: #fff;
   height: 60px;
   align-items: center;
@@ -30,7 +30,9 @@ header {
 .header_logo {
   margin-left: 50px;
   display: flex;
-   align-items: center;
+  align-items: center;
+  text-decoration: none;
+  color: #000000;
 }
 
 .header_searchBar input {
@@ -44,6 +46,7 @@ header {
   display: flex;
   align-items: center;
   padding: 40px;
+  gap: 20px;
 }
 
 .header_menu-user img,
@@ -165,4 +168,40 @@ header {
 .dropdown-menu li{
   display: flex;
   align-items: center;
+}
+
+.header_searchBar form{
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+}
+
+.searchBtn{
+    color: #fff;
+    border: none;
+    padding: 5px;
+    border-radius: 31px;
+    background-color: #000;
+}
+
+.searchResultText{
+  text-align: center;
+  font-size: 25px;
+  font-weight: 500;
+  padding: 30px;
+}
+
+.searchText{
+  color: blue;
+}
+
+.errorText{
+  text-align: center;
+  font-size: 21px;
+}
+
+.logoutContainer{
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }

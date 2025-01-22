@@ -1,4 +1,5 @@
 <cfset categories = application.objProductManagement.fetchAllCategories()>
+
 <cfoutput >
 <div class="categoriesContainer">
          <cfloop array="#categories.categoryId#" index="i" item="category">
@@ -9,7 +10,7 @@
                <cfset subCategories = application.objProductManagement.fetchSubCategories(categories.categoryId[i])>
                <ul class="dropdown-menu">
                   <cfloop array = #subCategories.subCategoryNames# index = i item = subcategory>
-                     <li><a class="dropdown-item" href="">#subCategories.subCategoryNames[i]#</a></li>
+                     <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#subCategories.subCategoryIds[i]#">#subCategories.subCategoryNames[i]#</a></li>
                   </cfloop>
                </ul>
             </div>
