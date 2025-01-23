@@ -42,12 +42,12 @@
    </cffunction>
 
    <cffunction name="encryptId" access="public" returntype="string">
-      <cfargument name="inputId" required="true" type="integer" >
+      <cfargument name="inputId" required="true" type="string">
       <cfset local.encryptedId =  encrypt(arguments.inputId,application.encryptionKey,'AES','Base64')>
       <cfreturn local.encryptedId>
    </cffunction>
 
-   <cffunction name="decryptId" access="public" returntype="integer" >
+   <cffunction name="decryptId" access="public">
       <cfargument name="encryptedId" required="true" type="string">
       <cfset local.decryptedId =  decrypt(arguments.encryptedId,application.encryptionKey,'AES','Base64')>
       <cfreturn local.decryptedId>
@@ -131,5 +131,9 @@
       </cfcatch>
       </cftry>
         <cfreturn local.result>		
-   </cffunction>   
+   </cffunction>
+
+   <cffunction name="logoutUser" access="remote" returntype="void">
+      <cfset StructClear(Session)>
+   </cffunction>
 </cfcomponent>

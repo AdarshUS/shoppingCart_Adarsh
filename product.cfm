@@ -7,6 +7,7 @@
       <cfset application.objProductManagement.updateProduct(productId = form.hiddenValue,subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,productDescription = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>      
    <cfelse>
       <cfset application.objProductManagement.insertProduct(subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,description = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>
+      <cflocation url="product.cfm?subCategoryId=#url.subCategoryId#&categoryId=#url.categoryId#" addtoken="false">
    </cfif>
 </cfif>
 <!DOCTYPE html>
@@ -23,13 +24,13 @@
    <header>
       <div class="headerLeftItem">
          <div class="headerLeftItem-1"> <img src="./Assets/Images/cart.png" alt="cartImage" width="40"></div>
-         <div class="headerLeftItem-2">Admin</div>         
+         <div class="headerLeftItem-2">Admin</div>
       </div>
        <div class="headerRightItem">
          <button class="logout">
             <span class="headerRightItem-1">LogOut</span>
             <i class="fa-solid fa-right-from-bracket"></i>
-         </button>        
+         </button>
       </div>
    </header>
    <main>
@@ -133,7 +134,7 @@
       <div class="modal-dialog modal-dialog-centered">
          <div class="modal-content">
             <div class="modal-header">
-            </div>            
+            </div>
                <div class="modal-body">
                   <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
                      <div class="carousel-inner" id="carouselContainer">

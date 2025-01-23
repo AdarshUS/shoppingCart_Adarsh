@@ -31,7 +31,7 @@
             </div>
              <div id="userNameError" class="error"></div> 
             <div class="password inputArea">
-               <input type="password" name="password" id="password" placeholder="Password">                 
+               <input type="password" name="password" id="password" placeholder="Password">
             </div>
             <div id="passwordError" class="error"></div>
             <div class="bottomContainer">
@@ -41,7 +41,8 @@
          <cfif structKeyExists(form,"submit")>
             <cfset result = application.objUser.validateAdminLogin(userName = form.userName,password = form.password)>
             <cfif result.success>
-               <cfset session.loginuserId = result.userId>
+               <cfset encrtptedAdminId = application.objUser.encryptId(result.userId)>
+               <cfset session.loginuserId = encrtptedAdminId>
                <cflocation url="./category.cfm"  addtoken="no">
             <cfelse>
                <p class="error" id="user_error">#result.message#</p>
@@ -49,7 +50,7 @@
          </cfif>
       </div>
    </main>
-    <script src="./Script/jquery-3.7.1.min.js"></script>  
+   <script src="./Script/jquery-3.7.1.min.js"></script>
    <script src="./Script/script.js"></script>
 </body>
 </html>

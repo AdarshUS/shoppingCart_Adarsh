@@ -314,7 +314,7 @@ function createproduct()
   document.getElementById('productForm').reset();
 }
 
-function editProduct(editObj) {   
+function editProduct(editObj) {
    let subCategoryElement  = document.getElementById("selectSubCategory");
    $.ajax({
      url: 'components/ProductManagement.cfc?method=fetchSingleProduct',
@@ -322,11 +322,12 @@ function editProduct(editObj) {
      type: 'POST',
      success: function(result) {
       let product = JSON.parse(result);
-      document.getElementById("productName").value = product.productName;
-      document.getElementById("brandName").value = product.brandId;
-      document.getElementById("productDesc").value = product.description;
-      document.getElementById("unitPrice").value = product.unitPrice;
-      document.getElementById("unitTax").value = product.unitTax;
+      console.log(product);
+      document.getElementById("productName").value = product.DATA.productName;
+      document.getElementById("brandName").value = product.DATA.brandId;
+      document.getElementById("productDesc").value = product.DATA.description;
+      document.getElementById("unitPrice").value = product.DATA.unitPrice;
+      document.getElementById("unitTax").value = product.DATA.unitTax;
       document.getElementById("categoryNameSelectPr").value = editObj.categoryId;
       document.getElementById("hiddenValue").value = editObj.productId;
       $.ajax({		
@@ -335,7 +336,7 @@ function editProduct(editObj) {
         data: {categoryId:editObj.categoryId},
         success: function(result) {
         let subcategoryIdArray = JSON.parse(result).SUBCATEGORYIDS;
-        let subcategoryNames = JSON.parse(result).SUBCATEGORYNAMES;      
+        let subcategoryNames = JSON.parse(result).SUBCATEGORYNAMES;
         subCategoryElement.innerHTML = "";
         for(let i = 0;i<subcategoryIdArray.length;i++)
         {        
@@ -393,7 +394,7 @@ function editImages(productId) {
                 img.alt = `Product Image ${i + 1}`;
 
                 if(productImagesId[i] != defaultImageId)
-                {                 
+                {
                   let setThumbnailBtn = document.createElement('button');
                   setThumbnailBtn.innerHTML = "setThumbnail"
                   setThumbnailBtn.setAttribute('class','thumbnailBtn btn btn-success'); 

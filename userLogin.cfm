@@ -23,7 +23,7 @@
    <main>
       <div class="signupContainer">
          <form method="POST" onsubmit="return validateUserDetails()">
-             <div class="mb-3">
+            <div class="mb-3">
                <label for="userName" class="form-label">UserName</label>
                <input type="email" class="form-control" placeholder="Enter the UserName" id="userName" name="userName">
                <div id="userNameError" class="error"></div>
@@ -38,10 +38,11 @@
             </div>
          </form>
          <cfif structKeyExists(form,"submitBtn")>
-            <cfset result = application.objUser.validateUser(userName = form.userName,password = form.userPassword)>            
-               <p class="text-primary">#result.message#</p>
-               <cfset session.loginuserId = result.userId>
-               <cflocation url="homePage.cfm" addtoken="no">
+            <cfset result = application.objUser.validateUser(userName = form.userName,password = form.userPassword)>
+            <p class="text-primary">#result.message#</p>
+            <cfset encryptedUserId = application.objUser.encryptId(result.userId)>
+            <cfset session.loginuserId = result.userId>
+            <cflocation url="homePage.cfm" addtoken="no">
          </cfif>
       </div>
    </main>
