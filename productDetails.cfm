@@ -1,5 +1,11 @@
 <cfset categories = application.objProductManagement.fetchAllCategories()>
 <cfset productDetails = application.objProductManagement.fetchSingleProduct(productId = url.productId,allImagesNeeded = true)>
+<cfif  structKeyExists(form, "submitBtn")>
+   <cfset result =  application.objProductManagement.addCart(userId = session.loginuserId,productId = url.productId,quantity = 1)>
+   <cfif result.success>
+      <cflocation url = "cart.cfm" addtoken = no>
+   </cfif>
+</cfif>
 <!DOCTYPE html>
 <cfoutput>
    <html lang="en">
@@ -68,10 +74,12 @@
                   <div class="price"><i class="fa-solid fa-indian-rupee-sign"></i>#productDetails.data.unitPrice#</div>
                   <div class="tax">Tax:#productDetails.data.unitTax#%</div>
                </div>
-               <div class="buttonContainer">
-                  <button class="btn btn-info p-2">Buy Now</button>
-                  <button class="btn btn-success p-2">Add to Cart</button>
-               </div>
+               <form method="post">
+                  <div class="buttonContainer">
+                     <button class="btn btn-info p-2">Buy Now</button>
+                     <button class="btn btn-success p-2" name="submitBtn">Add to Cart</button>
+                  </div>
+               </form>
             </div>
          </div>
          <footer>

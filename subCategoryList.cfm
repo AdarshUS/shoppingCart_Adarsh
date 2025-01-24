@@ -2,7 +2,7 @@
 <cfparam name="url.sort" default="ASC">
 <cfset categories = application.objProductManagement.fetchAllCategories()>
 <cfset products = application.objProductManagement.fetchProducts(subCategoryId = url.subCategoryId,limit = 4,sort = url.sort)>
-<!Doctype html
+<!Doctype html>
 <html>
    <head>
       <title>MyCart</title>
@@ -68,7 +68,7 @@
                </cfif>
             </cfloop>
          </div>
-         <div class="viewMoreBtn" id="viewLessBtn"><span onclick="toggleLessProducts(#url.subcategoryId#,#url.sort#)">see Less<i class="fa-solid fa-caret-down"></i></span></div>
+         <div class="viewMoreBtn" id="viewLessBtn"><span onclick="toggleLessProducts(#url.subcategoryId#,'#url.sort#')">see Less<i class="fa-solid fa-caret-down"></i></span></div>
       </main>
       <script src="./Script/jquery-3.7.1.min.js"></script>
       <script src="./Script/userPageScript.js"></script>

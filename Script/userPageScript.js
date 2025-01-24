@@ -137,3 +137,45 @@ function toggleLessProducts(subcategoryId)
     document.getElementById("viewLessBtn").style.display = "none";
     document.getElementById("viewMoreBtn").style.display = "flex";
 }
+
+function increaseQuantity(cartId,step)
+{
+    let qnty = document.getElementById("qntyNo"+cartId).value;
+    console.log(qnty)
+    qnty++;
+    document.getElementById("qntyNo"+cartId).value = qnty;
+     $.ajax({
+            url: 'components/productManagement.cfc?method=updateCart',
+            type: 'POST',
+            data:{cartId:cartId,step:step},
+            success: function(result) {
+              
+            },
+            error: function() {
+                
+            }
+        });
+        document.getElementById("totalPrice"+cartId).innerHTML = document.getElementById("qntyNo"+cartId).value * document.getElementById("actualprice"+cartId).innerHTML;
+        console.log( document.getElementById("actualprice"+cartId).innerHTML)
+}      
+
+function decreaseQuantity(cartId,step)
+{
+    let qnty = document.getElementById("qntyNo"+cartId).value;
+    qnty--;
+    document.getElementById("qntyNo"+cartId).value = qnty;
+    $.ajax({
+            url: 'components/productManagement.cfc?method=updateCart',
+            type: 'POST',
+            data:{cartId:cartId,step:step},
+            success: function(result) {
+              
+            },
+            error: function() {
+                
+            }
+        });
+         document.getElementById("totalPrice"+cartId).innerHTML = document.getElementById("qntyNo"+cartId).value * document.getElementById("actualprice"+cartId).innerHTML;
+        console.log( document.getElementById("actualprice"+cartId).innerHTML)
+}
+
