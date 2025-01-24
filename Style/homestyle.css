@@ -9,7 +9,7 @@ body {
 }
 
 header {
-  display: flex;  
+  display: flex;
   background-color: #fff;
   height: 60px;
   align-items: center;
@@ -30,7 +30,9 @@ header {
 .header_logo {
   margin-left: 50px;
   display: flex;
-   align-items: center;
+  align-items: center;
+  text-decoration: none;
+  color: #000000;
 }
 
 .header_searchBar input {
@@ -44,6 +46,7 @@ header {
   display: flex;
   align-items: center;
   padding: 40px;
+  gap: 20px;
 }
 
 .header_menu-user img,
@@ -103,6 +106,7 @@ header {
   flex-direction: column;
   align-items: center;
   padding: 20px;
+  text-decoration: none;
 }
 
 .randomProducts{
@@ -126,6 +130,10 @@ header {
   display: flex;
   gap: 30px;
   padding: 30px;
+  flex-wrap: wrap;
+/*   height: 28vw;
+  overflow: hidden;
+  transition: height 0.3s ease; */
 }
 
 .subcategoryName{
@@ -165,3 +173,87 @@ header {
   display: flex;
   align-items: center;
 }
+
+.header_searchBar form{
+  display: flex;
+  justify-content: space-between;
+  width: 90%;
+}
+
+.searchBtn{
+    color: #fff;
+    border: none;
+    padding: 5.5px;
+    border-radius: 31px;
+    background-color: #000;
+}
+
+.searchResultText{
+  text-align: center;
+  font-size: 25px;
+  font-weight: 500;
+  padding: 30px;
+}
+
+.searchText{
+  color: blue;
+}
+
+.errorText{
+  text-align: center;
+  font-size: 21px;
+}
+
+.logoutContainer{
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.logoutContainer button,.logoutContainer a{
+  border: none;
+  background-color: transparent;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.logoutContainer a{
+  text-decoration: none;
+  color: #000;
+}
+
+.viewMoreBtn{
+  display: flex;
+  justify-content: flex-end;
+  width: 80%;
+  cursor: pointer;
+}
+
+.cartContainer{
+  position: relative;
+}
+
+.itemcount{
+  width: 18px;
+  height: 18px;
+  background-color: #e5e9f1;
+  border-radius: 50%;
+  position: absolute;
+  top: -8px;
+  left: 16px;
+  color: #000;
+  font-size: 12px;
+  font-weight: bolder;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#viewLessBtn{
+  display: none;
+}
+
+
+
+

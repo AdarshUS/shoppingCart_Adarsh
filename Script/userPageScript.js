@@ -10,7 +10,7 @@ function validateUserDetails()
    document.getElementById("firstNameError").innerHTML = "";
    document.getElementById("lastNameError").innerHTML = "";
    document.getElementById("userEmailError").innerHTML = "";
-   document.getElementById("userPhoneError").innerHTML = "";   
+   document.getElementById("userPhoneError").innerHTML = "";
    document.getElementById("userPasswordError").innerHTML = "";
 
    if(firstName.trim() === "")
@@ -44,7 +44,96 @@ function validateUserDetails()
    return validDetails;
 }
 
-function filterPrices() {
-   let priceRange = document.getElementById("filterPrice").value;
-   console.log(priceRange);
+function filterPrices(subcategoryId) {
+    let priceRange = document.querySelector('input[name="filterPrice"]:checked');
+    let priceRangeValue;
+    document.getElementById("productContainer").innerHTML = ""; 
+    
+    if (priceRange != null) {
+        priceRangeValue = priceRange.value;
+        console.log(priceRangeValue);
+    } else {
+        let minvalue = document.getElementById("minimumPrice").value;
+        let maxvalue = document.getElementById("maxPrice").value;
+        priceRangeValue = minvalue+ " AND "+ maxvalue;
+    }
+    fetchProductsRemote("fetchProducts",{subcategoryId: subcategoryId, priceRange: priceRangeValue});
+}
+
+function fetchProductsRemote(methodName, parameters) {
+    $.ajax({
+        url: `components/ProductManagement.cfc?method=${methodName}`,
+        type: 'POST',
+        data: parameters,
+        success: function (result) {
+            let products = JSON.parse(result).DATA;
+            if(products === undefined)
+            {
+                products = JSON.parse(result).data;
+            }
+            console.log(products);
+            
+            let productContainer = document.getElementById("productContainer");
+            productContainer.innerHTML = "";
+
+            products.forEach((item) => {
+                let productBox = document.createElement("div");
+                productBox.className = "productBox";
+
+                let productImage = document.createElement("div");
+                productImage.className = "productImage";
+                let img = document.createElement("img");
+                img.src = `./Assets/uploads/product${item.productId}/${item.imageFilePath}`;
+                img.alt = "productImage";
+                img.className = "prodimg";
+                productImage.appendChild(img);
+
+                let productName = document.createElement("div");
+                productName.className = "productName";
+                productName.textContent = item.productName;
+
+                let productPrice = document.createElement("div");
+                productPrice.className = "productPrice";
+                productPrice.innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i> ${item.unitPrice}`;
+
+                productBox.appendChild(productImage);
+                productBox.appendChild(productName);
+                productBox.appendChild(productPrice);
+
+                productContainer.appendChild(productBox);
+            });
+        },
+        error: function () {
+            console.error("Error fetching products");
+        },
+    });
+}
+
+function logoutUser()
+{
+    if (confirm("Are you sure you want to Logout")) {
+        $.ajax({
+            url: 'components/User.cfc?method=logoutUser',
+            type: 'POST',
+            success: function(result) {
+              location.reload();
+            },
+            error: function() {
+                
+            }
+        });
+    }
+}
+
+function toggleProducts(subcategoryId,sort) {
+    fetchProductsRemote("fetchProducts",{subcategoryId: subcategoryId,sort:sort});
+    document.getElementById("viewMoreBtn").style.display = "none";
+    document.getElementById("viewLessBtn").style.display = "flex";
+}
+
+function toggleLessProducts(subcategoryId)
+{
+    fetchProductsRemote("getRandomProducts",{subcategoryId: subcategoryId});
+    document.getElementById("viewLessBtn").style.display = "none";
+    document.getElementById("viewMoreBtn").style.display = "flex";
 }

@@ -23,7 +23,7 @@
     <header>
       <div class="headerLeftItem">
          <div class="headerLeftItem-1"> <img src="./Assets/Images/cart.png" alt="cartImage" width="40"></div>
-         <div class="headerLeftItem-2">Admin DashBoard</div>         
+         <div class="headerLeftItem-2">Admin DashBoard</div>
       </div>
       <div class="headerRightItem">
          <button class="logout">
@@ -48,9 +48,9 @@
                      <a class="categoryBtn" href="./product.cfm?subCategoryId=#subcategories.subcategoryIds[i]#&categoryId=#url.categoryId#">
                         <i class="fa-solid fa-circle-arrow-right categoryfns"></i>
                      </a>
-                  </div>              
-               </div>                                  
-            </cfloop>                   
+                  </div>
+               </div>
+            </cfloop>
          </div>
       </div>   
    </main>  
@@ -62,8 +62,8 @@
                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="POST" onsubmit="return validateSubCategory()">
-               <div class="modal-body">              
-                  <div class="mb-3">                      
+               <div class="modal-body">
+                  <div class="mb-3">
                         <label for="categoryNameSelect" class="form-label">Select Category Name</label>
                         <select class="form-control" id="categoryNameSelect" name = "selectCategory">
                            <option>--</option>
@@ -78,19 +78,19 @@
                      <input type="text" class="form-control" id="subCategoryName" name="subCategoryName">
                      <input type="hidden" id="distinguishSubCreateEdit" name = "distinguishSubCreateEdit" >
                       <div id = "subCategoryNameError" class = "error"></div>
-                  </div>                            
+                  </div>
                </div>
                <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                   <button type="submit" class="btn btn-primary insertSubCategoryBtn" name="submit">Save changes</button>
                </div>
-            </form>            
+            </form>
          </div>
       </div>
    </div>
    <script src="./Script/bootstrapScript.js"></script>
-   <script src="./Script/jquery-3.7.1.min.js"></script>     
-   <script src="./Script/script.js"></script>   
+   <script src="./Script/jquery-3.7.1.min.js"></script>
+   <script src="./Script/script.js"></script>
 </body>
 </html>
 </cfoutput>

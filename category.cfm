@@ -1,5 +1,5 @@
  <cfset result = application.objProductManagement.fetchAllCategories()>
-<cfoutput >
+<cfoutput>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,7 +24,6 @@
       </div>
    </header>
    <main>
-   
       <div class="categoryContainer">
          <div class="categoryheader">
             <h5>Categories</h5>
@@ -42,8 +41,8 @@
                </div>
             </cfloop>
          </div>
-      </div>   
-   </main>  
+      </div>
+   </main>
    <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
       <div class="modal-dialog">
          <div class="modal-content">
