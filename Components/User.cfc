@@ -41,7 +41,7 @@
       <cfset StructClear(Session)>
    </cffunction>
 
-   <cffunction name="encryptId" access="public" returntype="string">
+   <!--- <cffunction name="encryptId" access="public" returntype="string">
       <cfargument name="inputId" required="true" type="string">
       <cfset local.encryptedId =  encrypt(arguments.inputId,application.encryptionKey,'AES','Base64')>
       <cfreturn local.encryptedId>
@@ -51,7 +51,7 @@
       <cfargument name="encryptedId" required="true" type="string">
       <cfset local.decryptedId =  decrypt(arguments.encryptedId,application.encryptionKey,'AES','Base64')>
       <cfreturn local.decryptedId>
-   </cffunction>
+   </cffunction> --->
 
    <cffunction name="registerUser" access="public" returntype="struct">
         <cfargument name="firstName" required="true" type="string" >

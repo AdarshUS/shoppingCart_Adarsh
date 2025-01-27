@@ -12,7 +12,7 @@
       <cfinclude template="header.cfm">
       <cfinclude template="navbar.cfm">
       <div class="bannerContainer">
-         <img src="./Assets/Images/cartnewbanner4.jpg" alt="cartbanner" class="bannerImage">
+         <img src="./Assets/Images/9167.jpg" alt="cartbanner" class="bannerImage">
       </div>
       <h5 class="productText">Random Products</h5>
       <div class="randomProducts d-flex flex-wrap">
@@ -23,6 +23,7 @@
                   </div>
                   <div class="productName">#product.productName#</div>
                   <div class="productPrice"><i class="fa-solid fa-indian-rupee-sign"></i>#product.unitPrice#</div>
+                  <div class="productTax">Tax:#product.unitTax#%</div>
                </a>
          </cfloop>
       </div>

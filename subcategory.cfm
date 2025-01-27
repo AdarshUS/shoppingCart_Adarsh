@@ -4,7 +4,7 @@
    <cfif LEN(form.distinguishSubCreateEdit) GT 0>
       <cfset application.objProductManagement.updateSubCategory(subCategoryId = form.distinguishSubCreateEdit,newCategoryName = form.subCategoryName,categoryId = form.selectCategory)>      
    <cfelse>
-      <cfset application.objProductManagement.insertSubCategory(categoryId = form.selectCategory,subcategoryName = form.subCategoryName)>
+      <cfset application.objProductManagement.addSubCategory(categoryId = form.selectCategory,subcategoryName = form.subCategoryName)>
    </cfif>
 </cfif>
 <cfset subcategories = application.objProductManagement.fetchSubCategories(categoryId = url.categoryId)>

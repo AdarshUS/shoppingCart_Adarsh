@@ -62,6 +62,7 @@
                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                <button type="button" class="btn btn-primary" class="insertBtn" onclick="insertEditCategory()">Save changes</button>
             </div>
+            <div class="categoryExistError" id="categoryExistError"></div>
          </div>
       </div>
    </div>

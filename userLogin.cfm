@@ -29,8 +29,8 @@
                <div id="userNameError" class="error"></div>
             </div>
             <div class="mb-3">
-               <label for="userPassword" class="form-label">Phone</label>
-               <input type="text" class="form-control" placeholder="Enter the Password" id="userPassword" name="userPassword">
+               <label for="userPassword" class="form-label">Password</label>
+               <input type="password" class="form-control" placeholder="Enter the Password" id="userPassword" name="userPassword">
                <div id="userPasswordError" class="error"></div>
             </div>
             <div class="mb-3">
@@ -40,7 +40,7 @@
          <cfif structKeyExists(form,"submitBtn")>
             <cfset result = application.objUser.validateUser(userName = form.userName,password = form.userPassword)>
             <p class="text-primary">#result.message#</p>
-            <cfset encryptedUserId = application.objUser.encryptId(result.userId)>
+            <!--- <cfset encryptedUserId = application.objUser.encryptId(result.userId)> --->
             <cfset session.loginuserId = result.userId>
             <cflocation url="homePage.cfm" addtoken="no">
          </cfif>
