@@ -39,7 +39,7 @@
             </div>
          </form>
          <cfif structKeyExists(form,"submit")>
-            <cfset result = application.objUser.validateAdminLogin(userName = form.userName,password = form.password)>
+            <cfset result = application.objUser.adminLogin(userName = form.userName,password = form.password)>
             <cfif result.success>
                <cfset encrtptedAdminId = application.objUser.encryptId(result.userId)>
                <cfset session.loginuserId = encrtptedAdminId>

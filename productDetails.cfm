@@ -1,5 +1,14 @@
 <cfset categories = application.objProductManagement.fetchAllCategories()>
 <cfset productDetails = application.objProductManagement.fetchSingleProduct(productId = url.productId,allImagesNeeded = true)>
+<cfif  structKeyExists(form, "submitBtn")>
+   <cfif NOT structKeyExists(session, "loginuserId")>
+      <cflocation url = "userLogin.cfm" addToken = "no">
+   </cfif>
+   <cfset result =  application.objProductManagement.addCart(userId = application.objUser.decryptId(session.loginuserId),productId = url.productId,quantity = 1)>
+   <cfif result.success>
+      <cflocation url = "cart.cfm" addtoken = no>
+   </cfif>
+</cfif>
 <!DOCTYPE html>
 <cfoutput>
    <html lang="en">
@@ -17,13 +26,13 @@
          <div class="categoriesContainer">
             <cfloop array="#categories.categoryId#" index="i" item="category">
                <div class="dropdown">
-                  <a class="category"  aria-expanded="false" href="categoryList.cfm?categoryId=#categories.categoryId[i]#">
+                  <a class="category"  aria-expanded="false" href="categoryList.cfm?categoryId=#URLEncodedFormat(application.objUser.encryptId(categories.categoryId[i]))#">
                   #categories.categories[i]#
                   </a>
                   <cfset subCategories = application.objProductManagement.fetchSubCategories(categories.categoryId[i])>
                   <ul class="dropdown-menu">
                      <cfloop array = #subCategories.subCategoryNames# index = i item = subcategory>
-                        <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#subCategories.subCategoryIds[i]#">#subCategories.subCategoryNames[i]#</a></li>
+                        <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(application.objUser.encryptId(subCategories.subCategoryIds[i]))#">#subCategories.subCategoryNames[i]#</a></li>
                      </cfloop>
                   </ul>
                </div>
@@ -57,8 +66,8 @@
             </div>
             <div class="productDetail">
                <div class="pathtext">
-                  <a href="subCategoryList.cfm?subcategoryId=#productDetails.data.subcategoryId#">#productDetails.data.subcategoryName#</a><i class="fa-solid fa-angle-right"></i>
-                  <a href="./categoryList.cfm?categoryId=#productDetails.data.categoryId#">#productDetails.data.categoryName#</a><i class="fa-solid fa-angle-right"></i>
+                  <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(application.objUser.encryptId(productDetails.data.subcategoryId))#">#productDetails.data.subcategoryName#</a><i class="fa-solid fa-angle-right"></i>
+                  <a href="./categoryList.cfm?categoryId=#URLEncodedFormat(application.objUser.encryptId(productDetails.data.categoryId))#">#productDetails.data.categoryName#</a><i class="fa-solid fa-angle-right"></i>
                   <a href="">#productDetails.data.productName#</a>
                </div>
                <h4 class="productName">#productDetails.data.productName#</h4>
@@ -68,10 +77,12 @@
                   <div class="price"><i class="fa-solid fa-indian-rupee-sign"></i>#productDetails.data.unitPrice#</div>
                   <div class="tax">Tax:#productDetails.data.unitTax#%</div>
                </div>
-               <div class="buttonContainer">
-                  <button class="btn btn-info p-2">Buy Now</button>
-                  <button class="btn btn-success p-2">Add to Cart</button>
-               </div>
+               <form method="post">
+                  <div class="buttonContainer">
+                     <button class="btn btn-info p-2">Buy Now</button>
+                     <button class="btn btn-success p-2" name="submitBtn">Add to Cart</button>
+                  </div>
+               </form>
             </div>
          </div>
          <footer>

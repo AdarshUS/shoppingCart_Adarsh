@@ -4,7 +4,7 @@
    <cfif LEN(form.distinguishSubCreateEdit) GT 0>
       <cfset application.objProductManagement.updateSubCategory(subCategoryId = form.distinguishSubCreateEdit,newCategoryName = form.subCategoryName,categoryId = form.selectCategory)>      
    <cfelse>
-      <cfset application.objProductManagement.insertSubCategory(categoryId = form.selectCategory,subcategoryName = form.subCategoryName)>
+      <cfset application.objProductManagement.addSubCategory(categoryId = form.selectCategory,subcategoryName = form.subCategoryName)>
    </cfif>
 </cfif>
 <cfset subcategories = application.objProductManagement.fetchSubCategories(categoryId = url.categoryId)>
@@ -45,7 +45,7 @@
                   <div class="categoryItemRight">
                      <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="categoryBtn" value="#subcategories.subcategoryIds[i]#" onclick=editSubCategory({categoryId:#url.categoryId#,subCategoryName:"#subcategories.subCategoryNames[i]#",subCategoryId:#subcategories.subcategoryIds[i]#})><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
                      <button class="categoryBtn" onclick="deleteSubCategory(#subcategories.subcategoryIds[i]#)"><i class="fa-solid fa-trash categoryfns"></i></button>
-                     <a class="categoryBtn" href="./product.cfm?subCategoryId=#subcategories.subcategoryIds[i]#&categoryId=#url.categoryId#">
+                     <a class="categoryBtn" href="./product.cfm?subCategoryId=#URLEncodedFormat(application.objUser.encryptId(subcategories.subcategoryIds[i]))#&categoryId=#URLEncodedFormat(application.objUser.encryptId(url.categoryId))#">
                         <i class="fa-solid fa-circle-arrow-right categoryfns"></i>
                      </a>
                   </div>

@@ -2,7 +2,7 @@
 <cfparam name="url.sort" default="ASC">
 <cfset categories = application.objProductManagement.fetchAllCategories()>
 <cfset products = application.objProductManagement.fetchProducts(subCategoryId = url.subCategoryId,limit = 4,sort = url.sort)>
-<!Doctype html
+<!Doctype html>
 <html>
    <head>
       <title>MyCart</title>
@@ -15,13 +15,13 @@
       <div class="categoriesContainer">
          <cfloop array="#categories.categoryId#" index="i" item="category">
             <div class="dropdown">
-               <a class="category"  aria-expanded="false" href="categoryList.cfm?categoryId=#categories.categoryId[i]#">
+               <a class="category"  aria-expanded="false" href="categoryList.cfm?categoryId=#URLEncodedFormat(application.objUser.encryptId(categories.categoryId[i]))#">
                  #categories.categories[i]#
                </a>
                <cfset subCategoriesList = application.objProductManagement.fetchSubCategories(categories.categoryId[i])>
                <ul class="dropdown-menu">
                   <cfloop array = #subCategoriesList.subCategoryNames# index = i item = subcategory>
-                     <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#subCategoriesList.subCategoryIds[i]#">#subCategoriesList.subCategoryNames[i]#</a></li>
+                     <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(application.objUser.encryptId(subCategoriesList.subCategoryIds[i]))#">#subCategoriesList.subCategoryNames[i]#</a></li>
                   </cfloop>
                </ul>
             </div>
@@ -47,7 +47,6 @@
                     <li><input type="radio" name="filterPrice" id="filterPrice2"  class="dropdown-item" value="1000 AND 10000"><span>1000 to 10,000</span></li>
                     <li><input type="radio" name="filterPrice" id="filterPrice3"  class="dropdown-item" value = "10000 AND 15000"><span>10,000 to 15,000</span></li>
                     <li><input type="radio" name="filterPrice" id="filterPrice4"  class="dropdown-item" value = "15000 AND 25000"><span>15,000 to 25,000</span></li>
-                    <li><input type="radio" name="filterPrice" id="filterPrice4"  class="dropdown-item" value = "25000+"><span>Above 25,000</span></li>
                     <label for="minimumPrice"></label><input type="number" id="minimumPrice">
                     <label for="maxPrice"></label><input type="number" id="maxPrice">
                     <button class="btn btn-secondary" onclick="filterPrices(#url.subcategoryId#)">Submit</button>
@@ -60,7 +59,7 @@
          <div class="productContainer" id="productContainer">
             <cfloop array = "#products.data#" item = product>
                <cfif product.subCategoryId EQ url.subcategoryId>
-                  <a class="productBox" id="productBox" href="productDetails.cfm?productId=#product.productId#">
+                  <a class="productBox" id="productBox" href="productDetails.cfm?productId=#URLEncodedFormat(application.objUser.encryptId(product.productId))#">
                      <div class="productImage"><img src="./Assets/uploads/product#product.productId#/#product.imageFilePath#" alt="productImage" class="prodimg" id="prodimg"></div>
                      <div class="productName" id="productName">#product.productName#</div>
                      <div class="productPrice" id="productPrice"><i class="fa-solid fa-indian-rupee-sign"></i>#product.unitPrice#</div>
@@ -68,7 +67,7 @@
                </cfif>
             </cfloop>
          </div>
-         <div class="viewMoreBtn" id="viewLessBtn"><span onclick="toggleLessProducts(#url.subcategoryId#,#url.sort#)">see Less<i class="fa-solid fa-caret-down"></i></span></div>
+         <div class="viewMoreBtn" id="viewLessBtn"><span onclick="toggleLessProducts(#url.subcategoryId#,'#url.sort#')">see Less<i class="fa-solid fa-caret-down"></i></span></div>
       </main>
       <script src="./Script/jquery-3.7.1.min.js"></script>
       <script src="./Script/userPageScript.js"></script>

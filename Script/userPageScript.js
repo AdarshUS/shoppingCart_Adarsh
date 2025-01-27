@@ -1,5 +1,5 @@
 function validateUserDetails()
-{   
+{
    let validDetails = true;
    const firstName = document.getElementById("firstName").value;
    const lastName = document.getElementById("lastName").value;
@@ -21,11 +21,11 @@ function validateUserDetails()
 
    if(lastName.trim() === "")
    {
-      document.getElementById("firstNameError").innerHTML = "Enter the LastName";
+      document.getElementById("lastNameError").innerHTML = "Enter the LastName";
       validDetails = false;
    }
 
-   if (userEmail.trim() === "" ||  !(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email)) )
+   if (userEmail.trim() === "" ||  !(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(userEmail)) )
     {
        document.getElementById("userEmailError").innerHTML = "Please enter a valid email address";
       validDetails = false;
@@ -35,24 +35,66 @@ function validateUserDetails()
     {
      document.getElementById("userPhoneError").innerHTML  = "Please enter a valid 10-digit phone number";
      validDetails = false;
-    }   
+    }
+
    if (userPassword.trim() === "" || userPassword.search(/[a-z]/i) < 0 || userPassword.search(/[0-9]/) < 0 || userPassword.length<6)
     {
      document.getElementById("userPasswordError").innerHTML = "Password must be at least 6 characters long & should contain 1 letter and digit";
      validDetails = false;
     }
+
    return validDetails;
 }
 
-function filterPrices(subcategoryId) {
+function validateUserLogin() {
+    let validUserInput = true;
+    const userName = document.getElementById("userName").value.trim();
+    const password = document.getElementById("userPassword").value.trim();
+    
+    document.getElementById("userNameError").innerHTML = "";
+    document.getElementById("userPasswordError").innerHTML = "";
+    
+    if (userName === "") {
+        document.getElementById("userNameError").innerHTML = "Enter the UserName";
+        validUserInput = false;
+    } else if (
+        !isValidEmail(userName) && !isValidPhone(userName)
+    ) {
+        document.getElementById("userNameError").innerHTML = "UserName must be a valid email or phone number";
+        validUserInput = false;
+    }
+   
+    if (password === "") {
+        document.getElementById("userPasswordError").innerHTML = "Enter the Password";
+        validUserInput = false;
+    }
+    return validUserInput;
+}
+
+function isValidEmail(email) {
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    return emailRegex.test(email);
+}
+
+function isValidPhone(phone) {
+    const phoneRegex = /^[0-9]{10}$/;
+    return phoneRegex.test(phone);
+}
+
+
+function filterPrices(subcategoryId) 
+{
     let priceRange = document.querySelector('input[name="filterPrice"]:checked');
     let priceRangeValue;
-    document.getElementById("productContainer").innerHTML = ""; 
-    
-    if (priceRange != null) {
+    document.getElementById("productContainer").innerHTML = "";
+
+    if (priceRange != null) 
+    {
         priceRangeValue = priceRange.value;
         console.log(priceRangeValue);
-    } else {
+    }
+    else 
+    {
         let minvalue = document.getElementById("minimumPrice").value;
         let maxvalue = document.getElementById("maxPrice").value;
         priceRangeValue = minvalue+ " AND "+ maxvalue;
@@ -67,12 +109,11 @@ function fetchProductsRemote(methodName, parameters) {
         data: parameters,
         success: function (result) {
             let products = JSON.parse(result).DATA;
-            if(products === undefined)
-            {
+            if (products === undefined) {
                 products = JSON.parse(result).data;
             }
             console.log(products);
-            
+
             let productContainer = document.getElementById("productContainer");
             productContainer.innerHTML = "";
 
@@ -119,7 +160,7 @@ function logoutUser()
               location.reload();
             },
             error: function() {
-                
+                console.error("Error in LogOut");
             }
         });
     }
@@ -137,3 +178,118 @@ function toggleLessProducts(subcategoryId)
     document.getElementById("viewLessBtn").style.display = "none";
     document.getElementById("viewMoreBtn").style.display = "flex";
 }
+
+function increaseQuantity(cartId, step) {
+    document.getElementById("decreaseQntyBtn").disabled = false;
+    let qnty = document.getElementById("qntyNo" + cartId).value;
+    console.log(qnty);
+    qnty++;
+    document.getElementById("qntyNo" + cartId).value = qnty;
+
+    $.ajax({
+        url: 'components/productManagement.cfc?method=updateCart',
+        type: 'POST',
+        data: { cartId: cartId, step: step },
+        success: function (result) {
+            console.log("updated")
+        },
+        error: function () {
+            console.error("failed to Update")
+        }
+    });
+    document.getElementById("totalPrice" + cartId).innerHTML =
+        document.getElementById("qntyNo" + cartId).value *
+        document.getElementById("actualprice" + cartId).innerHTML;
+    checkQnty();
+}
+
+function decreaseQuantity(cartId, step) {
+    let qnty = document.getElementById("qntyNo" + cartId).value;
+    if (qnty === 1) {
+        document.getElementById("decreaseQntyBtn").disabled = true;
+        return;
+    }
+    qnty--;
+    document.getElementById("qntyNo" + cartId).value = qnty;
+    $.ajax({
+        url: 'components/productManagement.cfc?method=updateCart',
+        type: 'POST',
+        data: { cartId: cartId, step: step },
+        success: function (result) {
+            console.log("successful Operation")
+        },
+        error: function () {
+            console.error("failed")
+        }
+    });
+    document.getElementById("totalPrice" + cartId).innerHTML =
+        document.getElementById("qntyNo" + cartId).value *
+        document.getElementById("actualprice" + cartId).innerHTML;
+    checkQnty();
+}
+
+/* $( document ).ready(function() {
+    checkQnty();
+}); */
+
+function checkQnty()
+{
+    let qnty = $(".qntyNo");
+    for (let index = 0; index < qnty.length; index++) {
+        console.log(qnty[index].value)
+        if(qnty[index].value ==1)
+    {
+        qnty[index].previousElementSibling.disabled = true;
+    }
+    else
+    {
+        qnty[index].previousElementSibling.disabled = false;
+    }
+    }
+}
+
+function deleteCartItem(cartId)
+{
+    if(confirm("Are you sure you want to delete")) 
+    {
+        $.ajax({
+            url: 'components/productManagement.cfc?method=deleteCart',
+            type: 'POST',
+            data: { cartId: cartId},
+            success: function (result) {
+                console.log("successful Operation");
+                document.getElementById(cartId).remove();
+            },
+            error: function () {
+                console.error("failed")
+            }
+        });
+    }
+}
+
+function visiblePassword()
+{   
+    let x = document.getElementById("userPassword");
+  if (x.type === "password")
+   {
+    x.type = "text";
+  } else {
+    x.type = "password";
+  }
+}
+
+function hidePassword()
+{
+     let x = document.getElementById("userPassword");
+     if (x.type === "password")
+   {
+    x.type = "text";
+  } else {
+    x.type = "password";
+  }
+
+}
+
+
+
+
