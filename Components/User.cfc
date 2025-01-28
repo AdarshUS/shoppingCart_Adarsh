@@ -50,12 +50,9 @@
    <cffunction name="decryptId" access="public" returntype="string">
     <cfargument name="encryptedId" required="true" type="string">
     <cftry>
-        <!-- Log encrypted input -->        
-        <!-- Perform decryption -->
         <cfset var decryptedId = decrypt(arguments.encryptedId, application.encryptionKey, "AES", "Base64")>        
         <cfreturn decryptedId>
     <cfcatch>
-        <!-- Log error for debugging -->
         <cfdump var="#cfcatch#" label="Decryption Error">
         <cfthrow message="Decryption failed: #cfcatch.message#" detail="#cfcatch.detail#">
     </cfcatch>
@@ -100,36 +97,50 @@
         <cfif len(trim(arguments.password)) EQ 0>
         	<cfset arrayAppend(local.result.errors, "*Please enter the password")>
         <cfelseif NOT reFindNoCase("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$", arguments.password)>
-        	<cfset arrayAppend(local.result.errors, "*Please enter a valid password (minimum 6 characters, 1 lowercase, 1 uppercase, 1 special character)")>
+        	<cfset arrayAppend(local.result.errors, "*Please enter a valid password (minimum 6 characters, 1 lowercase, 1 uppercase)")>
         </cfif>
-
         <cfset local.saltString = generateSecretKey("AES")>
         <cfset local.hashedPassword =hmac(arguments.password,local.saltString,"hmacSHA256")>
         <cftry>
-            <cfquery>
-                INSERT
-                INTO
-                    tbluser(
-                        fldFirstName,
-                        fldLastName,
-                        fldRoleId,
-                        fldEmail,
-                        fldPhone,
-                        fldHashedPassword,
-                        fldUserSaltString
-                    )
-                VALUES(
-                    <cfqueryparam value="#arguments.firstName#" cfsqltype="varchar">,
-                    <cfqueryparam value="#arguments.lastName#" cfsqltype="varchar">,
-                    1,
-                    <cfqueryparam value="#arguments.email#" cfsqltype="varchar">,
-                    <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">,
-                    <cfqueryparam value="#local.hashedPassword#" cfsqltype="varchar">,
-                    <cfqueryparam value="#local.saltString#" cfsqltype="varchar">
-                )
+            <cfquery name="checkUniqueEmailPhone" datasource="shopping_cart">
+                SELECT
+                    fldEmail,
+                    fldPhone
+                FROM
+                    tbluser
+                WHERE
+                    fldEmail = <cfqueryparam value="#arguments.email#" cfsqltype="varchar">
+                    OR fldPhone = <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">
             </cfquery>
-            <cfset local.result.success = true>
-            <cfset local.result.message = "Successfully Registered">
+            <cfif checkUniqueEmailPhone.RecordCount>
+                <cfset local.result.success = false>
+                <cfset local.result.message = "Email or Phone Already Exist">
+            <cfelse>
+                <cfquery datasource="shopping_cart">
+                    INSERT
+                    INTO
+                        tbluser(
+                            fldFirstName,
+                            fldLastName,
+                            fldRoleId,
+                            fldEmail,
+                            fldPhone,
+                            fldHashedPassword,
+                            fldUserSaltString
+                        )
+                    VALUES(
+                        <cfqueryparam value="#arguments.firstName#" cfsqltype="varchar">,
+                        <cfqueryparam value="#arguments.lastName#" cfsqltype="varchar">,
+                        1,
+                        <cfqueryparam value="#arguments.email#" cfsqltype="varchar">,
+                        <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">,
+                        <cfqueryparam value="#local.hashedPassword#" cfsqltype="varchar">,
+                        <cfqueryparam value="#local.saltString#" cfsqltype="varchar">
+                    )
+                </cfquery>
+                <cfset local.result.success = true>
+                <cfset local.result.message = "Successfully Registered">
+            </cfif>
         <cfcatch>
            <cfset local.result.message = "Database error: " & cfcatch.message> 
         </cfcatch>
@@ -159,8 +170,7 @@
                   U.fldRoleId = 1
                   AND (U.fldEmail = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">
                   OR U.fldPhone = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">)
-          </cfquery>
-			 
+          </cfquery>			 
           <cfif local.getUserDetails.RecordCount>
               <cfset local.saltString = local.getUserDetails.fldUserSaltString>
               <cfset local.password = arguments.password>

@@ -92,17 +92,16 @@ function insertEditCategory() {
           data: {categoryName:inputValue},
           type: 'POST',
           success: function(response) {
-            let result = JSON.parse(response);            
-            console.log(result);
+            let result = JSON.parse(response);
             if(result.SUCCESS)
-            {              
+            {
               $('#categoryModal').modal('hide');
               location.reload();
             }
             else
-            {             
+            {
               document.getElementById("categoryError").innerHTML = result.MESSAGE;
-            }          
+            }
             
           },
           error: function() {
@@ -328,12 +327,11 @@ function createproduct()
 function editProduct(editObj) {
    let subCategoryElement  = document.getElementById("selectSubCategory");
    $.ajax({
-     url: 'components/ProductManagement.cfc?method=fetchSingleProduct',
+     url: 'components/ProductManagement.cfc?method=getProductDetails',
      data:{productId:editObj.productId},
      type: 'POST',
      success: function(result) {
       let product = JSON.parse(result);
-      console.log(product);
       document.getElementById("productName").value = product.DATA.productName;
       document.getElementById("brandName").value = product.DATA.brandId;
       document.getElementById("productDesc").value = product.DATA.description;
@@ -390,7 +388,6 @@ function editImages(productId) {
         data: { productId: productId },
         type: 'POST',
         success: function(result) {
-            console.log(result)
             let productImages = JSON.parse(result).IMAGES;
             let productImagesId = JSON.parse(result).PRODUCTIMAGESID;
             let defaultImageId = JSON.parse(result).DEFAULTIMAGEID;

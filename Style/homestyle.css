@@ -421,6 +421,17 @@ h1 {
 	padding: 20px;
 }
 
-.remove-item{
-  
+.cartProductPrice{
+	display: flex;
+    flex-direction: column;
+}
+
+.actualPriceCart{
+	font-size: 13px;
+   padding: 5px 0px;
+	color: #e67e22;
+}
+
+.productTax{
+	font-size: 13px;
 }

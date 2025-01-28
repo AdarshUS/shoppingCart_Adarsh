@@ -8,7 +8,8 @@
 
    <cffunction name="onApplicationStart" returnType="boolean">
 		<cfset application.objProductManagement = createObject("component","Components.ProductManagement")>
-      <cfset application.objUser = createObject("component","Components.User")>      
+      <cfset application.objUser = createObject("component","Components.User")>
+      <cfset application.objCart = createObject("component","Components.cart")>
       <cfreturn true>
    </cffunction>
 
@@ -17,9 +18,9 @@
        <cfif structKeyExists(url,"reload") AND url.reload EQ 1>
          <cfset onApplicationStart()>
       </cfif>
-      <cfset local.pages = ["admin.cfm","userSignUp.cfm","userLogin.cfm","homePage.cfm","categoryList.cfm","subCategoryList.cfm","productDetails.cfm","cart.cfm"]>
+     <!---  <cfset local.pages = ["admin.cfm","userSignUp.cfm","userLogin.cfm","homePage.cfm","categoryList.cfm","subCategoryList.cfm","productDetails.cfm","cart.cfm"]>
       <cfif NOT structKeyExists(session,"loginuserId") AND NOT arrayFindNoCase(local.pages, ListLast(CGI.SCRIPT_NAME,'/'))>
 		 <cflocation url="admin.cfm" addToken="no">
-	   </cfif>
+	   </cfif> --->
    </cffunction>
 </cfcomponent>

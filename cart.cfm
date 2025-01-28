@@ -1,7 +1,7 @@
 <cfif NOT structKeyExists(session,"loginuserId")>
    <cflocation url="userLogin.cfm" addtoken="no">
 </cfif>
-<cfset cart = application.objProductManagement.fetchCart(userId = application.objUser.decryptId(session.loginuserId))>
+<cfset cart = application.objCart.fetchCart(userId = application.objUser.decryptId(session.loginuserId))>
 <!DOCTYPE html>
 <cfoutput>
 <html lang="en">
@@ -36,7 +36,8 @@
                            #product.productName#<br>
                            <small></small>
                         </td>
-                        <td><i class="fa-solid fa-indian-rupee-sign"></i><span id="actualprice#product.cartId#">#product.unitPrice#</span></td>
+                        <td class="cartProductPrice"><div><i class="fa-solid fa-indian-rupee-sign"></i><span id="productPrice#product.cartId#">#(product.unitPrice + (product.unitPrice * (product.unittax / 100)))#
+</span></div><span id="actualprice#product.cartId#" class="actualPric">actualprice:<span class="actualPriceCart">#product.unitPrice#</span></span><span id="productTax#product.cartId#" class="productTaxes">Tax:<span class="productTax">#product.unittax#</span>%</span></td>
                         <td>
                            <div class="quantity-controls">
                               <button onclick="decreaseQuantity(#product.cartId#,'decrement')" id="decreaseQntyBtn">-</button>
@@ -44,7 +45,7 @@
                               <button onclick="increaseQuantity(#product.cartId#,'increment')">+</button>
                            </div>
                         </td>
-                        <td><i class="fa-solid fa-indian-rupee-sign"></i><span id="totalPrice#product.cartId#">#product.unitPrice*product.quantity#</span></td>
+                        <td><i class="fa-solid fa-indian-rupee-sign"></i><span id="totalPrice#product.cartId#" class="totalPrice">#(product.unitPrice + (product.unitPrice * (product.unittax / 100))) * product.quantity#</span></td>
                         <td><button class="remove-item" onclick = "deleteCartItem(#product.cartId#)"><i class="fa-solid fa-xmark"></i></button></td>
                      </tr>
                   </cfloop>
@@ -53,11 +54,12 @@
          </div>
          <div class="order-summary">
             <h2>Order Summary</h2>
-            <p>Subtotal: <strong><i class="fa-solid fa-indian-rupee-sign"></i>418</strong></p>
+            <p>TotalPrice: <strong><i class="fa-solid fa-indian-rupee-sign"></i><span id="totalActualprice"></span></strong></p>
+            <p>TotalTax: <strong><i class="fa-solid fa-indian-rupee-sign"></i><span id="totalTax"></span>%</strong></p>
             <p>Shipping: <strong>Free</strong></p>
+            <p>Subtotal: <strong><i class="fa-solid fa-indian-rupee-sign"></i><span id="subtotal"></span></strong></p>
             <p><span class="coupon-code">Add coupon code</span></p>
-            <p>Total: <strong><i class="fa-solid fa-indian-rupee-sign"></i>418</strong></p>
-            <a href="" class="checkout-btn">Checkout</a>
+            <a href="" class="checkout-btn">Bought Together</a>
          </div>
       </div>
       <script src="./Script/jquery-3.7.1.min.js"></script>

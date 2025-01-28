@@ -1,4 +1,4 @@
-<cfoutput >
+<cfoutput>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,14 +37,17 @@
             </div>
             <div class="mb-3">
                <input type="submit" class="form-control submitBtn btn btn-primary" placeholder="submit" id="submitBtn" name="submitBtn">
+               <div class="registerContainer">Don't have an account? <a href="./userSignUp.cfm">Register Here</a></div>
             </div>
          </form>
          <cfif structKeyExists(form,"submitBtn")>
             <cfset result = application.objUser.userLogin(userName = form.userName,password = form.userPassword)>
             <p class="text-primary">#result.message#</p>
-            <cfset encryptedUserId = application.objUser.encryptId(result.userId)>
-            <cfset session.loginuserId = encryptedUserId>
-            <cflocation url="homePage.cfm" addtoken="no">
+            <cfif result.success>
+               <cfset encryptedUserId = application.objUser.encryptId(result.userId)>
+               <cfset session.loginuserId = encryptedUserId>
+               <cflocation url="homePage.cfm" addtoken="no">
+            </cfif>
          </cfif>
       </div>
    </main>

@@ -18,7 +18,7 @@
                <a class="category"  aria-expanded="false" href="categoryList.cfm?categoryId=#URLEncodedFormat(application.objUser.encryptId(categories.categoryId[i]))#">
                  #categories.categories[i]#
                </a>
-               <cfset subCategoriesList = application.objProductManagement.fetchSubCategories(categories.categoryId[i])>
+               <cfset subCategoriesList = application.objProductManagement.fetchSubCategories(application.objUser.encryptId(categories.categoryId[i]))>
                <ul class="dropdown-menu">
                   <cfloop array = #subCategoriesList.subCategoryNames# index = i item = subcategory>
                      <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(application.objUser.encryptId(subCategoriesList.subCategoryIds[i]))#">#subCategoriesList.subCategoryNames[i]#</a></li>

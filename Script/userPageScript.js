@@ -91,7 +91,6 @@ function filterPrices(subcategoryId)
     if (priceRange != null) 
     {
         priceRangeValue = priceRange.value;
-        console.log(priceRangeValue);
     }
     else 
     {
@@ -112,8 +111,6 @@ function fetchProductsRemote(methodName, parameters) {
             if (products === undefined) {
                 products = JSON.parse(result).data;
             }
-            console.log(products);
-
             let productContainer = document.getElementById("productContainer");
             productContainer.innerHTML = "";
 
@@ -182,12 +179,11 @@ function toggleLessProducts(subcategoryId)
 function increaseQuantity(cartId, step) {
     document.getElementById("decreaseQntyBtn").disabled = false;
     let qnty = document.getElementById("qntyNo" + cartId).value;
-    console.log(qnty);
     qnty++;
     document.getElementById("qntyNo" + cartId).value = qnty;
 
     $.ajax({
-        url: 'components/productManagement.cfc?method=updateCart',
+        url: 'components/cart.cfc?method=updateCart',
         type: 'POST',
         data: { cartId: cartId, step: step },
         success: function (result) {
@@ -199,20 +195,17 @@ function increaseQuantity(cartId, step) {
     });
     document.getElementById("totalPrice" + cartId).innerHTML =
         document.getElementById("qntyNo" + cartId).value *
-        document.getElementById("actualprice" + cartId).innerHTML;
+        document.getElementById("productPrice" + cartId).innerHTML;
     checkQnty();
+    calculateTotalPrice();
 }
 
 function decreaseQuantity(cartId, step) {
     let qnty = document.getElementById("qntyNo" + cartId).value;
-    if (qnty === 1) {
-        document.getElementById("decreaseQntyBtn").disabled = true;
-        return;
-    }
     qnty--;
     document.getElementById("qntyNo" + cartId).value = qnty;
     $.ajax({
-        url: 'components/productManagement.cfc?method=updateCart',
+        url: 'components/cart.cfc?method=updateCart',
         type: 'POST',
         data: { cartId: cartId, step: step },
         success: function (result) {
@@ -224,13 +217,15 @@ function decreaseQuantity(cartId, step) {
     });
     document.getElementById("totalPrice" + cartId).innerHTML =
         document.getElementById("qntyNo" + cartId).value *
-        document.getElementById("actualprice" + cartId).innerHTML;
+        document.getElementById("productPrice" + cartId).innerHTML;
     checkQnty();
+    calculateTotalPrice();
 }
 
-/* $( document ).ready(function() {
+$( document ).ready(function() {
     checkQnty();
-}); */
+    calculateTotalPrice();
+});
 
 function checkQnty()
 {
@@ -253,12 +248,13 @@ function deleteCartItem(cartId)
     if(confirm("Are you sure you want to delete")) 
     {
         $.ajax({
-            url: 'components/productManagement.cfc?method=deleteCart',
+            url: 'components/cart.cfc?method=deleteCart',
             type: 'POST',
             data: { cartId: cartId},
             success: function (result) {
                 console.log("successful Operation");
                 document.getElementById(cartId).remove();
+                calculateTotalPrice();
             },
             error: function () {
                 console.error("failed")
@@ -287,8 +283,29 @@ function hidePassword()
   } else {
     x.type = "password";
   }
-
 }
+
+function calculateTotalPrice()
+{
+    let productprices = document.getElementsByClassName("totalPrice"); 
+    let actualprices = document.getElementsByClassName("actualPriceCart");
+    console.log(actualprices);
+    let taxes = document.getElementsByClassName("productTax");
+    let totalPrice = 0;
+    let totalActual = 0;
+    let totalTax = 0;
+    for (let index = 0; index < productprices.length; index++) {
+        console.log(actualprices[index].innerHTML)
+        totalPrice += parseFloat(productprices[index].innerHTML);
+        totalActual += parseFloat(actualprices[index].innerHTML);
+        totalTax+=parseFloat(taxes[index].innerHTML);
+    }
+
+    document.getElementById("totalActualprice").innerHTML = totalActual;
+    document.getElementById("totalTax").innerHTML = totalTax;
+    document.getElementById("subtotal").innerHTML = totalPrice;
+}
+
 
 
 
