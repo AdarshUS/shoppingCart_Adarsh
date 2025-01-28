@@ -12,17 +12,18 @@
       <cfinclude template="header.cfm">
       <cfinclude template="navbar.cfm">
       <div class="bannerContainer">
-         <img src="./Assets/Images/cartnewbanner4.jpg" alt="cartbanner" class="bannerImage">
+         <img src="./Assets/Images/9167.jpg" alt="cartbanner" class="bannerImage">
       </div>
       <h5 class="productText">Random Products</h5>
       <div class="randomProducts d-flex flex-wrap">
          <cfloop array = "#randomProducts.data#" item = product>
-               <a class="productBox" href="productDetails.cfm?productId=#product.productId#">
+               <a class="productBox" href="productDetails.cfm?productId=#URLEncodedFormat(application.objUser.encryptId(product.productId))#">
                   <div class="productImage">
                      <img src="./Assets/uploads/product#product.productId#/#product.imageFilePath#" alt="productImage"  class="prodimg">
                   </div>
                   <div class="productName">#product.productName#</div>
                   <div class="productPrice"><i class="fa-solid fa-indian-rupee-sign"></i>#product.unitPrice#</div>
+                  <div class="productTax">Tax:#product.unitTax#%</div>
                </a>
          </cfloop>
       </div>

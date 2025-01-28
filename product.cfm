@@ -51,7 +51,7 @@
                      <img src="./Assets/uploads/product#product.productId#/#product.imageFilePath#" alt="productImage">
                   </div>
                   <div class="productItemRight">
-                     <button class="productfnBtn" data-bs-toggle="modal" data-bs-target="##productModal" id="editProductBtn" value="#product.productId#" onclick="editProduct({productId :#product.productId#,categoryId:#url.categoryId#,subCategoryId:#url.subCategoryId#})"><i class="fa-solid fa-pen-to-square productfns" ></i></button>
+                     <button class="productfnBtn" data-bs-toggle="modal" data-bs-target="##productModal" id="editProductBtn" value="#product.productId#" onclick="editProduct({productId :#product.productId#,categoryId:#application.objUser.decryptId(url.categoryId)#,subCategoryId:#application.objUser.decryptId(url.subCategoryId)#})"><i class="fa-solid fa-pen-to-square productfns" ></i></button>
                      <button class="productfnBtn" onclick="deleteProduct(#product.productId#)"><i class="fa-solid fa-trash productfns"></i></button>
                   </div>
                </div>

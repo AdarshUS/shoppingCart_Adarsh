@@ -58,3 +58,13 @@ main{
    color: #ff0000;
    padding: 4px;
 }
+
+.passwordCntr{
+   position: relative;
+}
+
+.fa-solid fa-eye{
+   position: absolute;
+   top: 42px;
+   left: 5px;
+}

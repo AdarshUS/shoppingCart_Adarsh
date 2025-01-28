@@ -5,8 +5,9 @@
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Document</title>
-   <link rel="stylesheet" href="./Style/userLoginStyle.css">
    <link rel="stylesheet" href="./Style/bootstrap.css">
+   <link rel="stylesheet" href="./Style/fontawesome.css">
+   <link rel="stylesheet" href="./Style/userLoginStyle.css">
 </head>
 <body>
    <header>
@@ -22,15 +23,16 @@
    </header>
    <main>
       <div class="signupContainer">
-         <form method="POST" onsubmit="return validateUserDetails()">
+         <form method="POST" onsubmit="return validateUserLogin()">
             <div class="mb-3">
                <label for="userName" class="form-label">UserName</label>
-               <input type="email" class="form-control" placeholder="Enter the UserName" id="userName" name="userName">
+               <input type="text" class="form-control" placeholder="Email or Phone" id="userName" name="userName">
                <div id="userNameError" class="error"></div>
             </div>
-            <div class="mb-3">
-               <label for="userPassword" class="form-label">Phone</label>
-               <input type="text" class="form-control" placeholder="Enter the Password" id="userPassword" name="userPassword">
+            <div class="mb-3 passwordCntr">
+               <label for="userPassword" class="form-label">Password</label>
+               <input type="password" class="form-control" placeholder="Enter the Password" id="userPassword" name="userPassword">
+               <div class="passwordToggle" onmousedown="visiblePassword()" onmouseup="hidePassword()"><i class="fa-solid fa-eye"></i></div>
                <div id="userPasswordError" class="error"></div>
             </div>
             <div class="mb-3">
@@ -38,14 +40,15 @@
             </div>
          </form>
          <cfif structKeyExists(form,"submitBtn")>
-            <cfset result = application.objUser.validateUser(userName = form.userName,password = form.userPassword)>
+            <cfset result = application.objUser.userLogin(userName = form.userName,password = form.userPassword)>
             <p class="text-primary">#result.message#</p>
             <cfset encryptedUserId = application.objUser.encryptId(result.userId)>
-            <cfset session.loginuserId = result.userId>
+            <cfset session.loginuserId = encryptedUserId>
             <cflocation url="homePage.cfm" addtoken="no">
          </cfif>
       </div>
    </main>
+   <script src="./Script/userPageScript.js"></script>
 </body>
 </html>
 </cfoutput>

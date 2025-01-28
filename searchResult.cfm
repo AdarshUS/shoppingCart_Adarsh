@@ -1,6 +1,9 @@
 <cfoutput>
    <cfset categories = application.objProductManagement.fetchAllCategories()>
    <cfif structKeyExists(form,"searchInput")>
+      <cfif len(trim(form.searchInput)) EQ 0>
+         <cflocation url="homePage.cfm" addtoken="no">
+      </cfif>
       <cfset products =  application.objProductManagement.fetchProducts(searchText = form.searchInput)>
       <cfif ArrayIsEmpty(products.data)>
          <cfset message = "No Results Found for ""<span class=""searchText"">#form.searchInput#</span>""">

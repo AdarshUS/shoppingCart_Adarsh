@@ -14,12 +14,12 @@
        <div class="headerLeftItem">
          <div class="headerLeftItem-1"> <img src="./Assets/Images/cart.png" alt="cartImage" width="40"></div>                
       </div>
-      <div class="headerRightItem">
+      <a class="headerRightItem" href="./userLogin.cfm">
          <div class="headerRightItem-1">LogIn</div>
          <div class="headerRightItem-2">
             <i class="fa-solid fa-arrow-right-to-bracket"></i>
          </div>  
-      </div>
+      </a>
    </header>
    <main>
       <div class="signupContainer">
@@ -45,17 +45,18 @@
                <div id="userPhoneError" class="error"></div>
             </div>
             <div class="mb-3">
-               <label for="userPhone" class="form-label">Password</label>
+               <label for="userPassword" class="form-label">Password</label>
                <input type="password" class="form-control" placeholder="Enter the Password" id="userPassword" name="userPassword">
                <div id="userPasswordError" class="error"></div>
-            </div>-
+            </div>
             <div class="mb-3">
                <input type="submit" class="form-control submitBtn btn btn-primary" placeholder="submit" id="submitBtn" name="submitBtn">
             </div>
          </form>
          <cfif structKeyExists(form,"submitBtn")>
             <cfset result = application.objUser.registerUser(firstName = form.firstName,lastName = form.lastName,email = form.userEmail,phone = form.userPhone,password = form.userPassword)>
-            <cfif result.success>
+            <cfdump var="#result#">
+            <cfif result.success AND ArrayLen(result.errors) EQ 0>
                <p class="text-primary">successfully Registered</p>
             <cfelse>
                <p class="text-danger">registration Failed</p>

@@ -1,4 +1,4 @@
- <cfset result = application.objProductManagement.fetchAllCategories()>
+<cfset result = application.objProductManagement.fetchAllCategories()>
 <cfoutput>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,7 +14,7 @@
    <header>
       <div class="headerLeftItem">
          <div class="headerLeftItem-1"> <img src="./Assets/Images/cart.png" alt="cartImage" width="40"></div>
-         <div class="headerLeftItem-2">Admin DashBoard</div>         
+         <div class="headerLeftItem-2">Admin DashBoard</div>
       </div>
       <div class="headerRightItem">
          <button class="logout">
@@ -36,7 +36,7 @@
                   <div class="categoryItemRight">
                      <button data-bs-toggle="modal" data-bs-target="##categoryModal" onclick="editCategory(this)" value = #result.categoryId[i]# class="categoryBtn"><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
                      <button class="categoryBtn" onclick="deleteCategory(this)" value = #result.categoryId[i]#><i class="fa-solid fa-trash categoryfns"></i></button>
-                     <a class="categoryBtn" href="./subcategory.cfm?categoryId=#result.categoryId[i]#"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></a>
+                     <a class="categoryBtn" href="./subcategory.cfm?categoryId=#URLEncodedFormat(application.objUser.encryptId(result.categoryId[i]))#"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></a>
                   </div>
                </div>
             </cfloop>
@@ -62,6 +62,7 @@
                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                <button type="button" class="btn btn-primary" class="insertBtn" onclick="insertEditCategory()">Save changes</button>
             </div>
+            <div class="categoryExistError" id="categoryExistError"></div>
          </div>
       </div>
    </div>

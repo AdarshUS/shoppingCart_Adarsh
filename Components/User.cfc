@@ -1,5 +1,5 @@
 <cfcomponent >
-    <cffunction name="validateAdminLogin" access="public" returntype="struct">
+    <cffunction name="adminLogin" access="public" returntype="struct">
         <cfargument name="userName" required="true" type="string">
         <cfargument name="password" required="true" type="string">
         <cfset local.result = {success = false}>
@@ -19,7 +19,7 @@
             <cfif local.getAdminDetails.RecordCount>
                 <cfset local.saltString = local.getAdminDetails.fldUserSaltString>
                 <cfset local.password = arguments.password>
-                <cfset local.hashedPassword = hmac(local.password,local.saltString,"hmacSHA256")>                
+                <cfset local.hashedPassword = hmac(local.password,local.saltString,"hmacSHA256")>
                 <cfif local.hashedPassword EQ local.getAdminDetails.fldHashedPassword>
                     <cfset local.result.success = true>
                     <cfset local.result.userId = local.getAdminDetails.fldUser_Id>
@@ -47,23 +47,66 @@
       <cfreturn local.encryptedId>
    </cffunction>
 
-   <cffunction name="decryptId" access="public">
-      <cfargument name="encryptedId" required="true" type="string">
-      <cfset local.decryptedId =  decrypt(arguments.encryptedId,application.encryptionKey,'AES','Base64')>
-      <cfreturn local.decryptedId>
-   </cffunction>
+   <cffunction name="decryptId" access="public" returntype="string">
+    <cfargument name="encryptedId" required="true" type="string">
+    <cftry>
+        <!-- Log encrypted input -->        
+        <!-- Perform decryption -->
+        <cfset var decryptedId = decrypt(arguments.encryptedId, application.encryptionKey, "AES", "Base64")>        
+        <cfreturn decryptedId>
+    <cfcatch>
+        <!-- Log error for debugging -->
+        <cfdump var="#cfcatch#" label="Decryption Error">
+        <cfthrow message="Decryption failed: #cfcatch.message#" detail="#cfcatch.detail#">
+    </cfcatch>
+    </cftry>
+</cffunction>
+
 
    <cffunction name="registerUser" access="public" returntype="struct">
-        <cfargument name="firstName" required="true" type="string" >
-        <cfargument name="lastName" required="true" type="string" >
-        <cfargument name="email" required="true" type="string" >
-        <cfargument name="phone" required="true" type="string" >
-        <cfargument name="password" required="true" type="string" >
-        <cfset local.result = {success = false}>
+        <cfargument name="firstName" required="true" type="string">
+        <cfargument name="lastName" required="true" type="string">
+        <cfargument name="email" required="true" type="string">
+        <cfargument name="phone" required="true" type="string">
+        <cfargument name="password" required="true" type="string">
+        <cfset local.result = {
+            success = false,
+            errors = []
+        }>
+        <cfif len(trim(arguments.firstName)) EQ 0>
+            <cfset arrayAppend(local.result.errors, "firstName is required")>
+        <cfelseif NOT reFindNoCase("^[A-Za-z]+(\s[A-Za-z]+)*$", arguments.firstName)>
+			<cfset arrayAppend(local.result.errors, "*Enter a valid firstname")>
+        </cfif>
+
+        <cfif len(trim(arguments.lastName)) EQ 0>
+            <cfset arrayAppend(local.result.errors, "*lastName is required")>
+        <cfelseif NOT reFindNoCase("^[A-Za-z]+(\s[A-Za-z]+)*$", arguments.lastName)>
+			<cfset arrayAppend(local.result.errors, "*Enter a valid lastname")>
+        </cfif>
+        
+        <cfif len(trim(arguments.email)) EQ 0>
+        	<cfset arrayAppend(local.result.errors, "*Email is required")>
+        <cfelseif NOT reFindNoCase("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", arguments.email)>
+        	<cfset arrayAppend(local.result.errors, "*Enter a valid email")>
+        </cfif>
+       
+        <cfif len(trim(arguments.phone)) EQ 0>
+        	<cfset arrayAppend(local.result.errors, "*Please enter the phoneNumber")>
+        <cfelseif NOT reFindNoCase("^\d{10}$", arguments.phone)>
+        	<cfset arrayAppend(local.result.errors, "*Please enter a valid username")>
+        </cfif>
+       
+        <cfif len(trim(arguments.password)) EQ 0>
+        	<cfset arrayAppend(local.result.errors, "*Please enter the password")>
+        <cfelseif NOT reFindNoCase("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$", arguments.password)>
+        	<cfset arrayAppend(local.result.errors, "*Please enter a valid password (minimum 6 characters, 1 lowercase, 1 uppercase, 1 special character)")>
+        </cfif>
+
         <cfset local.saltString = generateSecretKey("AES")>
         <cfset local.hashedPassword =hmac(arguments.password,local.saltString,"hmacSHA256")>
         <cftry>
-            <cfquery name="local.registerUser">
+            <cfquery>
                 INSERT
                 INTO
                     tbluser(
@@ -78,7 +121,7 @@
                 VALUES(
                     <cfqueryparam value="#arguments.firstName#" cfsqltype="varchar">,
                     <cfqueryparam value="#arguments.lastName#" cfsqltype="varchar">,
-                    <cfqueryparam value="1" cfsqltype="integer">,
+                    1,
                     <cfqueryparam value="#arguments.email#" cfsqltype="varchar">,
                     <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">,
                     <cfqueryparam value="#local.hashedPassword#" cfsqltype="varchar">,
@@ -94,11 +137,17 @@
         <cfreturn local.result>
    </cffunction>
 
-   <cffunction name="validateUser" access="public" returntype="struct" >
+   <cffunction name="userLogin" access="public" returntype="struct" >
 		<cfargument name="userName" required="true" type="string">
-      <cfargument name="password" required="true" type="string">		
-      <cfset local.result = {success = false}>
-      <cftry>
+        <cfargument name="password" required="true" type="string">		
+        <cfset local.result = {success = false,errors=[]}>
+        <cfif len(trim(arguments.userName)) EQ 0>
+           <cfset arrayAppend(local.result.errors, "userName is required")>
+        </cfif>
+        <cfif len(trim(arguments.password)) EQ 0>
+           <cfset arrayAppend(local.result.errors, "password is required")>
+        </cfif>
+        <cftry>
           <cfquery name="local.getUserDetails">
               SELECT 
                   U.fldUser_Id, 
@@ -115,7 +164,7 @@
           <cfif local.getUserDetails.RecordCount>
               <cfset local.saltString = local.getUserDetails.fldUserSaltString>
               <cfset local.password = arguments.password>
-              <cfset local.hashedPassword = hmac(local.password,local.saltString,"hmacSHA256")>              
+              <cfset local.hashedPassword = hmac(local.password,local.saltString,"hmacSHA256")>
               <cfif local.hashedPassword EQ local.getUserDetails.fldHashedPassword>
                   <cfset local.result.success = true>
                   <cfset local.result.userId = local.getUserDetails.fldUser_Id>

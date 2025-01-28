@@ -15,7 +15,7 @@
          <i class="fa-solid fa-user"></i>
          <span></span>
       </div>
-      <div class="cartContainer"><i data-count="4" class="fa-solid fa-cart-shopping"><div class="itemcount">4</div></i></div>
+      <a class="cartContainer" href="cart.cfm"><i data-count="4" class="fa-solid fa-cart-shopping"><div class="itemcount">4</div></i></a>
       <div class="logoutContainer">
          <cfif structKeyExists(session,"loginuserId")>
             <button onclick="logoutUser()">

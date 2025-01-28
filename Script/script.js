@@ -68,7 +68,7 @@ $(".logout").click(function() {
 });
 
 $(document).on("click", function(){
-    $("#user_error").hide();
+    $("#user_error").hide();    
 });
 
 $(".subcategoryAddbtn").click(function() {
@@ -91,8 +91,19 @@ function insertEditCategory() {
           url: 'components/ProductManagement.cfc?method=addCategory',
           data: {categoryName:inputValue},
           type: 'POST',
-          success: function() {
-            location.reload();
+          success: function(response) {
+            let result = JSON.parse(response);            
+            console.log(result);
+            if(result.SUCCESS)
+            {              
+              $('#categoryModal').modal('hide');
+              location.reload();
+            }
+            else
+            {             
+              document.getElementById("categoryError").innerHTML = result.MESSAGE;
+            }          
+            
           },
           error: function() {
           }
@@ -387,25 +398,24 @@ function editImages(productId) {
             carouselContainer.innerHTML = '';
             for (let i = 0; i < productImages.length; i++) {
                 
-                let div = document.createElement("div");
-                div.setAttribute('class', i === 0 ? 'carousel-item active' : 'carousel-item'); 
+                let div = document.createElement("div");               
+                div.setAttribute('class', i === 0 ? 'carousel-item active' : 'carousel-item');                 
                 const img = document.createElement('img');
                 img.src = "./Assets/uploads/product"+productId+"/"+productImages[i]; 
                 img.alt = `Product Image ${i + 1}`;
-
                 if(productImagesId[i] != defaultImageId)
                 {
                   let setThumbnailBtn = document.createElement('button');
                   setThumbnailBtn.innerHTML = "setThumbnail"
-                  setThumbnailBtn.setAttribute('class','thumbnailBtn btn btn-success'); 
+                  setThumbnailBtn.setAttribute('class','thumbnailBtn btn btn-success m-2'); 
                   setThumbnailBtn.setAttribute('onclick', `setThumbnail(${productImagesId[i]},${productId})`);
                   let deleteImageBtn = document.createElement('button');
                   deleteImageBtn.innerHTML = "deleteImage"
-                  deleteImageBtn.setAttribute('class','deleteImageBtn btn btn-danger');
+                  deleteImageBtn.setAttribute('class','deleteImageBtn btn btn-danger m-2');
                   deleteImageBtn.setAttribute('onclick', `deleteProductImage(${productImagesId[i]},${productId},"${productImages[i]}")`);
                   div.appendChild(setThumbnailBtn);
                   div.appendChild(deleteImageBtn);  
-                }
+                }                
                 div.appendChild(img);
                 carouselContainer.appendChild(div);
             }
