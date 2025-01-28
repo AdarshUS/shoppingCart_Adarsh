@@ -47,11 +47,21 @@
       <cfreturn local.encryptedId>
    </cffunction>
 
-   <cffunction name="decryptId" access="public">
-      <cfargument name="encryptedId" required="true" type="string">
-      <cfset local.decryptedId =  decrypt(arguments.encryptedId,application.encryptionKey,'AES','Base64')>
-      <cfreturn local.decryptedId>
-   </cffunction>
+   <cffunction name="decryptId" access="public" returntype="string">
+    <cfargument name="encryptedId" required="true" type="string">
+    <cftry>
+        <!-- Log encrypted input -->        
+        <!-- Perform decryption -->
+        <cfset var decryptedId = decrypt(arguments.encryptedId, application.encryptionKey, "AES", "Base64")>        
+        <cfreturn decryptedId>
+    <cfcatch>
+        <!-- Log error for debugging -->
+        <cfdump var="#cfcatch#" label="Decryption Error">
+        <cfthrow message="Decryption failed: #cfcatch.message#" detail="#cfcatch.detail#">
+    </cfcatch>
+    </cftry>
+</cffunction>
+
 
    <cffunction name="registerUser" access="public" returntype="struct">
         <cfargument name="firstName" required="true" type="string">

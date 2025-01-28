@@ -4,11 +4,11 @@
    <cfset this.datasource = "shopping_cart">
    <cfset this.sessionManagement = true>
    <cfset this.sessionTimeout = createTimeSpan(0, 0, 30, 0)>
+   <cfset this.encryptionKey = "p085TCupwllF2ks0JiBD3Q==">
 
    <cffunction name="onApplicationStart" returnType="boolean">
 		<cfset application.objProductManagement = createObject("component","Components.ProductManagement")>
-      <cfset application.objUser = createObject("component","Components.User")>
-      <cfset application.encryptionKey = generateSecretKey("AES")>
+      <cfset application.objUser = createObject("component","Components.User")>      
       <cfreturn true>
    </cffunction>
 

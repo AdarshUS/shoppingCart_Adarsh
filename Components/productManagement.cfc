@@ -234,11 +234,14 @@
 
     <cffunction name="fetchSubCategories" access="remote" returntype="struct" returnformat="JSON">
         <cfargument name="categoryId" type="string" required="false">
+        <cfset local.decryptedCategoryId = application.objUser.decryptId(arguments.categoryId)>
+        <cfdump var="#local.decryptedCategoryId#">
         <cfset  local.result =
         {
             success = false,
             subcategoryIds = [],
-            subCategoryNames = []}>
+            subCategoryNames = []
+        }>
         <cftry>
             <cfquery  name="local.fetchSubCategories" datasource="shopping_cart">
                SELECT 
@@ -249,7 +252,7 @@
                    tblsubcategory
                WHERE
                    fldActive = 1
-                   AND fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="varchar">
+                   AND fldCategoryId = <cfqueryparam value="#local.decryptedCategoryId#" cfsqltype="varchar">
             </cfquery>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful operation">
@@ -456,6 +459,10 @@
         <cfargument name="limit" type="integer" required="false">
         <cfargument name="searchText" type="string" required="false" >
         <cfargument name="sort" required="false" type="string">
+        <cfif structKeyExists(arguments,"subCategoryId")>
+            
+            <cfset local.decryptedSubCategoryId = application.objUser.decryptId(arguments.subCategoryId)>
+        </cfif>        
         <cfset local.result = {
             "success": false,
             "data": []
@@ -484,7 +491,8 @@
                 WHERE
                     P.fldActive = 1
                     <cfif structKeyExists(arguments, "subCategoryId") AND arguments.subCategoryId NEQ 0>
-                        AND P.fldSubCategoryId = <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="integer">
+                        <cfdump var="#arguments.subCategoryId#" >
+                        AND P.fldSubCategoryId = <cfqueryparam value="#local.decryptedSubCategoryId#" cfsqltype="integer">
                     </cfif>
                     <cfif structKeyExists(arguments, "priceRange") AND arguments.priceRange NEQ 0>
                         AND P.fldUnitPrice BETWEEN #arguments.priceRange#
@@ -537,8 +545,9 @@
     </cffunction>
 
    <cffunction name="fetchSingleProduct" access="remote" returntype="struct" returnformat="JSON">
-    <cfargument name="productId" required="true" type="integer">
+    <cfargument name="productId" required="true" type="string">
     <cfargument name="allImagesNeeded" required="false" type="boolean" default="false">
+    <cfset local.decryptedProductId = application.objUser.decryptId(arguments.productId)>
     <cfset local.structProduct = {
         success: false,
         message: "",
@@ -570,7 +579,7 @@
 			LEFT join
 				tblcategory AS TC ON TC.fldCategory_Id = SC.fldCategoryId
             WHERE
-                TP.fldProduct_Id = <cfqueryparam value="#arguments.productId#" cfsqltype="integer">
+                TP.fldProduct_Id = <cfqueryparam value="#local.decryptedProductId#" cfsqltype="integer">
             AND
                 TP.fldActive = 1
             <cfif NOT arguments.allImagesNeeded>

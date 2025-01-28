@@ -1,6 +1,6 @@
 <cfoutput>
 <cfset categories = application.objProductManagement.fetchAllCategories()>
-<cfset subCategories = application.objProductManagement.fetchSubCategories(application.objUser.decryptId(url.categoryId))>
+<cfset subCategories = application.objProductManagement.fetchSubCategories(url.categoryId)>
 <cfset products = application.objProductManagement.fetchProducts()>
 <!Doctype html>
 <html>
