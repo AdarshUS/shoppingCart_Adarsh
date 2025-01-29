@@ -1,5 +1,5 @@
-<cfoutput>
 <!DOCTYPE html>
+<cfoutput>
 <html lang="en">
 <head>
    <meta charset="UTF-8">
@@ -44,9 +44,16 @@
             <cfset result = application.objUser.userLogin(userName = form.userName,password = form.userPassword)>
             <p class="text-primary">#result.message#</p>
             <cfif result.success>
-               <cfset encryptedUserId = application.objUser.encryptId(result.userId)>
-               <cfset session.loginuserId = encryptedUserId>
-               <cflocation url="homePage.cfm" addtoken="no">
+                <cfset encryptedUserId = application.objUser.encryptId(result.userId)>
+                <cfset session.loginuserId = encryptedUserId>
+                <cfif structKeyExists(url,"productId")>
+                    <cfset application.objCart.addcart(application.objUser.decryptId(session.loginuserId),application.objUser.decryptId(url.productId),1)>
+                    <cflocation url="cart.cfm" addtoken="no">
+                <cfelseif structKeyExists(url,"redirect")>
+                    <cflocation url="cart.cfm" addToken = "no">
+                <cfelse>
+                    <cflocation url="homePage.cfm" addtoken="no">
+                </cfif>
             </cfif>
          </cfif>
       </div>

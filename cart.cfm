@@ -1,4 +1,7 @@
 <cfif NOT structKeyExists(session,"loginuserId")>
+    <cfif structKeyExists(url,"redirect")>
+        <cflocation url="userLogin.cfm?redirect='cartpage'" addtoken="no">                    
+    </cfif>
    <cflocation url="userLogin.cfm" addtoken="no">
 </cfif>
 <cfset cart = application.objCart.fetchCart(userId = application.objUser.decryptId(session.loginuserId))>

@@ -1,8 +1,8 @@
 <cfset categories = application.objProductManagement.fetchAllCategories()>
-<cfset productDetails = application.objProductManagement.getProductDetails(productId = url.productId,allImagesNeeded = true)>
+<cfset productDetails = application.objProductManagement.getProductDetails(productId = url.productId)>
 <cfif  structKeyExists(form, "submitBtn")>
    <cfif NOT structKeyExists(session, "loginuserId")>
-      <cflocation url = "userLogin.cfm" addToken = "no">
+      <cflocation url = "userLogin.cfm?productId=#URLEncodedFormat(application.objUser.encryptId(productDetails.data.productId))#" addToken = "no">
    </cfif>
    <cfset result =  application.objCart.addCart(userId = application.objUser.decryptId(session.loginuserId),productId = application.objUser.decryptId(url.productId),quantity = 1)>
    <cfif result.success>
@@ -27,7 +27,7 @@
             <cfloop array="#categories.categoryId#" index="i" item="category">
                <div class="dropdown">
                   <a class="category"  aria-expanded="false" href="categoryList.cfm?categoryId=#URLEncodedFormat(application.objUser.encryptId(categories.categoryId[i]))#">
-                  #categories.categories[i]#
+                    #categories.categories[i]#
                   </a>
                   <cfset subCategories = application.objProductManagement.fetchSubCategories(application.objUser.encryptId(categories.categoryId[i]))>
                   <ul class="dropdown-menu">

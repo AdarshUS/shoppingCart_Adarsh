@@ -16,7 +16,7 @@
                 <i class="fa-solid fa-user"></i>
                 <span></span>
             </div>
-            <a class="cartContainer" href="cart.cfm">
+            <a class="cartContainer" href="cart.cfm?redirect=cartpage">
                 <i class="fa-solid fa-cart-shopping">
                     <cfif structKeyExists(session,"loginuserId")>
                         <cfset numberOfCartItems = application.objCart.getNumberOfCartItems()>

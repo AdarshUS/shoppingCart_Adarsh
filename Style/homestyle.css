@@ -435,3 +435,14 @@ h1 {
 .productTax{
 	font-size: 13px;
 }
+
+.required:after{
+     content:" *";
+    color: red;
+}
+
+.error{
+   color: #ff0000;
+   padding: 5px;
+   font-size: 12px;
+}

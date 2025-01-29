@@ -115,8 +115,9 @@ function fetchProductsRemote(methodName, parameters) {
             productContainer.innerHTML = "";
 
             products.forEach((item) => {
-                let productBox = document.createElement("div");
+                let productBox = document.createElement("a");
                 productBox.className = "productBox";
+                productBox.href = `./productDetails.cfm?productId=${item.productId}`;
 
                 let productImage = document.createElement("div");
                 productImage.className = "productImage";
@@ -300,10 +301,77 @@ function calculateTotalPrice()
         totalActual += parseFloat(actualprices[index].innerHTML);
         totalTax+=parseFloat(taxes[index].innerHTML);
     }
-
     document.getElementById("totalActualprice").innerHTML = totalActual;
     document.getElementById("totalTax").innerHTML = totalTax;
     document.getElementById("subtotal").innerHTML = totalPrice;
+}
+
+function validateAddress()
+{
+    alert("sss")
+    let validAddress = true;
+    const firstName = document.getElementById("firstName").value;
+    const phone = document.getElementById("phone").value;
+    const address1 = document.getElementById("address1").value;
+    const city = document.getElementById("city").value;
+    const state = document.getElementById("state").value;
+    const pincode = document.getElementById("pincode").value;
+
+    document.getElementById("firstNameError").innerHTML = "";
+    document.getElementById("phoneError").innerHTML = "";
+    document.getElementById("address1Error").innerHTML = "";
+    document.getElementById("cityError").innerHTML = "";
+    document.getElementById("stateError").innerHTML = "";
+    document.getElementById("pincodeError").innerHTML = "";
+
+    if(firstName.trim() === "")
+    {
+        alert("inside")
+        document.getElementById("firstNameError").innerHTML = "firstName cannot be empty";
+        validAddress = false;
+    }
+
+    if(phone.trim() === "")
+    {
+        document.getElementById("phoneError").innerHTML = "phone cannot be empty";
+        validAddress = false;
+    }
+    else if(!/^[0-9]{10}$/.test(phone))
+    {
+        document.getElementById("phoneError").innerHTML = "Enter valid phoneNumber";
+        validAddress = false;
+    }
+
+    if(address1.trim() === "")
+    {
+        document.getElementById("address1Error").innerHTML = "address cannot be empty";
+        validAddress = false;
+    }
+
+    if(city.trim() === "")
+    {
+        document.getElementById("cityError").innerHTML = "city cannot be empty";
+        validAddress = false;
+    }
+
+    if(state.trim() === "")
+    {
+        document.getElementById("stateError").innerHTML = "state cannot be empty";
+        validAddress = false;
+    }
+
+    if(pincode.trim() === "")
+    {
+        document.getElementById("pincodeError").innerHTML = "pincode cannot be empty";
+        validAddress = false;
+    }
+    else if(!/^[0-9]{6}$/.test(pincode))
+    {
+        document.getElementById("pincodeError").innerHTML = "Enter a valid pincode";
+        validAddress = false;
+    }
+    console.log(validAddress)
+    return validAddress;
 }
 
 
