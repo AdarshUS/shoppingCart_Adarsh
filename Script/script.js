@@ -1,55 +1,52 @@
 function validate()
 {
-   let validInput = true;
-   let username = document.getElementById("userName").value;
-   let passsword =  document.getElementById("password").value;
+    let validInput = true;
+    let username = document.getElementById("userName").value;
+    let passsword = document.getElementById("password").value; 
+    let usernameError = document.getElementById("userNameError");
+    let passswordError = document.getElementById("passwordError"); 
 
-   let usernameError = document.getElementById("userNameError");
-   let passswordError =  document.getElementById("passwordError");
+    usernameError.textContent = "";
+    passswordError.textContent = "";
 
-   usernameError.textContent = "";
-   passswordError.textContent = "";
-
-   if(username.trim() === "")
-   {
-      usernameError.textContent = "userName cannot be empty";
-      validInput = false;
-   }
+    if(username.trim() === "")
+    {
+        usernameError.textContent = "userName cannot be empty";
+        validInput = false;
+    }
 
     if(passsword.trim() === "")
-   {
-      passswordError.textContent = "password cannot be empty";
-      validInput = false;
-   }
+    {
+        passswordError.textContent = "password cannot be empty";
+        validInput = false;
+    }
 
    return validInput;
 }
 
 function validateSubCategory()
-{
-  
-  let validSubCategory = true;
-  let categoryName = document.getElementById("categoryNameSelect").value;
-  let subCategoryName = document.getElementById("subCategoryName").value;
-  
-  let categorySelectError = document.getElementById("categorySelectError");
-  let subCategoryNameError = document.getElementById("subCategoryNameError");
+{  
+    let validSubCategory = true;
+    let categoryName = document.getElementById("categoryNameSelect").value;
+    let subCategoryName = document.getElementById("subCategoryName").value;
 
-  categorySelectError.innerHTML = "";
-  subCategoryNameError.innerHTML = "";
+    let categorySelectError = document.getElementById("categorySelectError");
+    let subCategoryNameError = document.getElementById("subCategoryNameError");
 
-  if(categoryName === "" || categoryName === "--")
-  {
-    categorySelectError.innerHTML = "Category Cannot be Empty"
-    validSubCategory = false;
-  }
+    categorySelectError.innerHTML = "";
+    subCategoryNameError.innerHTML = "";
 
-  if(subCategoryName.trim() === "")
-  {
-    subCategoryNameError.innerHTML = "Subcategory Cannot be Empty"
-    validSubCategory = false;
-  }
-  return validSubCategory;
+    if(categoryName === "" || categoryName === "--")
+    {
+        categorySelectError.innerHTML = "Category Cannot be Empty"
+        validSubCategory = false;
+    }   
+    if(subCategoryName.trim() === "")
+    {
+        subCategoryNameError.innerHTML = "Subcategory Cannot be Empty"
+        validSubCategory = false;
+    }
+    return validSubCategory;
 }
 
 $(".logout").click(function() {
@@ -68,7 +65,7 @@ $(".logout").click(function() {
 });
 
 $(document).on("click", function(){
-    $("#user_error").hide();    
+    $("#user_error").hide();
 });
 
 $(".subcategoryAddbtn").click(function() {
@@ -77,12 +74,11 @@ $(".subcategoryAddbtn").click(function() {
 });
 
 function insertEditCategory() {
-
     let inputValue = $("#categoryInput").val();
     if(inputValue.trim() === "")
     {
-      document.getElementById("categoryError").innerHTML = "Enter a Category Name";
-      return;
+        document.getElementById("categoryError").innerHTML = "Enter a Category Name";
+        return;
     }
     let hiddenValue = $("#distinguishCreateEdit").val();
       if(hiddenValue.trim() === "")
@@ -118,10 +114,9 @@ function insertEditCategory() {
             location.reload();
           },
           error: function() {
-              
           }
-      });        
-      }      
+      });
+      }
 }
 
 function editCategory(editBtn)

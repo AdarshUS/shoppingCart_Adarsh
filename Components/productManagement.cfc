@@ -1,5 +1,5 @@
 <cfcomponent>
-  <cffunction name="addCategory" access="remote" returntype="struct" returnformat="JSON">
+    <cffunction name="addCategory" access="remote" returntype="struct" returnformat="JSON">
         <cfargument name="categoryName" type="string" required="true">
         <cfset local.result = {success = false}>
         <cftry>
@@ -30,15 +30,10 @@
             </cfif>
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
-            <cfset local.currentFunction = getFunctionCalledName()>
-            <cfmail 
-                from="adarshus1999@gmail.com" 
-                to="adarshus123@gmail.com" 
-                subject="Error in Function: #local.currentFunction#"
-            >
-                <h3>An error occurred in function: #local.currentFunction#</h3>
-                <p><strong>Error Message:</strong> #cfcatch.message#</p>
-            </cfmail>
+            <cfset sendErrorEmail(
+                errorMessage=cfcatch.message, 
+                functionName="updateProduct"
+            )>
         </cfcatch>
         </cftry>
         <cfreturn local.result>
@@ -63,18 +58,13 @@
             </cfquery>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful operation">
-            <cfcatch>
-                <cfset local.result.message = "Database error: " & cfcatch.message>
-                <cfset local.currentFunction = getFunctionCalledName()>
-                <cfmail 
-                    from="adarshus1999@gmail.com" 
-                    to="adarshus123@gmail.com" 
-                    subject="Error in Function: #local.currentFunction#"
-                >
-                    <h3>An error occurred in function: #local.currentFunction#</h3>
-                    <p><strong>Error Message:</strong> #cfcatch.message#</p>
-                </cfmail>
-            </cfcatch>
+        <cfcatch>
+            <cfset local.result.message = "Database error: " & cfcatch.message>
+            <cfset sendErrorEmail(
+                errorMessage=cfcatch.message, 
+                functionName="updateProduct"
+            )>
+        </cfcatch>
         </cftry>
         <cfloop query="local.fetchCategories">
             <cfset arrayAppend(local.result.categories, local.fetchCategories.fldCategoryName)>
@@ -88,29 +78,24 @@
         <cfargument name="newCategory" required="true" type="string">
         <cfset local.result = {success = false}>
         <cftry>
-             <cfquery datasource="shopping_cart">
-                  UPDATE
-                      tblcategory
-                  SET
-                      fldCategoryName = <cfqueryparam value="#arguments.newCategory#" cfsqltype="varchar">,
-                      fldUpdatedBy = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">,
-                      fldUpdatedDate = <cfqueryparam value="#now()#" cfsqltype="timestamp">
-                  WHERE
-                      fldCategory_Id = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
+            <cfquery datasource="shopping_cart">
+                UPDATE
+                    tblcategory
+                SET
+                    fldCategoryName = <cfqueryparam value="#arguments.newCategory#" cfsqltype="varchar">,
+                    fldUpdatedBy = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">,
+                    fldUpdatedDate = <cfqueryparam value="#now()#" cfsqltype="timestamp">
+                WHERE
+                    fldCategory_Id = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
             </cfquery>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
-            <cfset local.currentFunction = getFunctionCalledName()>
-                <cfmail 
-                    from = "adarshus1999@gmail.com" 
-                    to = "adarshus123@gmail.com" 
-                    subject = "Error in Function: #local.currentFunction#"
-                >
-                    <h3>An error occurred in function: #local.currentFunction#</h3>
-                    <p><strong>Error Message:</strong> #cfcatch.message#</p>
-                </cfmail>
+            <cfset sendErrorEmail(
+                errorMessage=cfcatch.message, 
+                functionName="updateProduct"
+            )>
         </cfcatch>
         </cftry>
         <cfreturn local.result>
@@ -121,28 +106,23 @@
         <cfset  local.structCategory={success = false}>
         <cftry>
             <cfquery name="local.fetchCategory" datasource="shopping_cart">
-               SELECT
-                   fldCategory_Id
-                   ,fldCategoryName
-                   ,fldCreatedBy
-               FROM
-                   tblcategory
-               WHERE
-                   fldCategory_Id = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
+                SELECT
+                    fldCategory_Id
+                    ,fldCategoryName
+                    ,fldCreatedBy
+                FROM
+                    tblcategory
+                WHERE
+                    fldCategory_Id = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
             </cfquery>
             <cfset local.structCategory.success = true>
             <cfset local.structCategory.message = "successful Operation">
         <cfcatch>
             <cfset local.structCategory.message = "Database error: " & cfcatch.message>
-            <cfset local.currentFunction = getFunctionCalledName()>
-                <cfmail 
-                    from = "adarshus1999@gmail.com" 
-                    to = "adarshus123@gmail.com" 
-                    subject = "Error in Function: #local.currentFunction#"
-                >
-                    <h3>An error occurred in function: #local.currentFunction#</h3>
-                    <p><strong>Error Message:</strong> #cfcatch.message#</p>
-                </cfmail>
+            <cfset sendErrorEmail(
+                errorMessage=cfcatch.message, 
+                functionName="updateProduct"
+            )>
         </cfcatch>
         </cftry>
         <cfset local.structCategory['categoryId'] = local.fetchCategory.fldCategory_Id>
@@ -154,7 +134,7 @@
 
     <cffunction name="deleteCategory" access="remote" returntype="void">
         <cfargument name="categoryId" required="true" type="integer">
-         <cfset local.result = {success = false}>
+        <cfset local.result = {success = false}>
         <cftry>
             <cfquery datasource="shopping_cart">
                 UPDATE
@@ -169,15 +149,10 @@
             <cfset local.result.message = "successful Operation">
         <cfcatch type="any">
             <cfset local.result.message = "Database error: " & cfcatch.message>
-            <cfset local.currentFunction = getFunctionCalledName()>
-                <cfmail 
-                    from = "adarshus1999@gmail.com" 
-                    to = "adarshus123@gmail.com" 
-                    subject = "Error in Function: #local.currentFunction#"
-                >
-                    <h3>An error occurred in function: #local.currentFunction#</h3>
-                    <p><strong>Error Message:</strong> #cfcatch.message#</p>
-                </cfmail>
+            <cfset sendErrorEmail(
+                errorMessage=cfcatch.message, 
+                functionName="updateProduct"
+            )>
         </cfcatch>
         </cftry>
     </cffunction>
@@ -219,15 +194,10 @@
             </cfif>
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
-            <cfset local.currentFunction = getFunctionCalledName()>
-                <cfmail 
-                    from = "adarshus1999@gmail.com" 
-                    to = "adarshus123@gmail.com" 
-                    subject = "Error in Function: #local.currentFunction#"
-                >
-                    <h3>An error occurred in function: #local.currentFunction#</h3>
-                    <p><strong>Error Message:</strong> #cfcatch.message#</p>
-                </cfmail>
+            <cfset sendErrorEmail(
+                errorMessage=cfcatch.message, 
+                functionName="updateProduct"
+            )>
         </cfcatch>
         </cftry>
     </cffunction>
@@ -243,15 +213,15 @@
         }>
         <cftry>
             <cfquery  name="local.fetchSubCategories" datasource="shopping_cart">
-               SELECT 
-                   fldSubCategory_Id
-                   ,fldSubCategoryName
-                   ,fldCreatedBy
+                SELECT 
+                    fldSubCategory_Id
+                    ,fldSubCategoryName
+                    ,fldCreatedBy
                FROM
-                   tblsubcategory
+                    tblsubcategory
                WHERE
-                   fldActive = 1
-                   AND fldCategoryId = <cfqueryparam value="#local.decryptedCategoryId#" cfsqltype="varchar">
+                    fldActive = 1
+                    AND fldCategoryId = <cfqueryparam value="#local.decryptedCategoryId#" cfsqltype="varchar">
             </cfquery>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful operation">
@@ -261,15 +231,10 @@
             </cfloop>
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
-            <cfset local.currentFunction = getFunctionCalledName()>
-                <cfmail 
-                    from = "adarshus1999@gmail.com" 
-                    to = "adarshus123@gmail.com" 
-                    subject = "Error in Function: #local.currentFunction#"
-                >
-                    <h3>An error occurred in function: #local.currentFunction#</h3>
-                    <p><strong>Error Message:</strong> #cfcatch.message#</p>
-                </cfmail>
+            <cfset sendErrorEmail(
+                errorMessage=cfcatch.message, 
+                functionName="updateProduct"
+            )>
         </cfcatch>
         </cftry>
         <cfreturn local.result>
@@ -294,16 +259,12 @@
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
         <cfcatch>
-             <cfset local.result.message = "Database error: " & cfcatch.message>
-             <cfset local.currentFunction = getFunctionCalledName()>
-             <cfmail 
-                 from = "adarshus1999@gmail.com" 
-                 to = "adarshus123@gmail.com" 
-                 subject = "Error in Function: #local.currentFunction#"
-             >
-                 <h3>An error occurred in function: #local.currentFunction#</h3>
-                 <p><strong>Error Message:</strong> #cfcatch.message#</p>
-             </cfmail>
+            <cfset local.result.message = "Database error: " & cfcatch.message>
+            <cfset local.currentFunction = getFunctionCalledName()>
+            <cfset sendErrorEmail(
+                errorMessage=cfcatch.message, 
+                functionName="updateProduct"
+            )>
         </cfcatch>
         </cftry>
     </cffunction>
@@ -325,15 +286,10 @@
             <cfset local.result.message = "successful Operation">
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
-            <cfset local.currentFunction = getFunctionCalledName()>
-                <cfmail 
-                    from = "adarshus1999@gmail.com" 
-                    to = "adarshus123@gmail.com" 
-                    subject = "Error in Function: #local.currentFunction#"
-                >
-                    <h3>An error occurred in function: #local.currentFunction#</h3>
-                    <p><strong>Error Message:</strong> #cfcatch.message#</p>
-                </cfmail>
+            <cfset sendErrorEmail(
+                errorMessage=cfcatch.message, 
+                functionName="updateProduct"
+            )>
         </cfcatch>
         </cftry>
     </cffunction>
@@ -352,13 +308,13 @@
                 INSERT
                 INTO
                     tblproduct(
-                      fldSubCategoryId
-                      ,fldProductName
-                      ,fldBrandId
-                      ,fldDescription
-                      ,fldUnitPrice
-                      ,fldUnitTax
-                      ,fldCreatedBy
+                        fldSubCategoryId
+                        ,fldProductName
+                        ,fldBrandId
+                        ,fldDescription
+                        ,fldUnitPrice
+                        ,fldUnitTax
+                        ,fldCreatedBy
                     )
                 VALUES(
                     <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="integer">
@@ -366,7 +322,7 @@
                     ,<cfqueryparam value="#arguments.brandId#" cfsqltype="integer">
                     ,<cfqueryparam value="#arguments.description#" cfsqltype="varchar">
                     ,<cfqueryparam value="#arguments.unitPrice#" cfsqltype="integer">
-                    ,<cfqueryparam value="#arguments.unitTax#" cfsqltype="integer">  
+                    ,<cfqueryparam value="#arguments.unitTax#" cfsqltype="integer">
                     ,<cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
                 )
             </cfquery>
@@ -382,40 +338,35 @@
 		    result="local.newPath"
 		    >
             <cfloop array="#local.newPath#" index="i"  item="image">
-               <cfquery>
-                  INSERT
-                  INTO
-                     tblproductimages(
-                         fldProductId
-                         ,fldImageFilePath
-                         ,fldCreatedBy
-                         ,fldDefaultImage
-                     )
-                  VALUES(
-                     <cfqueryparam value="#product.GENERATEDKEY#" cfsqltype="integer">,
-                     <cfqueryparam value="#image.serverFile#" cfsqltype="varchar">,
-                     <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="varchar">,
-                     <cfif i EQ 1>
-                        <cfqueryparam value=1 cfsqltype="integer">
-                     <cfelse>
-                        <cfqueryparam value=0 cfsqltype="integer">
-                     </cfif>
-                  )
-               </cfquery>
+                <cfquery>
+                    INSERT
+                    INTO
+                        tblproductimages(
+                            fldProductId
+                            ,fldImageFilePath
+                            ,fldCreatedBy
+                            ,fldDefaultImage
+                        )
+                    VALUES(
+                        <cfqueryparam value="#product.GENERATEDKEY#" cfsqltype="integer">,
+                        <cfqueryparam value="#image.serverFile#" cfsqltype="varchar">,
+                        <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="varchar">,
+                        <cfif i EQ 1>
+                            <cfqueryparam value=1 cfsqltype="integer">
+                        <cfelse>
+                            <cfqueryparam value=0 cfsqltype="integer">
+                        </cfif>
+                    )
+                </cfquery>
             </cfloop>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
-            <cfset local.currentFunction = getFunctionCalledName()>
-                <cfmail 
-                    from = "adarshus1999@gmail.com" 
-                    to = "adarshus123@gmail.com" 
-                    subject = "Error in Function: #local.currentFunction#"
-                >
-                    <h3>An error occurred in function: #local.currentFunction#</h3>
-                    <p><strong>Error Message:</strong> #cfcatch.message#</p>
-                </cfmail>
+            <cfset sendErrorEmail(
+                errorMessage=cfcatch.message, 
+                functionName="updateProduct"
+            )>
         </cfcatch>
         </cftry>
     </cffunction>
@@ -423,14 +374,14 @@
     <cffunction name="fetchBrands" access="public"  returntype="struct" >
         <cfset  local.result={
             success = false,
-            brandIds = []
-            ,brandNames = []
+            brandIds = [],
+            brandNames = []
         }>
         <cftry>
             <cfquery  name="local.fetchBrands" datasource="shopping_cart">
                 SELECT
-                   fldBrand_Id
-                   ,fldBrandName
+                    fldBrand_Id
+                    ,fldBrandName
                 FROM
                     tblbrand
             </cfquery>
@@ -580,7 +531,7 @@
                 AND
                     TP.fldActive = 1
             </cfquery>
-            <cfif local.fetchProduct.recordCount GT 0>
+            <cfif local.fetchProduct.recordCount>
                 <cfloop query="local.fetchProduct">
                     <cfif local.fetchProduct.fldImageFilePath NEQ "">
                         <cfset arrayAppend(local.imageList, local.fetchProduct.fldImageFilePath)>
@@ -645,34 +596,34 @@
                     fldProduct_Id = <cfqueryparam value="#arguments.productId#">
             </cfquery>
             <cfif LEN(arguments.productImages)>
-              <cfset productDirectory = expandPath('Assets/uploads/product'&arguments.productId)>
-              <cffile
-              action="uploadall"
-              destination="#productDirectory#"
-              nameconflict="MakeUnique"
-              filefield = "#arguments.productImages#"
-              allowedExtensions="jpg,png,gif,jpeg,webp"
-              strict="true"
-              result="local.newPath"
-              >
-              <cfloop array="#local.newPath#" index="i"  item="image">
-                <cfquery>
-                       INSERT
-                       INTO
-                          tblproductimages(
-                              fldProductId
-                              ,fldImageFilePath
-                              ,fldCreatedBy
-                              ,fldDefaultImage
-                          )
-                       VALUES(
-                          <cfqueryparam value="#arguments.productId#" cfsqltype="integer">,
-                          <cfqueryparam value="#image.serverFile#" cfsqltype="varchar">,
-                          <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="varchar">,
-                          <cfqueryparam value=0 cfsqltype="integer">
-                       )
+                <cfset productDirectory = expandPath('Assets/uploads/product'&arguments.productId)>
+                <cffile
+                action="uploadall"
+                destination="#productDirectory#"
+                nameconflict="MakeUnique"
+                filefield = "#arguments.productImages#"
+                allowedExtensions="jpg,png,gif,jpeg,webp"
+                strict="true"
+                result="local.newPath"
+                >
+                <cfloop array="#local.newPath#" index="i"  item="image">
+                    <cfquery>
+                        INSERT
+                        INTO
+                            tblproductimages(
+                                fldProductId
+                                ,fldImageFilePath
+                                ,fldCreatedBy
+                                ,fldDefaultImage
+                            )
+                        VALUES(
+                            <cfqueryparam value="#arguments.productId#" cfsqltype="integer">,
+                            <cfqueryparam value="#image.serverFile#" cfsqltype="varchar">,
+                            <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="varchar">,
+                            <cfqueryparam value=0 cfsqltype="integer">
+                        )
                     </cfquery>
-                 </cfloop>
+                </cfloop>
             </cfif>
             <cfset local.structProduct.success = true>
             <cfset local.structProduct.message = "successful Operation">
@@ -809,44 +760,44 @@
         </cftry>
     </cffunction>
 
-  <cffunction name="getRandomProducts" access="remote" returntype="struct" returnformat="JSON">
-    <cfargument name="subCategoryId" required="false" type="integer">
-    <cfset local.result = {
-        success = false,
-        data = []
-    }>
-    <cftry>
-        <cfquery name="local.getRandomProducts" datasource="shopping_cart">
-            SELECT
-                P.fldProduct_Id,
-                P.fldSubCategoryId,
-                P.fldProductName,
-                B.fldBrandName,
-                P.fldDescription,
-                P.fldUnitPrice,
-                P.fldUnitTax,
-                PI.fldImageFilePath,
-                SC.fldSubCategoryName
-            FROM
-                tblproduct P
-            INNER JOIN 
-                tblbrand B ON P.fldBrandId = B.fldBrand_Id
-            INNER JOIN
-                tblsubcategory AS SC ON SC.fldSubCategory_Id = P.fldSubCategoryId
-            LEFT JOIN 
-                tblproductimages PI ON PI.fldProductId = P.fldProduct_Id
-                AND PI.fldDefaultImage = 1
-            WHERE
-                P.fldActive = 1
-                <cfif structKeyExists(arguments, "subCategoryId")>
-                    AND P.fldSubCategoryId = #arguments.subCategoryId#
-                </cfif>
-            ORDER BY RAND() 
-            LIMIT 4;
-        </cfquery>
-        <cfif local.getRandomProducts.recordCount>
+    <cffunction name="getRandomProducts" access="remote" returntype="struct" returnformat="JSON">
+        <cfargument name="subCategoryId" required="false" type="integer">
+        <cfset local.result = {
+            success = false,
+            data = []
+        }>
+        <cftry>
+            <cfquery name="local.getRandomProducts" datasource="shopping_cart">
+                SELECT
+                    P.fldProduct_Id,
+                    P.fldSubCategoryId,
+                    P.fldProductName,
+                    B.fldBrandName,
+                    P.fldDescription,
+                    P.fldUnitPrice,
+                    P.fldUnitTax,
+                    PI.fldImageFilePath,
+                    SC.fldSubCategoryName
+                FROM
+                    tblproduct P
+                INNER JOIN 
+                    tblbrand B ON P.fldBrandId = B.fldBrand_Id
+                INNER JOIN
+                    tblsubcategory AS SC ON SC.fldSubCategory_Id = P.fldSubCategoryId
+                LEFT JOIN 
+                    tblproductimages PI ON PI.fldProductId = P.fldProduct_Id
+                    AND PI.fldDefaultImage = 1
+                WHERE
+                    P.fldActive = 1
+                    <cfif structKeyExists(arguments, "subCategoryId")>
+                        AND P.fldSubCategoryId = #arguments.subCategoryId#
+                    </cfif>
+                ORDER BY RAND() 
+                LIMIT 4;
+            </cfquery>
+            <cfif local.getRandomProducts.recordCount>
                 <cfloop query="local.getRandomProducts">
-                    <cfset arrayAppend(local.result.data, {
+                    <cfset arrayAppend(local.result.data,{
                         "productId": local.getRandomProducts.fldProduct_Id,
                         "subCategoryId": local.getRandomProducts.fldSubCategoryId,
                         "productName": local.getRandomProducts.fldProductName,
@@ -859,32 +810,31 @@
                     })>
                 </cfloop>
             </cfif>
-            <cfset local.result.success = true>
-            <cfset local.result.message = "successful Operation">
-    <cfcatch>
-        <cfdump var="#cfcatch#" >
-        <cfset local.result.message = "Database error: " & cfcatch.message> 
-        <cfset sendErrorEmail(
-            errorMessage=cfcatch.message, 
-            functionName="getRandomProducts"
-        )>
-    </cfcatch>
-    </cftry>
-    <cfreturn local.result>
-  </cffunction>
+                <cfset local.result.success = true>
+                <cfset local.result.message = "successful Operation">
+        <cfcatch>
+            <cfdump var="#cfcatch#" >
+            <cfset local.result.message = "Database error: " & cfcatch.message> 
+            <cfset sendErrorEmail(
+                errorMessage=cfcatch.message, 
+                functionName="getRandomProducts"
+            )>
+        </cfcatch>
+        </cftry>
+        <cfreturn local.result>
+    </cffunction>
   
-  <cffunction name="sendErrorEmail" access="public" returntype="void" output="false">
-     <cfargument name="errorMessage" type="string" required="true">
-     <cfargument name="functionName" type="string" required="true">
-     <cfmail 
-         from="adarshus1999@gmail.com" 
-         to="adarsh.us@techversantinfotech.com" 
-         subject="Error in Function: #arguments.functionName#">
-         <h3>An error occurred in function: #arguments.functionName#</h3>
-         <p><strong>Error Message:</strong> #arguments.errorMessage#</p>
-     </cfmail>
-  </cffunction>
-
+    <cffunction name="sendErrorEmail" access="public" returntype="void" output="false">
+        <cfargument name="errorMessage" type="string" required="true">
+        <cfargument name="functionName" type="string" required="true">
+        <cfmail 
+            from="adarshus1999@gmail.com" 
+            to="adarsh.us@techversantinfotech.com" 
+            subject="Error in Function: #arguments.functionName#">
+            <h3>An error occurred in function: #arguments.functionName#</h3>
+            <p><strong>Error Message:</strong> #arguments.errorMessage#</p>
+        </cfmail>
+    </cffunction>
 </cfcomponent>
 
 
