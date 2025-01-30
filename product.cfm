@@ -1,5 +1,5 @@
 <cfoutput>
-<cfset categoriesStruct = application.objProductManagement.fetchAllCategories()>
+<cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfset brands = application.objProductManagement.fetchBrands()>
 <cfset products = application.objProductManagement.fetchProducts(subCategoryId =url.subCategoryId)>
 <cfif structKeyExists(form,"submit")>
@@ -72,8 +72,8 @@
                      <label for="categoryNameSelectPr" class="form-label">Select Category Name</label>
                      <select class="form-control" id="categoryNameSelectPr" name = "categoryNameSelectPr">
                         <option>--</option> 
-                        <cfloop array="#categoriesStruct.categories#" index="i" item="category">
-                           <option value="#categoriesStruct.categoryId[i]#">#categoriesStruct.categories[i]#</option>
+                        <cfloop array="#categoriesResult.categories#" index="i" item="category">
+                           <option value="#category.categoryId#">#category.categoryName#</option>
                         </cfloop>
                      </select>
                      <div id="categorySelectError" class="error"></div>

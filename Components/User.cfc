@@ -2,7 +2,10 @@
     <cffunction name="adminLogin" access="public" returntype="struct">
         <cfargument name="userName" required="true" type="string">
         <cfargument name="password" required="true" type="string">
-        <cfset local.result = {success = false}>
+        <cfset local.result = {
+            success = false,
+            message = ""
+        }>
         <cftry>
             <cfquery name="local.getAdminDetails" datasource="#application.datasource#">
                 SELECT 
@@ -22,7 +25,7 @@
                 <cfset local.hashedPassword = hmac(local.password,local.saltString,"hmacSHA256")>
                 <cfif local.hashedPassword EQ local.getAdminDetails.fldHashedPassword>
                     <cfset local.result.success = true>
-                    <cfset local.result.userId = local.getAdminDetails.fldUser_Id>
+                    <cfset session.loginAdminId = application.objUser.encryptId(local.getAdminDetails.fldUser_Id)>
                     <cfset local.result.message = "Login successful.">
                 <cfelse>
                     <cfset local.result.message = "Invalid password.">

@@ -45,8 +45,8 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset sendErrorEmail(
-               errorMessage=cfcatch.message, 
-               functionName="addcart"
+               subject=cfcatch.message, 
+               body="#cfcatch#"
            )>
         </cfcatch>
         </cftry>
@@ -102,8 +102,8 @@
             <cfdump var="#cfcatch#">
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset sendErrorEmail(
-                errorMessage=cfcatch.message, 
-                functionName="fetchCart"
+                subject=cfcatch.message, 
+                body = "#cfcatch#"
             )>
         </cfcatch>
         </cftry>
@@ -130,8 +130,8 @@
         <cfcatch>
             <cfdump var="#cfcatch#">
             <cfset sendErrorEmail(
-                errorMessage=cfcatch.message, 
-                functionName="updateCart"
+                subject=cfcatch.message, 
+                body = "#cfcatch#"
             )>
         </cfcatch>
         </cftry>
@@ -150,8 +150,8 @@
         <cfcatch>
             <cfdump var="#cfcatch#">
             <cfset sendErrorEmail(
-                errorMessage=cfcatch.message, 
-                functionName="deleteCart"
+                subject=cfcatch.message, 
+                body = "#cfcatch#"
             )>
         </cfcatch>
         </cftry>
@@ -170,8 +170,8 @@
         <cfcatch>
             <cfdump var="#cfcatch#">
             <cfset sendErrorEmail(
-                errorMessage=cfcatch.message,
-                functionName="getNumberOfCartItems"
+                subject=cfcatch.message,
+                body = "#cfcatch#"
             )>
         </cfcatch>
         </cftry>

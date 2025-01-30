@@ -106,12 +106,23 @@ function insertEditCategory() {
       }
       else
       {
+       
           $.ajax({
           url: 'components/ProductManagement.cfc?method=editCategory',
           data: {categoryId:hiddenValue,newcategory:inputValue},
           type: 'POST',
-          success: function() {
-            location.reload();
+          success: function(response) {
+            let result = JSON.parse(response);
+            console.log(result)
+            if(result.SUCCESS)
+                {
+                  $('#categoryModal').modal('hide');
+                  location.reload();
+                }
+                else
+                {
+                  document.getElementById("categoryError").innerHTML = result.MESSAGE;
+                }
           },
           error: function() {
           }
@@ -121,7 +132,7 @@ function insertEditCategory() {
 
 function editCategory(editBtn)
 {   
-   document.getElementById("categoryModalLabel").textContent = "Edit Category";   
+   document.getElementById("categoryModalLabel").textContent = "Edit Category";
    $.ajax({
           url: 'components/ProductManagement.cfc?method=fetchSingleCategory',
           data: {categoryId:editBtn.value},
@@ -141,12 +152,13 @@ function deleteCategory(dltBtn)
 {
    if (confirm("Are you sure you want to delete"))
 	{
+        console.log(document.getElementById(dltBtn.value))		
 		$.ajax({		
    	 url: 'components/ProductManagement.cfc?method=deleteCategory',
    	 type: 'POST',
    	 data: {categoryId:dltBtn.value},
-   	 success: function() {			
-			document.getElementById(dltBtn.value).remove();
+   	 success: function() {	
+			
    	 },
    	 error: function() {		
    	 }
@@ -162,6 +174,7 @@ function createCategory()
 
 function editSubCategory(subCategory)
 {
+    console.log(subCategory)
   document.getElementById("subCategoryName").value = subCategory.subCategoryName;
   document.getElementById("categoryNameSelect").value = subCategory.categoryId;
   document.getElementById("subCategoryModalLabel").innerHTML = "Edit SubCategory";

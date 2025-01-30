@@ -1,15 +1,13 @@
-<cfoutput>
 <cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfif structKeyExists(form,"submit")>
-   <cfif LEN(form.distinguishSubCreateEdit) GT 0>
-      <cfset application.objProductManagement.updateSubCategory(subCategoryId = form.distinguishSubCreateEdit,newCategoryName = form.subCategoryName,categoryId = form.selectCategory)>      
-   <cfelse>
-      <cfset application.objProductManagement.addSubCategory(categoryId = form.selectCategory,subcategoryName = form.subCategoryName)>
-   </cfif>
+    <cfif LEN(form.distinguishSubCreateEdit) GT 0>
+        <cfset application.objProductManagement.updateSubCategory(subCategoryId = form.distinguishSubCreateEdit,newCategoryName = form.subCategoryName,categoryId = form.selectCategory)>      
+    <cfelse>
+        <cfset application.objProductManagement.addSubCategory(categoryId = form.selectCategory,subcategoryName = form.subCategoryName)>
+    </cfif>
 </cfif>
 <cfset subcategoriesResult = application.objProductManagement.fetchSubCategories(categoryId = url.categoryId)>
-<cfdump var="#categoriesResult#" >
-
+<cfoutput>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,14 +35,24 @@
       <div class="categoryContainer">
          <div class="categoryheader">
             <h5>Sub Categories</h5>
-            <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="subcategoryAddbtn"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>         
+            <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="subcategoryAddbtn"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>
          </div>
          <div class="categoryBody">
             <cfloop array="#subcategoriesResult.subcategory#" item="subCategory">
                 <div class="categoryItem" id="#application.objUser.decryptId(subCategory.subcategoryId)#">
                   <div class="categoryItemText">#subCategory.subCategoryName#</div>
                   <div class="categoryItemRight">
-                     <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="categoryBtn" value="#application.objUser.decryptId(subCategory.subcategoryId)#" onclick=editSubCategory({categoryId:#application.objUser.decryptId(url.categoryId)#,subCategoryName:"#subCategory.subCategoryName#",subCategoryId:#application.objUser.decryptId(subCategory.subcategoryId)#})><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
+                    <button data-bs-toggle="modal" data-bs-target="##subCategoryModal"
+                        class="categoryBtn"
+                        value="#application.objUser.decryptId(subCategory.subcategoryId)#"
+                        onclick="editSubCategory({
+                            categoryId: '#application.objUser.decryptId(url.categoryId)#',
+                            subCategoryName: '#JSStringFormat(subCategory.subCategoryName)#',
+                            subCategoryId: '#application.objUser.decryptId(subCategory.subcategoryId)#'
+                        })">
+                        <i class="fa-solid fa-pen-to-square categoryfns"></i>
+                    </button>
+                
                      <button class="categoryBtn" onclick="deleteSubCategory(#application.objUser.decryptId(subCategory.subcategoryId)#)"><i class="fa-solid fa-trash categoryfns"></i></button>
                      <a class="categoryBtn" href="./product.cfm?subCategoryId=#URLEncodedFormat(subcategory.subcategoryId)#&categoryId=#URLEncodedFormat(url.categoryId)#">
                         <i class="fa-solid fa-circle-arrow-right categoryfns"></i>
@@ -69,7 +77,7 @@
                         <select class="form-control" id="categoryNameSelect" name = "selectCategory">
                            <option>--</option>
                            <cfloop array ="#categoriesResult.categories#" index = i item = category>
-                              <option value="#category.categoryId#">#category.categoryName#</option>
+                              <option value="#application.objUser.decryptId(category.categoryId)#">#category.categoryName#</option>
                            </cfloop>
                         </select>
                         <div id = "categorySelectError" class = "error"></div>

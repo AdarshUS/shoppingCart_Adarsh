@@ -31,7 +31,7 @@
          </div>
          <div class="categoryBody">
             <cfloop array="#result.categories#" item="category">
-               <div class="categoryItem" id="#application.objUser.decryptId(category.categoryId)#">
+               <div class="categoryItem" id="#trim(application.objUser.decryptId(category.categoryId))#">
                   <div class="categoryItemText">#category.categoryName#</div>
                   <div class="categoryItemRight">
                      <button data-bs-toggle="modal" data-bs-target="##categoryModal" onclick="editCategory(this)" value = #application.objUser.decryptId(category.categoryId)# class="categoryBtn"><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>

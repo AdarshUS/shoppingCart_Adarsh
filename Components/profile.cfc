@@ -8,8 +8,8 @@
             </cfquery>
         <cfcatch>
             <cfset application.objUser.sendErrorEmail(
-                errorMessage=cfcatch.message, 
-                functionName="addAddress"
+                subject=cfcatch.message, 
+                body = "#cfcatch#"addAddress"
             )>
         </cfcatch>
         </cftry>
