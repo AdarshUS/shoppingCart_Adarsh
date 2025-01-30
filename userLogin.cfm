@@ -18,7 +18,7 @@
          <div class="headerRightItem-1">LogIn</div>
          <div class="headerRightItem-2">
             <i class="fa-solid fa-arrow-right-to-bracket"></i>
-         </div>  
+         </div>
       </div>
    </header>
    <main>
@@ -44,8 +44,6 @@
             <cfset result = application.objUser.userLogin(userName = form.userName,password = form.userPassword)>
             <p class="text-primary">#result.message#</p>
             <cfif result.success>
-                <cfset encryptedUserId = application.objUser.encryptId(result.userId)>
-                <cfset session.loginuserId = encryptedUserId>
                 <cfif structKeyExists(url,"productId")>
                     <cfset application.objCart.addcart(application.objUser.decryptId(session.loginuserId),application.objUser.decryptId(url.productId),1)>
                     <cflocation url="cart.cfm" addtoken="no">

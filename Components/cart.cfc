@@ -25,7 +25,7 @@
                     WHERE fldCart_Id = <cfqueryparam value="#local.checkProductExist.fldCart_Id#" cfsqltype="integer">
                </cfquery>
             <cfelse>
-                <cfquery>
+                <cfquery datasource="#application.datasource#">
                     INSERT
                     INTO
                         tblcart(
@@ -60,7 +60,7 @@
             data=[]
         }>
         <cftry>
-            <cfquery name="local.fetchCart">
+            <cfquery name="local.fetchCart" datasource="#application.datasource#">
                 SELECT
                     PI.fldImageFilePath,
                     P.fldUnitPrice,
@@ -99,7 +99,6 @@
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
         <cfcatch>
-            <cfdump var="#cfcatch#">
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset sendErrorEmail(
                 subject=cfcatch.message, 
@@ -128,7 +127,6 @@
                     fldCart_Id = <cfqueryparam value = #arguments.cartId# cfsqltype = "integer">
             </cfquery>
         <cfcatch>
-            <cfdump var="#cfcatch#">
             <cfset sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
@@ -148,7 +146,6 @@
                     fldCart_Id = <cfqueryparam value = #arguments.cartId# cfsqltype = "integer">
             </cfquery>
         <cfcatch>
-            <cfdump var="#cfcatch#">
             <cfset sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
@@ -159,7 +156,7 @@
 
     <cffunction name="getNumberOfCartItems" access="public" returntype="numeric">
         <cftry>
-            <cfquery name="getNumberOfCartItems">
+            <cfquery name="getNumberOfCartItems" datasource="#application.datasource#">
                 SELECT
                     fldCart_Id 
                 FROM 
@@ -168,7 +165,6 @@
                     fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#">
             </cfquery>
         <cfcatch>
-            <cfdump var="#cfcatch#">
             <cfset sendErrorEmail(
                 subject=cfcatch.message,
                 body = "#cfcatch#"

@@ -39,7 +39,7 @@
          </div>
          <div class="categoryBody">
             <cfloop array="#subcategoriesResult.subcategory#" item="subCategory">
-                <div class="categoryItem" id="#application.objUser.decryptId(subCategory.subcategoryId)#">
+                <div class="categoryItem" id="#subCategory.subcategoryId#">
                   <div class="categoryItemText">#subCategory.subCategoryName#</div>
                   <div class="categoryItemRight">
                     <button data-bs-toggle="modal" data-bs-target="##subCategoryModal"
@@ -53,7 +53,7 @@
                         <i class="fa-solid fa-pen-to-square categoryfns"></i>
                     </button>
                 
-                     <button class="categoryBtn" onclick="deleteSubCategory(#application.objUser.decryptId(subCategory.subcategoryId)#)"><i class="fa-solid fa-trash categoryfns"></i></button>
+                     <button class="categoryBtn" onclick="deleteSubCategory('#subCategory.subcategoryId#','#url.categoryId#')"><i class="fa-solid fa-trash categoryfns"></i></button>
                      <a class="categoryBtn" href="./product.cfm?subCategoryId=#URLEncodedFormat(subcategory.subcategoryId)#&categoryId=#URLEncodedFormat(url.categoryId)#">
                         <i class="fa-solid fa-circle-arrow-right categoryfns"></i>
                      </a>

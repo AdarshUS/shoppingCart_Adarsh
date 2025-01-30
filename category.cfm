@@ -31,11 +31,11 @@
          </div>
          <div class="categoryBody">
             <cfloop array="#result.categories#" item="category">
-               <div class="categoryItem" id="#trim(application.objUser.decryptId(category.categoryId))#">
+               <div class="categoryItem" id="#category.categoryId#">
                   <div class="categoryItemText">#category.categoryName#</div>
                   <div class="categoryItemRight">
                      <button data-bs-toggle="modal" data-bs-target="##categoryModal" onclick="editCategory(this)" value = #application.objUser.decryptId(category.categoryId)# class="categoryBtn"><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
-                     <button class="categoryBtn" onclick="deleteCategory(this)" value = #application.objUser.decryptId(category.categoryId)#><i class="fa-solid fa-trash categoryfns"></i></button>
+                     <button class="categoryBtn" onclick="deleteCategory(this)" value = #category.categoryId#><i class="fa-solid fa-trash categoryfns"></i></button>
                      <a class="categoryBtn" href="./subcategory.cfm?categoryId=#URLEncodedFormat(category.categoryId)#"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></a>
                   </div>
                </div>

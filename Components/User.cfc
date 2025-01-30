@@ -50,10 +50,10 @@
         <cfreturn local.encryptedId>
     </cffunction>
 
-    <cffunction name="decryptId" access="public" returntype="string">
+    <cffunction name="decryptId" access="remote" returntype="string" returnformat="JSON">
         <cfargument name="encryptedId" required="true" type="string">
         <!--- <cftry> --->
-            <cfset var decryptedId = decrypt(arguments.encryptedId,application.encryptionkey, "AES", "Base64")>           
+            <cfset var decryptedId = decrypt(arguments.encryptedId,application.encryptionkey, "AES", "Base64")>
             <cfreturn decryptedId>
         <!--- <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(subject = "Error in function:decryptId",body = cfcatch)>
@@ -156,7 +156,7 @@
         }>
         <cftry>
             <cfif len(trim(arguments.userName)) NEQ 0 AND len(trim(arguments.password)) NEQ 0>
-                <cfquery name="local.getUserDetails">
+                <cfquery name="local.getUserDetails" datasource="#application.datasource#">
                     SELECT 
                         U.fldUser_Id, 
                         U.fldHashedPassword, 
@@ -185,6 +185,7 @@
             </cfif>
             </cfif>
         <cfcatch>
+            <cfdump var="#cfcatch#" >
             <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset application.objProductManagement.sendErrorEmail(subject = "Error in function:userLogin",body = cfcatch)>
         </cfcatch>

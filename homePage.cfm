@@ -1,4 +1,4 @@
-<cfset randomProducts = application.objProductManagement.getRandomProducts() >
+<cfset randomProducts = application.objProductManagement.fetchProducts(random = true)>
 <!Doctype html>
 <cfoutput>
 <html>
@@ -17,9 +17,9 @@
       <h5 class="productText">Random Products</h5>
       <div class="randomProducts d-flex flex-wrap">
          <cfloop array = "#randomProducts.data#" item = product>
-               <a class="productBox" href="productDetails.cfm?productId=#URLEncodedFormat(application.objUser.encryptId(product.productId))#">
+               <a class="productBox" href="productDetails.cfm?productId=#URLEncodedFormat(product.productId)#">
                   <div class="productImage">
-                     <img src="./Assets/uploads/product#product.productId#/#product.imageFilePath#" alt="productImage"  class="prodimg">
+                     <img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" alt="productImage"  class="prodimg">
                   </div>
                   <div class="productName">#product.productName#</div>
                   <div class="productPrice"><i class="fa-solid fa-indian-rupee-sign"></i>#product.unitPrice#</div>

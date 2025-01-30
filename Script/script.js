@@ -106,14 +106,13 @@ function insertEditCategory() {
       }
       else
       {
-       
+        console.log(hiddenValue);
           $.ajax({
           url: 'components/ProductManagement.cfc?method=editCategory',
           data: {categoryId:hiddenValue,newcategory:inputValue},
           type: 'POST',
           success: function(response) {
             let result = JSON.parse(response);
-            console.log(result)
             if(result.SUCCESS)
                 {
                   $('#categoryModal').modal('hide');
@@ -130,35 +129,55 @@ function insertEditCategory() {
       }
 }
 
-function editCategory(editBtn)
-{   
-   document.getElementById("categoryModalLabel").textContent = "Edit Category";
-   $.ajax({
-          url: 'components/ProductManagement.cfc?method=fetchSingleCategory',
-          data: {categoryId:editBtn.value},
-          type: 'POST',
-          success: function(result) {
-            let category = JSON.parse(result);
-            document.getElementById("categoryInput").value = category.name;
-            document.getElementById("distinguishCreateEdit").value = category.categoryId;
-          },
-          error: function() {
-              
-          }
-      });        
+function editCategory(editBtn) {
+    document.getElementById("categoryModalLabel").textContent = "Edit Category";
+
+    $.ajax({
+        url: 'components/ProductManagement.cfc?method=fetchAllCategories',
+        data: { categoryId: editBtn.value },
+        type: 'POST',
+        success: function (result) {
+            let parsedResult = JSON.parse(result);
+            let categoryId = parsedResult.CATEGORIES[0].categoryId;
+            let categoryName = parsedResult.CATEGORIES[0].categoryName;
+
+            // Nested AJAX call for decryption
+            $.ajax({
+                url: 'components/User.cfc?method=decryptId',
+                data: { encryptedId: categoryId },
+                type: 'POST',
+                success: function (decryptResult) {
+                    let decryptedId = JSON.parse(decryptResult);
+                    console.log(decryptedId); // Now, this will have the correct value.
+
+                    // Set the input values inside this callback
+                    document.getElementById("categoryInput").value = categoryName;
+                    document.getElementById("distinguishCreateEdit").value = decryptedId;
+                },
+                error: function () {
+                    console.error("Error decrypting category ID.");
+                }
+            });
+        },
+        error: function () {
+            console.error("Error fetching category data.");
+        }
+    });
 }
+
 
 function deleteCategory(dltBtn)
 {
    if (confirm("Are you sure you want to delete"))
 	{
-        console.log(document.getElementById(dltBtn.value))		
+        	
 		$.ajax({		
    	 url: 'components/ProductManagement.cfc?method=deleteCategory',
    	 type: 'POST',
    	 data: {categoryId:dltBtn.value},
    	 success: function() {	
-			
+        console.log(dltBtn.value);
+		document.getElementById(dltBtn.value).remove();	
    	 },
    	 error: function() {		
    	 }
@@ -187,14 +206,14 @@ $(".subcategoryAddbtn").click(function() {
   document.getElementById("categoryNameSelect").value = "";
 });
 
-function deleteSubCategory(subCategoryId)
+function deleteSubCategory(subCategoryId,categoryId)
 {
   if (confirm("Are you sure you want to delete"))
 	{
 		$.ajax({		
-   	 url: 'components/ProductManagement.cfc?method=softDeleteSubCategory',
+   	 url: 'components/ProductManagement.cfc?method=DeleteSubCategory',
    	 type: 'POST',
-   	 data: {subCategoryId:subCategoryId},
+   	 data: {subCategoryId:subCategoryId,categoryId:categoryId},
    	 success: function() {			
 			document.getElementById(subCategoryId).remove();
    	 },
@@ -218,14 +237,14 @@ $("#categoryNameSelectPr").change(function() {
    	 type: 'POST',
    	 data: {categoryId:categorySelected},
    	 success: function(result) {
-      let subcategoryIdArray = JSON.parse(result).SUBCATEGORYIDS;
-      let subcategoryNames = JSON.parse(result).SUBCATEGORYNAMES;      
+      let subcategories = JSON.parse(result).SUBCATEGORY;
+      console.log(subcategories)
       subCategoryElement.innerHTML = "";
-      for(let i = 0;i<subcategoryIdArray.length;i++)
-      {        
+      for(let i = 0;i<subcategories.length;i++)
+      {
         let opt = document.createElement('option');
-        opt.value = subcategoryIdArray[i];
-        opt.innerHTML = subcategoryNames[i];
+        opt.value = subcategories[i].subCategoryId;
+        opt.innerHTML = subcategories[i].subCategoryName;
         subCategoryElement.appendChild(opt); 
       }
    	 },
@@ -340,6 +359,7 @@ function editProduct(editObj) {
      type: 'POST',
      success: function(result) {
       let product = JSON.parse(result);
+      console.log(product);
       document.getElementById("productName").value = product.DATA.productName;
       document.getElementById("brandName").value = product.DATA.brandId;
       document.getElementById("productDesc").value = product.DATA.description;
@@ -352,16 +372,16 @@ function editProduct(editObj) {
         type: 'POST',
         data: {categoryId:editObj.categoryId},
         success: function(result) {
-        let subcategoryIdArray = JSON.parse(result).SUBCATEGORYIDS;
-        let subcategoryNames = JSON.parse(result).SUBCATEGORYNAMES;
-        subCategoryElement.innerHTML = "";
-        for(let i = 0;i<subcategoryIdArray.length;i++)
-        {        
-          let opt = document.createElement('option');
-          opt.value = subcategoryIdArray[i];
-          opt.innerHTML = subcategoryNames[i];
-          subCategoryElement.appendChild(opt); 
-        }
+            let subcategories = JSON.parse(result).SUBCATEGORY;
+      console.log(subcategories)
+      subCategoryElement.innerHTML = "";
+      for(let i = 0;i<subcategories.length;i++)
+      {
+        let opt = document.createElement('option');
+        opt.value = subcategories[i].subCategoryId;
+        opt.innerHTML = subcategories[i].subCategoryName;
+        subCategoryElement.appendChild(opt); 
+      }
         },
         error: function() {		
         }
@@ -433,7 +453,7 @@ function editImages(productId) {
 function setThumbnail(productImageId,productId)
 {
   $.ajax({		
-        url: 'components/ProductManagement.cfc?method=updateThumbnail',
+        url: 'components/ProductManagement.cfc?method=updateDefaultImage',
         type: 'POST',
         data: {productImageId:productImageId,productId:productId},
         success: function() {			
