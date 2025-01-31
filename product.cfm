@@ -47,7 +47,7 @@
                      <h6 class="productBrand">#product.brandName#</h6>
                      <div class="productprice"><i class="fa-solid fa-indian-rupee-sign">#product.unitPrice#</i></div>
                   </div>
-                  <div class="productItemImage" data-bs-toggle="modal" data-bs-target="##imageModal" onclick="editImages(#product.productId#)">
+                  <div class="productItemImage" data-bs-toggle="modal" data-bs-target="##imageModal" onclick="editImages('#product.productId#')">
                      <img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" alt="productImage">
                   </div>
                   <div class="productItemRight">
@@ -64,7 +64,7 @@
     <i class="fa-solid fa-pen-to-square productfns"></i>
 </button>
 
-                    <button class="productfnBtn" onclick="deleteProduct(#product.productId#)"><i class="fa-solid fa-trash productfns"></i></button>
+                    <button class="productfnBtn" onclick="deleteProduct('#product.productId#')"><i class="fa-solid fa-trash productfns"></i></button>
                   </div>
                </div>
             </div>

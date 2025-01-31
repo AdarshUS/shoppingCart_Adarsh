@@ -410,12 +410,14 @@ function deleteProduct(productId)
     }	
 }
 
-function editImages(productId) {   
+function editImages(productId) {
     $.ajax({
-        url: 'components/ProductManagement.cfc?method=fetchProductImages',
+        url: 'components/ProductManagement.cfc?method=getProductDetails',
         data: { productId: productId },
         type: 'POST',
         success: function(result) {
+            console.log(JSON.parse(result));
+            let 
             let productImages = JSON.parse(result).IMAGES;
             let productImagesId = JSON.parse(result).PRODUCTIMAGESID;
             let defaultImageId = JSON.parse(result).DEFAULTIMAGEID;
@@ -423,8 +425,8 @@ function editImages(productId) {
             carouselContainer.innerHTML = '';
             for (let i = 0; i < productImages.length; i++) {
                 
-                let div = document.createElement("div");               
-                div.setAttribute('class', i === 0 ? 'carousel-item active' : 'carousel-item');                 
+                let div = document.createElement("div");
+                div.setAttribute('class', i === 0 ? 'carousel-item active' : 'carousel-item');
                 const img = document.createElement('img');
                 img.src = "./Assets/uploads/product"+productId+"/"+productImages[i]; 
                 img.alt = `Product Image ${i + 1}`;
