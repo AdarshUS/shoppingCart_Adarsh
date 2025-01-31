@@ -417,10 +417,6 @@ function editImages(productId) {
         type: 'POST',
         success: function(result) {
             console.log(JSON.parse(result));
-            let 
-            let productImages = JSON.parse(result).IMAGES;
-            let productImagesId = JSON.parse(result).PRODUCTIMAGESID;
-            let defaultImageId = JSON.parse(result).DEFAULTIMAGEID;
             let carouselContainer = document.getElementById("carouselContainer");
             carouselContainer.innerHTML = '';
             for (let i = 0; i < productImages.length; i++) {

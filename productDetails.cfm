@@ -4,7 +4,7 @@
    <cfif NOT structKeyExists(session, "loginuserId")>
       <cflocation url = "userLogin.cfm?productId=#URLEncodedFormat(application.objUser.encryptId(productDetails.data.productId))#" addToken = "no">
    </cfif>
-   <cfset result =  application.objCart.addCart(userId = application.objUser.decryptId(session.loginuserId),productId = application.objUser.decryptId(url.productId),quantity = 1)>
+   <cfset result =  application.objCart.addCart(productId = url.productId,quantity = 1)>
    <cfif result.success>
       <cflocation url = "cart.cfm" addtoken = no>
    </cfif>
@@ -40,16 +40,16 @@
          </div>
          <div class="productContainer">
             <div class="productImageBox">
-               <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+               <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel"> 
                   <div class="carousel-inner">
                      <cfloop array="#productDetails.data.images#" item = image>
                         <cfif image EQ productDetails.data.defaultImagePath>
                            <div class="carousel-item active">
-                              <img src="./Assets/uploads/product#productDetails.data.productId#/#image#">
+                              <img src="#'./Assets/uploads/product'&application.objUser.decryptId(productDetails.data.productId)#/#image#">
                            </div>
                            <cfelse>
                            <div class="carousel-item">
-                              <img src="./Assets/uploads/product#productDetails.data.productId#/#image#">
+                              <img src="#'./Assets/uploads/product'&application.objUser.decryptId(productDetails.data.productId)#/#image#">
                            </div>
                         </cfif>
                      </cfloop>

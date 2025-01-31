@@ -1,6 +1,7 @@
 <cfoutput>
 <cfparam name="url.sort" default="ASC">
 <cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
+
 <cfset products = application.objProductManagement.fetchProducts(subCategoryId = url.subCategoryId,limit = 4,sort = url.sort)>
 <!Doctype html>
 <html>
@@ -34,8 +35,8 @@
             <h4 class="subcategoryname">#products.data[1].subcategoryName#</h4>
              <div class="priceFilterContainer">
             <div class="priceSort">
-               <a href="subCategoryList.cfm?subcategoryId=#url.subcategoryId#&sort=ASC">price: Low to High</a>
-               <a href="subCategoryList.cfm?subcategoryId=#url.subcategoryId#&sort=DESC">price :High to Low</a>
+               <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(url.subcategoryId)#&sort=ASC">price: Low to High</a>
+               <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(url.subcategoryId)#&sort=DESC">price :High to Low</a>
             </div>
             <div class="filterBox">
                <div class="dropdown">
@@ -65,7 +66,7 @@
                   </a>
             </cfloop>
          </div>
-         <div class="viewMoreBtn" id="viewLessBtn"><span onclick="toggleLessProducts(#application.objUser.decryptId(url.subcategoryId)#,'#url.sort#')">see Less<i class="fa-solid fa-caret-down"></i></span></div>
+         <div class="viewMoreBtn" id="viewLessBtn"><span onclick="toggleLessProducts('#url.subcategoryId#','#url.sort#')">see Less<i class="fa-solid fa-caret-down"></i></span></div>
       </main>
       <script src="./Script/jquery-3.7.1.min.js"></script>
       <script src="./Script/userPageScript.js"></script>

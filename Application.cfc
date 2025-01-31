@@ -9,6 +9,7 @@
         <cfset application.objProductManagement = createObject("component","Components.ProductManagement")>
         <cfset application.objUser = createObject("component","Components.User")>
         <cfset application.objCart = createObject("component","Components.cart")>
+        <cfset application.objProfile = createObject("component","Components.profile")>
         <cfset application.encryptionKey = "p085TCupwllF2ks0JiBD3Q==">
         <cfset application.datasource = "shopping_cart">
         <cfreturn true>

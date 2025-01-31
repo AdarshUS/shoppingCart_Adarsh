@@ -606,7 +606,6 @@
                     AND fldSubCategoryId = <cfqueryparam value="#local.decryptedSubCategoryId#">
                     AND fldactive = 1
             </cfquery>
-            <cfdump var="#local.checkExistingProduct#">
             <cfif local.checkExistingProduct.RecordCount AND local.checkExistingProduct.fldProduct_Id NEQ local.decryptedProductId>
                 <cfset local.structProduct.message = "product Already Exist">
             <cfelse>
@@ -627,7 +626,7 @@
                 </cfquery>
                 <cfif LEN(arguments.productImages)>
                     <cfset productDirectory = expandPath('Assets/uploads/product'&local.decryptedProductId)>
-                    <cfset local.newPath = uploadFile(productImages = #arguments.productImages#,productDirectory = #productDirectory#)>
+                    <cfset local.newPath = uploadFile(productImages = arguments.productImages,productDirectory = productDirectory)>
                     <cfloop array="#local.newPath#" index="i"  item="image">
                         <cfquery datasource="#application.datasource#">
                             INSERT
@@ -660,14 +659,13 @@
             )>
         </cfcatch>
         </cftry>
-        <cfdump var="#local.structProduct#" >
     </cffunction>
 
     <cffunction name="deleteProduct" access="remote" returntype="void">
         <cfargument name="productId" required="true" type="string">
         <cfset local.decryptedProductId = application.objUser.decryptId(arguments.productId)>
         <cfset local.result = {success = false}>
-        <!--- <cftry> --->
+        <cftry>
             <cfquery datasource = "#application.datasource#">
                 UPDATE
                     tblproduct
@@ -681,54 +679,15 @@
             </cfquery>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
-        <!--- <cfcatch>
+        <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
-        </cftry> --->
-        <cfdump var="#local.result#" abort>
-    </cffunction>
-
-    <!--- <cffunction name="fetchProductImages" access="remote" returntype="struct" returnformat="JSON">
-        <cfargument name="productId" required="true" type="numeric">
-        <cfset var local = structNew()>
-        <cftry>
-            <cfquery name="local.fetchImages" datasource="#application.datasource#">
-                SELECT
-                    PI.fldImageFilePath,
-                    PI.fldProductImage_Id,
-                    PI.fldDefaultImage
-                FROM
-                    tblproductimages PI
-                INNER JOIN
-                    tblproduct P
-                ON
-                    PI.fldProductId = P.fldProduct_Id
-                WHERE
-                    P.fldProduct_Id = <cfqueryparam value="#arguments.productId#" cfsqltype="integer">
-                    AND
-                    PI.fldActive = 1
-            </cfquery>
-            <cfset var result = { images = [],productImagesId=[]}>
-            <cfloop query="local.fetchImages">
-                <cfif local.fetchImages.fldDefaultImage EQ 1>
-                    <cfset result.defaultImageId = local.fetchImages.fldProductImage_Id >
-                </cfif>
-                <cfset arrayAppend(result.images, local.fetchImages.fldImageFilePath)>
-                <cfset arrayAppend(result.productImagesId, local.fetchImages.fldProductImage_Id)>
-            </cfloop>
-        <cfcatch>
-            <cfset sendErrorEmail(
-                subject=cfcatch.message, 
-                body = "#cfcatch#"
-            )>
-        </cfcatch>
         </cftry>
-        <cfreturn result>
-    </cffunction> --->
+    </cffunction>
 
     <cffunction name="updateDefaultImage" access="remote" returntype="void">
         <cfargument name="productImageId" required="true" type="numeric">
@@ -789,69 +748,6 @@
         </cfcatch>
         </cftry>
     </cffunction>
-
-    <!--- <cffunction name="getRandomProducts" access="remote" returntype="struct" returnformat="JSON">
-        <cfargument name="subCategoryId" required="false" type="integer">
-        <cfset local.result = {
-            success = false,
-            data = []
-        }>
-        <cftry>
-            <cfquery name="local.getRandomProducts" datasource = "#application.datasource#">
-                SELECT
-                    P.fldProduct_Id,
-                    P.fldSubCategoryId,
-                    P.fldProductName,
-                    B.fldBrandName,
-                    P.fldDescription,
-                    P.fldUnitPrice,
-                    P.fldUnitTax,
-                    PI.fldImageFilePath,
-                    SC.fldSubCategoryName
-                FROM
-                    tblproduct P
-                INNER JOIN 
-                    tblbrand B ON P.fldBrandId = B.fldBrand_Id
-                INNER JOIN
-                    tblsubcategory AS SC ON SC.fldSubCategory_Id = P.fldSubCategoryId
-                LEFT JOIN 
-                    tblproductimages PI ON PI.fldProductId = P.fldProduct_Id
-                    AND PI.fldDefaultImage = 1
-                WHERE
-                    P.fldActive = 1
-                    <cfif structKeyExists(arguments, "subCategoryId")>
-                        AND P.fldSubCategoryId = #arguments.subCategoryId#
-                    </cfif>
-                ORDER BY RAND() 
-                LIMIT 4;
-            </cfquery>
-            <cfif local.getRandomProducts.recordCount>
-                <cfloop query="local.getRandomProducts">
-                    <cfset arrayAppend(local.result.data,{
-                        "productId": local.getRandomProducts.fldProduct_Id,
-                        "subCategoryId": local.getRandomProducts.fldSubCategoryId,
-                        "productName": local.getRandomProducts.fldProductName,
-                        "brandName": local.getRandomProducts.fldBrandName,
-                        "description": local.getRandomProducts.fldDescription,
-                        "unitPrice": local.getRandomProducts.fldUnitPrice,
-                        "unitTax": local.getRandomProducts.fldUnitTax,
-                        "imageFilePath": local.getRandomProducts.fldImageFilePath,
-                        "subCategoryName": local.getRandomProducts.fldSubCategoryName
-                    })>
-                </cfloop>
-            </cfif>
-                <cfset local.result.success = true>
-                <cfset local.result.message = "successful Operation">
-        <cfcatch>
-            <cfset local.result.message = "Database error: " & cfcatch.message> 
-            <cfset sendErrorEmail(
-                subject=cfcatch.message, 
-                body = "#cfcatch#"
-            )>
-        </cfcatch>
-        </cftry>
-        <cfreturn local.result>
-    </cffunction> --->
   
     <cffunction name="sendErrorEmail" access="public" returntype="void" output="false">
         <cfargument name="subject" type="string" required="true">

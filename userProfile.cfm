@@ -1,7 +1,9 @@
-<cfif structkeyExist(form,"submit")>
-    
+<cfif structKeyExists(form,"submit")>
+    <cfset result = application.objProfile.addAddress(firstName = form.firstName,lastName = form.lastName,phone = form.phone,address1 = form.address1,address2 = form.address2,city = form.city,state = form.state,pincode = form.pincode)>    
 </cfif>
+<cfset addressResult = application.objProfile.fetchAddress()>
 <!DOCTYPE html>
+<cfoutput>
 <html lang="en">
 <head>
    <meta charset="UTF-8">
@@ -10,34 +12,45 @@
    <link rel="stylesheet" href="./Style/bootstrap.css">
    <link rel="stylesheet" href="./Style/fontawesome.css">
    <link rel="stylesheet" href="./Style/homestyle.css">
+   <link rel="stylesheet" href="./Style/profile.css">
 </head>
 <body>
     <cfinclude template = "header.cfm">
     <main>
-        <div class="profileContainer">
+        <div class="profileinfoContainer">
             <div class="profileIcon">
-                <img src="./Assets/Images/profile.png" alt="profileimg" width="30">
+                <img src="./Assets/Images/profile.png" alt="profileimg" width="60">
             </div>
             <div class="profileDetails">
                 <div>hello,</div>
-                <div class="profileName"></div>
-                <div class="profileEmail"></div>
+                <div class="profileName">#session.loginuserfirstName# #session.loginuserlastName#</div>
+                <div class="profileEmail">email: #session.userEmailId#</div>
             </div>
+            <button class="editProfBtn" data-bs-toggle="modal" data-bs-target="##editProfileModal"><i class="fa-solid fa-pen"></i></button>
         </div>
         <div class="addressContainer">
-            <div>profile Informations</div>
+            <div class="profile-info">profile Informations</div>
             <div class="addressBox">
-                <div class="addressItem">
-                    <span class="firstName"></span>
-                    <span class="lastName"></span>
-                    <span class="phone"></span>
-                    <div class="addressLine1"></div>
-                    <div class="addressLine2"></div>
-                    <div class="city"></div>
-                    <div class="state"></div>
-                    <div class="pincode"></div>
-                </div>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addressAddModal">Add New Address</button>
+                <cfloop array="#addressResult.address#" item="address">
+                    <div class="addressItem" id="#address.addressId#">
+                        <div>
+                            <span class="firstName">#address.firstName#</span>
+                            <span class="lastName">#address.lastName#</span>
+                            <span class="phone">#address.phone#</span>
+                            <div class="addressLine1">#address.addressline1#</div>
+                            <div class="addressLine2">#address.addressline2#</div>
+                            <div class="city">#address.city#</div>
+                            <div class="state">#address.state#</div>
+                            <div class="pincode">#address.pincode#</div>
+                        </div>
+                        <div class="deleteAddressBtn">
+                            <button onclick="deleteAddress('#address.addressId#')" class="deleteaddressbtn">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </cfloop>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="##addressAddModal">Add New Address</button>
                 <button class="btn btn-info">order Details</button>
             </div>
         </div>
@@ -100,7 +113,44 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="editProfileText">Edit Profile</div>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label">FirstName:</label>
+                        <input type="text" class="form-control" name="firstName" id="firstName">
+                        <div id ="firstNameError" class="error"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label">LastName:</label>
+                        <input type="text" class="form-control" name="lastName" id="lastName">
+                        <div id ="lastNameError" class="error"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email:</label>
+                        <input type="text" class="form-control" name="email" id="email">
+                        <div id ="emailError" class="error"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">phone:</label>
+                        <input type="text" class="form-control" name="phone" id="phone">
+                        <div id ="phoneError" class="error"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="submit" name="submit">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script src="./Script/bootstrapScript.js"></script>
+    <script src="./Script/jquery-3.7.1.min.js"></script>
     <script src="./Script/userPageScript.js"></script>
 </body>
 </html>
+</cfoutput>

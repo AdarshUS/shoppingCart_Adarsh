@@ -4,7 +4,7 @@
     </cfif>
    <cflocation url="userLogin.cfm" addtoken="no">
 </cfif>
-<cfset cart = application.objCart.fetchCart(userId = application.objUser.decryptId(session.loginuserId))>
+<cfset cart = application.objCart.fetchCart()>
 <!DOCTYPE html>
 <cfoutput>
 <html lang="en">

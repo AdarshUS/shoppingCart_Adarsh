@@ -1,9 +1,12 @@
 <cfcomponent>
     <cffunction name="addcart" access="public" returntype="struct">
-        <cfargument name = "userId" required="true" type="integer">
-        <cfargument name = "productId" required="true" type="integer">
+        <cfargument name = "productId" required="true" type="string">
         <cfargument name = "quantity" required="true" type="integer">
-        <cfset local.result = {success = false}>
+        <cfset local.result = {
+            success = false,
+            message = ""
+        }>
+        <cfset local.decryptedProductId = application.objUser.decryptId(arguments.productId)>
         <cftry>
             <cfquery name = "local.checkProductExist" datasource="#application.datasource#">
                 SELECT
@@ -14,9 +17,9 @@
                 FROM
                     tblcart
                 WHERE
-                    fldUserId = <cfqueryparam value="#arguments.userId#" cfsqltype="integer">
+                    fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
                     AND
-                    fldProductId = <cfqueryparam value="#arguments.productId#" cfsqltype="integer">
+                    fldProductId = <cfqueryparam value="#local.decryptedProductId#" cfsqltype="integer">
             </cfquery>
             <cfif local.checkProductExist.RecordCount>
                 <cfquery datasource="#application.datasource#">
@@ -26,16 +29,14 @@
                </cfquery>
             <cfelse>
                 <cfquery datasource="#application.datasource#">
-                    INSERT
-                    INTO
-                        tblcart(
+                    INSERT INTO tblcart(
                             fldUserId,
                             fldProductId,
                             fldQuantity
                         )
                     VALUES(
-                        <cfqueryparam value="#arguments.userId#" cfsqltype="integer">,
-                        <cfqueryparam value="#arguments.productId#" cfsqltype="integer">,
+                        <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">,
+                        <cfqueryparam value="#local.decryptedProductId#" cfsqltype="integer">,
                         <cfqueryparam value="#arguments.quantity#" cfsqltype="integer">
                     )
                </cfquery>
@@ -54,7 +55,6 @@
     </cffunction>
 
     <cffunction name="fetchCart" access="public" returntype="struct">
-        <cfargument name="userId" required="true" type="integer">
         <cfset local.result = {
             success = false,
             data=[]
@@ -81,7 +81,7 @@
                     P.fldProduct_Id = PI.fldProductId
                 WHERE 
                     fldDefaultImage = 1
-                    AND fldUserId = <cfqueryparam value = #arguments.userId#>
+                    AND fldUserId = <cfqueryparam value = #application.objUser.decryptId(session.loginuserId)# cfsqltype="integer">
             </cfquery>
             <cfif local.fetchCart.recordCount>
                 <cfloop query="local.fetchCart">

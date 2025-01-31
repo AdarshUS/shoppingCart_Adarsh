@@ -107,46 +107,64 @@ function fetchProductsRemote(methodName, parameters) {
         type: 'POST',
         data: parameters,
         success: function (result) {
-            let products = JSON.parse(result).DATA;
-            if (products === undefined) {
-                products = JSON.parse(result).data;
+            let parsedResult = JSON.parse(result);
+            let products = parsedResult.DATA || parsedResult.data;
+
+            if (!products || !Array.isArray(products)) {
+                console.error("Invalid product data");
+                return;
             }
+
             let productContainer = document.getElementById("productContainer");
             productContainer.innerHTML = "";
 
             products.forEach((item) => {
                 let productBox = document.createElement("a");
                 productBox.className = "productBox";
-                productBox.href = `./productDetails.cfm?productId=${item.productId}`;
 
-                let productImage = document.createElement("div");
-                productImage.className = "productImage";
-                let img = document.createElement("img");
-                img.src = `./Assets/uploads/product${item.productId}/${item.imageFilePath}`;
-                img.alt = "productImage";
-                img.className = "prodimg";
-                productImage.appendChild(img);
+                $.ajax({
+                    url: 'components/User.cfc?method=decryptId',
+                    type: 'POST',
+                    data: { encryptedId: item.productId },
+                    success: function (decryptResult) {
+                        console.log(decryptResult);
+                        let decryptedId = decryptResult.trim(); 
+                        productBox.href = `./productDetails.cfm?productId=${item.productId}`;
 
-                let productName = document.createElement("div");
-                productName.className = "productName";
-                productName.textContent = item.productName;
+                        let productImage = document.createElement("div");
+                        productImage.className = "productImage";
+                        let img = document.createElement("img");
+                        img.src = `./Assets/uploads/product${decryptedId}/${item.imageFilePath}`;
+                        img.alt = "productImage";
+                        img.className = "prodimg";
+                        productImage.appendChild(img);
 
-                let productPrice = document.createElement("div");
-                productPrice.className = "productPrice";
-                productPrice.innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i> ${item.unitPrice}`;
+                        let productName = document.createElement("div");
+                        productName.className = "productName";
+                        productName.textContent = item.productName;
 
-                productBox.appendChild(productImage);
-                productBox.appendChild(productName);
-                productBox.appendChild(productPrice);
+                        let productPrice = document.createElement("div");
+                        productPrice.className = "productPrice";
+                        productPrice.innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i> ${item.unitPrice}`;
 
-                productContainer.appendChild(productBox);
+                        productBox.appendChild(productImage);
+                        productBox.appendChild(productName);
+                        productBox.appendChild(productPrice);
+
+                        productContainer.appendChild(productBox);
+                    },
+                    error: function () {
+                        console.error("Error decrypting product ID for:", item.productId);
+                    }
+                });
             });
         },
         error: function () {
             console.error("Error fetching products");
-        },
+        }
     });
 }
+
 
 function logoutUser()
 {
@@ -172,7 +190,8 @@ function toggleProducts(subcategoryId,sort) {
 
 function toggleLessProducts(subcategoryId)
 {
-    fetchProductsRemote("getRandomProducts",{subcategoryId: subcategoryId});
+    console.log(subcategoryId);
+    fetchProductsRemote("fetchProducts",{subcategoryId: subcategoryId,limit:4,sort:'ASC'});
     document.getElementById("viewLessBtn").style.display = "none";
     document.getElementById("viewMoreBtn").style.display = "flex";
 }
@@ -301,14 +320,14 @@ function calculateTotalPrice()
         totalActual += parseFloat(actualprices[index].innerHTML);
         totalTax+=parseFloat(taxes[index].innerHTML);
     }
-    document.getElementById("totalActualprice").innerHTML = totalActual;
-    document.getElementById("totalTax").innerHTML = totalTax;
-    document.getElementById("subtotal").innerHTML = totalPrice;
+    /* document.getElementById("totalActualprice").innerHTML = totalActual; */
+  /*   document.getElementById("totalTax").innerHTML = totalTax;
+    document.getElementById("subtotal").innerHTML = totalPrice; */
 }
 
 function validateAddress()
 {
-    alert("sss")
+    
     let validAddress = true;
     const firstName = document.getElementById("firstName").value;
     const phone = document.getElementById("phone").value;
@@ -326,7 +345,6 @@ function validateAddress()
 
     if(firstName.trim() === "")
     {
-        alert("inside")
         document.getElementById("firstNameError").innerHTML = "firstName cannot be empty";
         validAddress = false;
     }
@@ -372,6 +390,26 @@ function validateAddress()
     }
     console.log(validAddress)
     return validAddress;
+}
+
+function deleteAddress(addressId)
+{
+    
+    if(confirm("Are you sure you want to delete")) 
+    {
+        $.ajax({
+            url: 'components/profile.cfc?method=deleteAddress',
+            type: 'POST',
+            data: { addessId: addressId},
+            success: function (result) {
+                console.log("successful Operation");
+                document.getElementById(addressId).remove();
+            },
+            error: function () {
+                console.error("failed")
+            }
+        });
+    }
 }
 
 

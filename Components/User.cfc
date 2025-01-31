@@ -160,7 +160,10 @@
                     SELECT 
                         U.fldUser_Id, 
                         U.fldHashedPassword, 
-                        U.fldUserSaltString
+                        U.fldUserSaltString,
+                        U.fldFirstName,
+                        U.fldLastName,
+                        U.fldEmail
                     FROM 
                         tbluser U
                     WHERE 
@@ -174,8 +177,10 @@
                     <cfset local.hashedPassword = hmac(local.password,local.saltString,"hmacSHA256")>
                     <cfif local.hashedPassword EQ local.getUserDetails.fldHashedPassword>
                         <cfset local.result.success = true>
-                        <cfset session.loginuserId = local.getUserDetails.fldUser_Id>
-                        <cfset session.loginuserName = local.getUserDetails.fldFirstName>
+                        <cfset session.loginuserId = application.objUser.encryptId(local.getUserDetails.fldUser_Id)>
+                        <cfset session.loginuserfirstName = local.getUserDetails.fldFirstName>
+                        <cfset session.loginuserlastName = local.getUserDetails.fldLastName>
+                        <cfset session.userEmailId = local.getUserDetails.fldEmail>
                         <cfset local.result.message = "Login successful.">
                     <cfelse>
                         <cfset local.result.message = "Invalid password.">
