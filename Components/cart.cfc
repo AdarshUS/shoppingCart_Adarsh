@@ -90,9 +90,9 @@
                         "unitPrice": local.fetchCart.fldUnitPrice,
                         "unitTax": local.fetchCart.fldUnitTax,
                         "productName": local.fetchCart.fldProductName,
-                        "productId":local.fetchCart.fldProduct_Id,
+                        "productId":application.objUser.encryptId(local.fetchCart.fldProduct_Id),
                         "quantity": local.fetchCart.fldQuantity,
-                        "cartId":local.fetchCart.fldCart_Id
+                        "cartId":application.objUser.encryptId(local.fetchCart.fldCart_Id)
                     })>
                 </cfloop>
             </cfif>

@@ -1,5 +1,6 @@
 <cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfset productDetails = application.objProductManagement.getProductDetails(productId = url.productId)>
+<cfset addresses = application.objProfile.fetchAddress()>
 <cfif  structKeyExists(form, "submitBtn")>
    <cfif NOT structKeyExists(session, "loginuserId")>
       <cflocation url = "userLogin.cfm?productId=#URLEncodedFormat(application.objUser.encryptId(productDetails.data.productId))#" addToken = "no">
@@ -79,7 +80,7 @@
                </div>
                <form method="post">
                   <div class="buttonContainer">
-                     <button class="btn btn-info p-2">Buy Now</button>
+                     <button type="button" class="btn btn-info p-2" data-bs-toggle="modal" data-bs-target="##selectAddressModal">Buy Now</button>
                      <button class="btn btn-success p-2" name="submitBtn">Add to Cart</button>
                   </div>
                </form>
@@ -166,6 +167,41 @@
             <div>
             </div>
          </footer>
+         <div class="modal fade" id="selectAddressModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="selectAddress"></div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="savedAddressText">Saved Addresses</div>
+                        <cfloop array = #addresses.address# item = "address">
+                            <div class="addressItem">
+                                <input type="radio" name="address" id="address" value=#address.addressId#>
+                                <div class="addressContent">
+                                    <div>
+                                        <span class="firstName">#address.firstName#</span>
+                                        <span class="lastName">#address.lastName#</span>
+                                        <span class="phone">#address.phone#</span>
+                                        <div class="addressLine1">#address.addressline1#</div>
+                                        <div class="addressLine2">#address.addressline2#</div>
+                                        <div class="city">#address.city#</div>
+                                        <div class="state">#address.state#</div>
+                                        <div class="pincode">#address.pincode#</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </cfloop>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" id="addAddressBtn" name="submit">Add Address</button>
+                        <button type="button" class="btn btn-primary" id="submit" name="submit" onclick="redirectToOrder('#url.productId#')">Payment Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <cfinclude  template="addAdress.cfm">
          <script src="./Script/jquery-3.7.1.min.js"></script>
          <script src="./Script/bootstrapScript.js"></script>
           <script src="./Script/userPageScript.js"></script>

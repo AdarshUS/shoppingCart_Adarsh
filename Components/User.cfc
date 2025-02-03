@@ -180,7 +180,6 @@
                         <cfset session.loginuserId = application.objUser.encryptId(local.getUserDetails.fldUser_Id)>
                         <cfset session.loginuserfirstName = local.getUserDetails.fldFirstName>
                         <cfset session.loginuserlastName = local.getUserDetails.fldLastName>
-                        <cfset session.userEmailId = local.getUserDetails.fldEmail>
                         <cfset local.result.message = "Login successful.">
                     <cfelse>
                         <cfset local.result.message = "Invalid password.">
@@ -200,5 +199,71 @@
 
     <cffunction name="logoutUser" access="remote" returntype="void">
         <cfset StructClear(Session)>
+    </cffunction>
+
+    <cffunction name="fetchUserDetails" access="public" returntype="struct">
+        <cfset local.result = {
+            "success": false,
+            "message": "",
+            "userDetails":[]
+        }>
+        <cftry>
+            <cfquery name="local.fetchUserDetails" datasource="#application.datasource#">
+                SELECT
+                    fldFirstName,
+                    fldLastName,
+                    fldEmail,
+                    fldPhone
+                FROM
+                    tbluser
+                WHERE
+                    fldUser_Id = <cfqueryparam value="#decryptId(session.loginuserId)#" cfsqltype="integer">
+            </cfquery>
+            <cfloop query="local.fetchUserDetails">
+                <cfset arrayAppend(local.result.userDetails, {
+                    "firstName": local.fetchUserDetails.fldFirstName,
+                    "lastName": local.fetchUserDetails.fldLastName,
+                    "email": local.fetchUserDetails.fldEmail,
+                    "phone": local.fetchUserDetails.fldPhone
+                })>
+            </cfloop>
+            <cfset local.result.success = true>
+            <cfset local.result.message = "successful Operation">
+        <cfcatch>
+            <cfdump var="#cfcatch#" >
+            <cfset sendErrorEmail(
+                subject=cfcatch.message, 
+                body = "#cfcatch#"
+            )>
+        </cfcatch>
+        </cftry>
+        <cfreturn local.result>
+    </cffunction>
+
+    <cffunction name="updateProfile">
+        <cfargument name="firstName" type="string" required="true">
+        <cfargument name="lastName" type="string" required="true">
+        <cfargument name="email"  type="string" required="true">
+        <cfargument name="phone" type="string" required="true">
+        <cftry>
+            <cfquery datasource="#application.datasource#">
+                UPDATE
+                    tbluser
+                SET
+                    fldFirstName = <cfqueryparam value="#arguments.firstName#" cfsqltype="varchar">,
+                    fldLastName = <cfqueryparam value="#arguments.lastName#" cfsqltype="varchar">,
+                    fldEmail = <cfqueryparam value="#arguments.email#" cfsqltype="varchar">,
+                    fldPhone = <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">
+                WHERE
+                    fldUser_Id = <cfqueryparam value="#decryptId(session.loginuserId)#" cfsqltype="integer">
+            </cfquery>
+        <cfcatch>
+            <cfdump var="#cfcatch#">
+            <cfset sendErrorEmail(
+                subject=cfcatch.message, 
+                body = "#cfcatch#"
+            )>
+        </cfcatch>
+        </cftry>
     </cffunction>
 </cfcomponent>

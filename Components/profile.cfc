@@ -21,6 +21,7 @@
                     fldAddressLine1,
                     fldAddressLine2,
                     fldCity,
+                    fldPhone,
                     fldState,
                     fldPincode,
                     fldCreatedDate
@@ -32,6 +33,7 @@
                     <cfqueryparam value="#arguments.address1#" cfsqltype="varchar">,
                     <cfqueryparam value="#arguments.address2#" cfsqltype="varchar">,
                     <cfqueryparam value="#arguments.city#" cfsqltype="varchar">,
+                    <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">,
                     <cfqueryparam value="#arguments.state#" cfsqltype="varchar">,
                     <cfqueryparam value="#arguments.pincode#" cfsqltype="varchar">,
                     now()
@@ -40,6 +42,7 @@
             <cfset local.result.success = true>
             <cfset local.result.message = "successfully Added">
         <cfcatch>
+            <cfdump var="#cfcatch#" >
             <cfset application.objUser.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
@@ -50,7 +53,7 @@
     </cffunction>
 
     <cffunction name="fetchAddress" access="public" returntype="struct">
-        <cfargument name="addressId" required="false" type="integer">
+        <cfargument name="addressId" required="false" type="string">
         <cfset local.result = {
             'success':'false',
             'message':'',
@@ -73,6 +76,9 @@
                 WHERE
                     fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#">
                     AND fldActive = 1
+                    <cfif structKeyExists(arguments,"addressId")>
+                        AND fldAddress_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.addressId)#" cfsqltype="integer">
+                    </cfif>
             </cfquery>
             <cfloop query="local.fetchAllAddress">
                 <cfset arrayAppend(local.result.address, {
@@ -87,7 +93,10 @@
                         "addressId": application.objUser.encryptId(local.fetchAllAddress.fldAddress_Id)
                 })>
             </cfloop>
+            <cfset local.result.success = true>
+            <cfset local.result.message = "successful Operation">
         <cfcatch>
+            <cfdump var="#cfcatch#" >
             <cfset application.objUser.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"

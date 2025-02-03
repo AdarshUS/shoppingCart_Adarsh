@@ -412,6 +412,33 @@ function deleteAddress(addressId)
     }
 }
 
+$(document).ready(function () {
+    $("#addAddressBtn").click(function () {
+        $("#selectAddressModal").modal("hide"); 
+        setTimeout(function () {
+            $("#addressAddModal").modal("show"); 
+        }, 500); 
+    });
+    $("#addressAddModal").on("hidden.bs.modal", function () {
+        $("#selectAddressModal").modal("show");
+    });
+})
+
+function redirectToOrder(productId)
+{
+   
+    let selectedAddress = document.querySelector('input[name="address"]:checked');
+    let addressId = selectedAddress.value;
+    window.location.href = `orderSummary.cfm?addressId=${addressId}&productId=${productId}&type=single`;
+}
+
+function redirectCartToorder()
+{
+    let selectedAddress = document.querySelector('input[name="address"]:checked');
+    let addressId = selectedAddress.value;
+    window.location.href = `orderSummary.cfm?addressId=${addressId}&type=cart`;
+}
+
 
 
 

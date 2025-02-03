@@ -416,59 +416,79 @@ function editImages(productId) {
         data: { productId: productId },
         type: 'POST',
         success: function(result) {
-            console.log(JSON.parse(result));
-            let carouselContainer = document.getElementById("carouselContainer");
-            carouselContainer.innerHTML = '';
-            for (let i = 0; i < productImages.length; i++) {
-                
-                let div = document.createElement("div");
-                div.setAttribute('class', i === 0 ? 'carousel-item active' : 'carousel-item');
-                const img = document.createElement('img');
-                img.src = "./Assets/uploads/product"+productId+"/"+productImages[i]; 
-                img.alt = `Product Image ${i + 1}`;
-                if(productImagesId[i] != defaultImageId)
-                {
-                  let setThumbnailBtn = document.createElement('button');
-                  setThumbnailBtn.innerHTML = "setThumbnail"
-                  setThumbnailBtn.setAttribute('class','thumbnailBtn btn btn-success m-2'); 
-                  setThumbnailBtn.setAttribute('onclick', `setThumbnail(${productImagesId[i]},${productId})`);
-                  let deleteImageBtn = document.createElement('button');
-                  deleteImageBtn.innerHTML = "deleteImage"
-                  deleteImageBtn.setAttribute('class','deleteImageBtn btn btn-danger m-2');
-                  deleteImageBtn.setAttribute('onclick', `deleteProductImage(${productImagesId[i]},${productId},"${productImages[i]}")`);
-                  div.appendChild(setThumbnailBtn);
-                  div.appendChild(deleteImageBtn);  
-                }                
-                div.appendChild(img);
-                carouselContainer.appendChild(div);
-            }
+            let productData = JSON.parse(result).DATA;
+            console.log(productData)
+            let images = productData.images;
+            let defaultImage = productData.defaultImagePath;
+            $.ajax({
+                url: 'components/User.cfc?method=decryptId',
+                data: { encryptedId: productId },
+                type: 'POST',
+                success: function (decryptResult) {
+                    let decryptedId = JSON.parse(decryptResult);
+
+                    let carouselContainer = document.getElementById("carouselContainer");
+                    carouselContainer.innerHTML = '';
+
+                    images.forEach((image, i) => {
+                        let div = document.createElement("div");
+                        div.setAttribute('class', image === defaultImage ? 'carousel-item active' : 'carousel-item');
+
+                        const img = document.createElement('img');
+                        img.src = `./Assets/uploads/product${decryptedId}/${image}`;
+                        img.alt = `Product Image ${i + 1}`;
+
+                        if (image !== defaultImage) {
+                            let setThumbnailBtn = document.createElement('button');
+                            setThumbnailBtn.innerHTML = "Set Thumbnail";
+                            setThumbnailBtn.className = 'thumbnailBtn btn btn-success m-2'; 
+                            setThumbnailBtn.onclick = function() { setThumbnail(image, productId); };
+
+                            let deleteImageBtn = document.createElement('button');
+                            deleteImageBtn.innerHTML = "Delete Image";
+                            deleteImageBtn.className = 'deleteImageBtn btn btn-danger m-2';
+                            deleteImageBtn.onclick = function() { deleteProductImage(image,productId); };
+
+                            div.appendChild(setThumbnailBtn);
+                            div.appendChild(deleteImageBtn);  
+                        }
+
+                        div.appendChild(img);
+                        carouselContainer.appendChild(div);
+                    });
+                },
+                error: function() {
+                    alert("Failed to decrypt product ID.");
+                }
+            });
         },
         error: function() {
-            alert("Failed to fetch product images.");
+            alert("Failed to fetch product details.");
         }
     });
 }
-function setThumbnail(productImageId,productId)
-{
-  $.ajax({		
+
+function setThumbnail(productImage, productId) {
+    $.ajax({		
         url: 'components/ProductManagement.cfc?method=updateDefaultImage',
         type: 'POST',
-        data: {productImageId:productImageId,productId:productId},
+        data: { productImage: productImage, productId: productId },
         success: function() {			
-          editImages(productId);
+            editImages(productId);
         },
-        error: function() {		
+        error: function() {
+            alert("Error setting thumbnail.");
         }
-        });
+    });
 }
 
-function deleteProductImage(productImageId,productId,productImageFilename)
-{
-  alert(productImageFilename)
+
+function deleteProductImage(productImage,productId)
+{  
   $.ajax({		
      url: 'components/ProductManagement.cfc?method=deleteProductImage',
      type: 'POST',
-     data: {productImageId:productImageId,productId:productId,productFileName:productImageFilename},
+     data: {productImage: productImage, productId: productId},
      success: function() {			
        editImages(productId);
      },

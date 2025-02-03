@@ -1,9 +1,10 @@
 <cfif NOT structKeyExists(session,"loginuserId")>
     <cfif structKeyExists(url,"redirect")>
-        <cflocation url="userLogin.cfm?redirect='cartpage'" addtoken="no">                    
+        <cflocation url="userLogin.cfm?redirect='cartpage'" addtoken="no">
     </cfif>
    <cflocation url="userLogin.cfm" addtoken="no">
 </cfif>
+<cfset addresses = application.objProfile.fetchAddress()>
 <cfset cart = application.objCart.fetchCart()>
 <!DOCTYPE html>
 <cfoutput>
@@ -49,7 +50,7 @@
                            </div>
                         </td>
                         <td><i class="fa-solid fa-indian-rupee-sign"></i><span id="totalPrice#product.cartId#" class="totalPrice">#(product.unitPrice + (product.unitPrice * (product.unittax / 100))) * product.quantity#</span></td>
-                        <td><button class="remove-item" onclick = "deleteCartItem(#product.cartId#)"><i class="fa-solid fa-xmark"></i></button></td>
+                        <td><button class="remove-item" onclick = "deleteCartItem('#product.cartId#')"><i class="fa-solid fa-xmark"></i></button></td>
                      </tr>
                   </cfloop>
                </tbody>
@@ -62,10 +63,45 @@
             <p>Shipping: <strong>Free</strong></p>
             <p>Subtotal: <strong><i class="fa-solid fa-indian-rupee-sign"></i><span id="subtotal"></span></strong></p>
             <p><span class="coupon-code">Add coupon code</span></p>
-            <a href="" class="checkout-btn">Bought Together</a>
+            <button class="checkout-btn" data-bs-toggle="modal" data-bs-target="##selectAddressModal">Bought Together</button>
          </div>
       </div>
+      <div class="modal fade" id="selectAddressModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="selectAddress"></div>
+                </div>
+                <div class="modal-body">
+                    <div class="savedAddressText">Saved Addresses</div>
+                    <cfloop array = #addresses.address# item = "address">
+                        <div class="addressItem">
+                            <input type="radio" name="address" id="address" value=#address.addressId#>
+                            <div class="addressContent">
+                                <div>
+                                    <span class="firstName">#address.firstName#</span>
+                                    <span class="lastName">#address.lastName#</span>
+                                    <span class="phone">#address.phone#</span>
+                                    <div class="addressLine1">#address.addressline1#</div>
+                                    <div class="addressLine2">#address.addressline2#</div>
+                                    <div class="city">#address.city#</div>
+                                    <div class="state">#address.state#</div>
+                                    <div class="pincode">#address.pincode#</div>
+                                </div>
+                            </div>
+                        </div>
+                    </cfloop>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" id="addAddressBtn" name="submit">Add Address</button>
+                    <button type="button" class="btn btn-primary" id="submit" name="submit" onclick="redirectCartToorder()">Payment Details</button>
+                </div>
+            </div>
+        </div>
+    </div>
       <script src="./Script/jquery-3.7.1.min.js"></script>
+      <script src="./Script/bootstrapScript.js"></script>
       <script src="./Script/userPageScript.js"></script>
    </body>
 </html>

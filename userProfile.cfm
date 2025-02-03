@@ -1,7 +1,11 @@
 <cfif structKeyExists(form,"submit")>
     <cfset result = application.objProfile.addAddress(firstName = form.firstName,lastName = form.lastName,phone = form.phone,address1 = form.address1,address2 = form.address2,city = form.city,state = form.state,pincode = form.pincode)>    
 </cfif>
+<cfset userdetailsResult = application.objUser.fetchUserDetails()>
 <cfset addressResult = application.objProfile.fetchAddress()>
+<cfif structKeyExists(form,"editSubmitBtn")>
+    <cfset application.objUser.updateProfile(firstName = form.firstName,lastName = form.lastName,email = form.email,phone = form.phone)>
+</cfif>
 <!DOCTYPE html>
 <cfoutput>
 <html lang="en">
@@ -23,8 +27,8 @@
             </div>
             <div class="profileDetails">
                 <div>hello,</div>
-                <div class="profileName">#session.loginuserfirstName# #session.loginuserlastName#</div>
-                <div class="profileEmail">email: #session.userEmailId#</div>
+                <div class="profileName">#userdetailsResult.userDetails[1].firstName# #userdetailsResult.userDetails[1].lastName#</div>
+                <div class="profileEmail">email: #userdetailsResult.userDetails[1].email#</div>
             </div>
             <button class="editProfBtn" data-bs-toggle="modal" data-bs-target="##editProfileModal"><i class="fa-solid fa-pen"></i></button>
         </div>
@@ -116,35 +120,37 @@
     <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header">
-                    <div class="editProfileText">Edit Profile</div>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label for="firstName" class="form-label">FirstName:</label>
-                        <input type="text" class="form-control" name="firstName" id="firstName">
-                        <div id ="firstNameError" class="error"></div>
+                <form method="POST">
+                    <div class="modal-header">
+                        <div class="editProfileText">Edit Profile</div>
                     </div>
-                    <div class="mb-3">
-                        <label for="lastName" class="form-label">LastName:</label>
-                        <input type="text" class="form-control" name="lastName" id="lastName">
-                        <div id ="lastNameError" class="error"></div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="firstName" class="form-label">FirstName:</label>
+                            <input type="text" class="form-control" name="firstName" id="firstName" value="#userdetailsResult.userDetails[1].firstName#">
+                            <div id ="firstNameError" class="error"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="lastName" class="form-label">LastName:</label>
+                            <input type="text" class="form-control" name="lastName" id="lastName" value="#userdetailsResult.userDetails[1].lastName#">
+                            <div id ="lastNameError" class="error"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email:</label>
+                            <input type="text" class="form-control" name="email" id="email" value="#userdetailsResult.userDetails[1].email#">
+                            <div id ="emailError" class="error"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="phone" class="form-label">phone:</label>
+                            <input type="text" class="form-control" name="phone" id="phone" value="#userdetailsResult.userDetails[1].phone#">
+                            <div id ="phoneError" class="error"></div>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email:</label>
-                        <input type="text" class="form-control" name="email" id="email">
-                        <div id ="emailError" class="error"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="editSubmitBtn" name="editSubmitBtn">Save</button>
                     </div>
-                    <div class="mb-3">
-                        <label for="phone" class="form-label">phone:</label>
-                        <input type="text" class="form-control" name="phone" id="phone">
-                        <div id ="phoneError" class="error"></div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary" id="submit" name="submit">Save</button>
-                </div>
+                </form>
             </div>
         </div>
     </div>
