@@ -52,13 +52,13 @@
 
     <cffunction name="decryptId" access="remote" returntype="string" returnformat="JSON">
         <cfargument name="encryptedId" required="true" type="string">
-        <!--- <cftry> --->
+        <cftry>
             <cfset var decryptedId = decrypt(arguments.encryptedId,application.encryptionkey, "AES", "Base64")>
             <cfreturn decryptedId>
-        <!--- <cfcatch>
+        <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(subject = "Error in function:decryptId",body = cfcatch)>
         </cfcatch>
-        </cftry> --->
+        </cftry>
     </cffunction>
 
     <cffunction name="registerUser" access="public" returntype="struct">
@@ -189,7 +189,6 @@
             </cfif>
             </cfif>
         <cfcatch>
-            <cfdump var="#cfcatch#" >
             <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset application.objProductManagement.sendErrorEmail(subject = "Error in function:userLogin",body = cfcatch)>
         </cfcatch>
@@ -230,8 +229,7 @@
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
         <cfcatch>
-            <cfdump var="#cfcatch#" >
-            <cfset sendErrorEmail(
+            <cfset application.objProductManagement.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
             )>
@@ -258,8 +256,7 @@
                     fldUser_Id = <cfqueryparam value="#decryptId(session.loginuserId)#" cfsqltype="integer">
             </cfquery>
         <cfcatch>
-            <cfdump var="#cfcatch#">
-            <cfset sendErrorEmail(
+            <cfset application.objProductManagement.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
             )>

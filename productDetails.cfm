@@ -1,15 +1,18 @@
 <cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfset productDetails = application.objProductManagement.getProductDetails(productId = url.productId)>
 <cfset addresses = application.objProfile.fetchAddress()>
-<cfif  structKeyExists(form, "submitBtn")>
+
+<cfif structKeyExists(form, "submitBtn")>
    <cfif NOT structKeyExists(session, "loginuserId")>
-      <cflocation url = "userLogin.cfm?productId=#URLEncodedFormat(application.objUser.encryptId(productDetails.data.productId))#" addToken = "no">
-   </cfif>
-   <cfset result =  application.objCart.addCart(productId = url.productId,quantity = 1)>
-   <cfif result.success>
-      <cflocation url = "cart.cfm" addtoken = no>
+      <cflocation url = "userLogin.cfm?productId=#URLEncodedFormat(productDetails.data.productId)#" addToken = "no">
+   <cfelse>
+      <cfset result = application.objCart.addTocart(productId = url.productId, quantity = 1)>
+      <cfif result.success>
+         <cflocation url = "cart.cfm" addtoken = "no">
+      </cfif>
    </cfif>
 </cfif>
+
 <!DOCTYPE html>
 <cfoutput>
    <html lang="en">
@@ -67,8 +70,8 @@
             </div>
             <div class="productDetail">
                <div class="pathtext">
-                  <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(application.objUser.encryptId(productDetails.data.subcategoryId))#">#productDetails.data.subcategoryName#</a><i class="fa-solid fa-angle-right"></i>
-                  <a href="./categoryList.cfm?categoryId=#URLEncodedFormat(application.objUser.encryptId(productDetails.data.categoryId))#">#productDetails.data.categoryName#</a><i class="fa-solid fa-angle-right"></i>
+                  <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(productDetails.data.subcategoryId)#">#productDetails.data.subcategoryName#</a><i class="fa-solid fa-angle-right"></i>
+                  <a href="./categoryList.cfm?categoryId=#URLEncodedFormat(productDetails.data.categoryId)#">#productDetails.data.categoryName#</a><i class="fa-solid fa-angle-right"></i>
                   <a href="">#productDetails.data.productName#</a>
                </div>
                <h4 class="productName">#productDetails.data.productName#</h4>
@@ -177,7 +180,7 @@
                         <div class="savedAddressText">Saved Addresses</div>
                         <cfloop array = #addresses.address# item = "address">
                             <div class="addressItem">
-                                <input type="radio" name="address" id="address" value=#address.addressId#>
+                                <input type="radio" name="address" id="address" value=#urlEncodedFormat(address.addressId)#>
                                 <div class="addressContent">
                                     <div>
                                         <span class="firstName">#address.firstName#</span>
@@ -196,7 +199,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button type="button" class="btn btn-success" id="addAddressBtn" name="submit">Add Address</button>
-                        <button type="button" class="btn btn-primary" id="submit" name="submit" onclick="redirectToOrder('#url.productId#')">Payment Details</button>
+                        <button type="button" class="btn btn-primary" id="submit" name="submit" onclick="redirectToOrder('#urlEncodedFormat(url.productId)#')">Payment Details</button>
                     </div>
                 </div>
             </div>

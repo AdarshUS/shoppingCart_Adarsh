@@ -309,20 +309,20 @@ function calculateTotalPrice()
 {
     let productprices = document.getElementsByClassName("totalPrice"); 
     let actualprices = document.getElementsByClassName("actualPriceCart");
-    console.log(actualprices);
+    let qnty = document.getElementsByClassName("qntyNo");
     let taxes = document.getElementsByClassName("productTax");
     let totalPrice = 0;
     let totalActual = 0;
     let totalTax = 0;
     for (let index = 0; index < productprices.length; index++) {
-        console.log(actualprices[index].innerHTML)
+       console.log(parseFloat(actualprices[index].innerHTML) * parseFloat(qnty[index].value));
         totalPrice += parseFloat(productprices[index].innerHTML);
-        totalActual += parseFloat(actualprices[index].innerHTML);
+        totalActual += parseFloat(actualprices[index].innerHTML) * parseFloat(qnty[index].value);
         totalTax+=parseFloat(taxes[index].innerHTML);
     }
-    /* document.getElementById("totalActualprice").innerHTML = totalActual; */
-  /*   document.getElementById("totalTax").innerHTML = totalTax;
-    document.getElementById("subtotal").innerHTML = totalPrice; */
+    document.getElementById("totalActualprice").innerHTML = totalActual;
+    document.getElementById("totalTax").innerHTML = totalTax;
+    document.getElementById("subtotal").innerHTML = totalPrice;
 }
 
 function validateAddress()
@@ -436,6 +436,7 @@ function redirectCartToorder()
 {
     let selectedAddress = document.querySelector('input[name="address"]:checked');
     let addressId = selectedAddress.value;
+    console.log(addressId)
     window.location.href = `orderSummary.cfm?addressId=${addressId}&type=cart`;
 }
 

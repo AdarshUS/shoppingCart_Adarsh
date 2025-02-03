@@ -13,7 +13,7 @@
         </div>
         <div class="header_menu">
             <div class="profileContainer">
-                <i class="fa-solid fa-user"></i>
+                <a href="./userProfile.cfm"><i class="fa-solid fa-user"></i></a>
                 <span></span>
             </div>
             <a class="cartContainer" href="cart.cfm?redirect=cartpage">

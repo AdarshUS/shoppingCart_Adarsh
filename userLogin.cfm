@@ -45,7 +45,7 @@
             <p class="text-primary">#result.message#</p>
             <cfif result.success>
                 <cfif structKeyExists(url,"productId")>
-                    <cfset application.objCart.addcart(application.objUser.decryptId(session.loginuserId),application.objUser.decryptId(url.productId),1)>
+                    <cfset application.objCart.addTocart(url.productId,1)>
                     <cflocation url="cart.cfm" addtoken="no">
                 <cfelseif structKeyExists(url,"redirect")>
                     <cflocation url="cart.cfm" addToken = "no">

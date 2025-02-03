@@ -36,7 +36,7 @@
                   <cfloop array = #cart.data# item = product>
                      <tr id="#product.cartId#">
                         <td>
-                           <img src="./Assets/uploads/product#product.productId#/#product.imageFilePath#" alt="Analog Magazine Rack">
+                           <img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilepath#" alt="Analog Magazine Rack">
                            #product.productName#<br>
                            <small></small>
                         </td>
@@ -44,9 +44,9 @@
 </span></div><span id="actualprice#product.cartId#" class="actualPric">actualprice:<span class="actualPriceCart">#product.unitPrice#</span></span><span id="productTax#product.cartId#" class="productTaxes">Tax:<span class="productTax">#product.unittax#</span>%</span></td>
                         <td>
                            <div class="quantity-controls">
-                              <button onclick="decreaseQuantity(#product.cartId#,'decrement')" id="decreaseQntyBtn">-</button>
+                              <button onclick="decreaseQuantity('#product.cartId#','decrement')" id="decreaseQntyBtn">-</button>
                               <input type="text" value="#product.quantity#" id="qntyNo#product.cartId#" class="qntyNo">
-                              <button onclick="increaseQuantity(#product.cartId#,'increment')">+</button>
+                              <button onclick="increaseQuantity('#product.cartId#','increment')">+</button>
                            </div>
                         </td>
                         <td><i class="fa-solid fa-indian-rupee-sign"></i><span id="totalPrice#product.cartId#" class="totalPrice">#(product.unitPrice + (product.unitPrice * (product.unittax / 100))) * product.quantity#</span></td>
@@ -58,7 +58,7 @@
          </div>
          <div class="order-summary">
             <h2>Order Summary</h2>
-            <p>TotalPrice: <strong><i class="fa-solid fa-indian-rupee-sign"></i><span id="totalActualprice"></span></strong></p>
+            <p>TotalActualPrice: <strong><i class="fa-solid fa-indian-rupee-sign"></i><span id="totalActualprice"></span></strong></p>
             <p>TotalTax: <strong><i class="fa-solid fa-indian-rupee-sign"></i><span id="totalTax"></span>%</strong></p>
             <p>Shipping: <strong>Free</strong></p>
             <p>Subtotal: <strong><i class="fa-solid fa-indian-rupee-sign"></i><span id="subtotal"></span></strong></p>
@@ -76,7 +76,7 @@
                     <div class="savedAddressText">Saved Addresses</div>
                     <cfloop array = #addresses.address# item = "address">
                         <div class="addressItem">
-                            <input type="radio" name="address" id="address" value=#address.addressId#>
+                            <input type="radio" name="address" id="address" value=#urlEncodedFormat(address.addressId)#>
                             <div class="addressContent">
                                 <div>
                                     <span class="firstName">#address.firstName#</span>

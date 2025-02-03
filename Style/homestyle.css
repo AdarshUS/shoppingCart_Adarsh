@@ -446,3 +446,19 @@ h1 {
    padding: 5px;
    font-size: 12px;
 }
+
+.remove-item{
+    border: none;
+    background-color: #fff;
+}
+
+.savedAddressText{
+    font-size: 18px;
+    text-align: center;
+}
+
+.addressItem{
+    display: flex;
+    padding: 30px;
+    gap: 40px;
+}

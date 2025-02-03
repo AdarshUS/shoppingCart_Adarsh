@@ -42,8 +42,7 @@
             <cfset local.result.success = true>
             <cfset local.result.message = "successfully Added">
         <cfcatch>
-            <cfdump var="#cfcatch#" >
-            <cfset application.objUser.sendErrorEmail(
+            <cfset application.objProductManagement.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
             )>
@@ -59,6 +58,7 @@
             'message':'',
             'address':[]
         }>
+        
         <cftry>
             <cfquery name="local.fetchAllAddress" datasource="#application.datasource#">
                 SELECT
@@ -74,7 +74,7 @@
                 FROM
                     tbladdress
                 WHERE
-                    fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#">
+                    fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
                     AND fldActive = 1
                     <cfif structKeyExists(arguments,"addressId")>
                         AND fldAddress_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.addressId)#" cfsqltype="integer">
@@ -97,7 +97,7 @@
             <cfset local.result.message = "successful Operation">
         <cfcatch>
             <cfdump var="#cfcatch#" >
-            <cfset application.objUser.sendErrorEmail(
+            <cfset applicationobjProductManagement.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
             )>
@@ -114,14 +114,14 @@
                 UPDATE
                     tbladdress
                 SET
-                    fldActive = 0
+                    fldActive = 0,
+                    fldDeactivatedDate = now()
                 WHERE
-                    fldAddress_Id = <cfqueryparam value="#local.decryptedAddressId#">
+                    fldAddress_Id = <cfqueryparam value="#local.decryptedAddressId#" cfsqltype="integer">
                     AND fldActive = 1
             </cfquery>
         <cfcatch>
-            <cfdump var="#cfcatch#" >
-            <cfset sendErrorEmail(
+            <cfset application.objProductManagement.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
             )>
@@ -139,13 +139,32 @@
                 UPDATE
                     tbluser
                 SET
-                    fldFirstName = <cfqueryparam value="#arguments.firstName#">,
-                    fldLastName = <cfqueryparam value="#arguments.lastName#">,
-                    fldEmail = <cfqueryparam value="#arguments.email#">,
-                    fldPhone = <cfqueryparam value="#arguments.phone#">
+                    fldFirstName = <cfqueryparam value="#arguments.firstName#" cfsqltype="varchar">,
+                    fldLastName = <cfqueryparam value="#arguments.lastName#" cfsqltype="varchar">,
+                    fldEmail = <cfqueryparam value="#arguments.email#" cfsqltype="varchar">,
+                    fldPhone = <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">
             </cfquery>
         <cfcatch>
+            <cfset application.objProductManagement.sendErrorEmail(
+                subject=cfcatch.message, 
+                body = "#cfcatch#"
+            )>
         </cfcatch>
         </cftry>
+    </cffunction>
+
+    <cffunction name="ValidateCardDetails" access="public" returntype="struct">
+        <cfset local.result = {}>
+        <cfset local.cardNumber = 9526001384666666>
+        <cfset local.month = "september">
+        <cfset local.year = "2027">
+        <cfset local.cvv = 89>
+
+        <cfset local.result["cardNumber"] = local.cardNumber>
+        <cfset local.result["cardMonth"] = local.month>
+        <cfset local.result["cardYear"] = local.year>
+        <cfset local.result["cvv"] = local.cvv>
+
+        <cfreturn local.result>
     </cffunction>
 </cfcomponent>
