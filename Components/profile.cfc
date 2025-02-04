@@ -153,18 +153,36 @@
         </cftry>
     </cffunction>
 
-    <cffunction name="ValidateCardDetails" access="public" returntype="struct">
-        <cfset local.result = {}>
+    <cffunction name="ValidateCardDetails" access="remote" returntype="struct" returnformat="JSON">
+        <cfargument name="number" required="true" type="string">
+        <cfargument name="month" required="true" type="string">
+        <cfargument name="year" required="true" type="string">
+        <cfargument name="cvv" required="true" type="string">
+        
+        <cfset local.result = {
+            'success':'false',
+            'message':'',
+            'arguments':'#arguments#'
+        }>
         <cfset local.cardNumber = 9526001384666666>
-        <cfset local.month = "september">
-        <cfset local.year = "2027">
-        <cfset local.cvv = 89>
+        <cfset local.month = 12>
+        <cfset local.year = 2027>
+        <cfset local.cvv = 123>
 
-        <cfset local.result["cardNumber"] = local.cardNumber>
-        <cfset local.result["cardMonth"] = local.month>
-        <cfset local.result["cardYear"] = local.year>
-        <cfset local.result["cvv"] = local.cvv>
-
-        <cfreturn local.result>
+        <cfif len(trim(arguments.number)) NEQ 0 AND len(trim(arguments.month)) NEQ 0 AND len(trim(arguments.year)) NEQ 0 AND len(trim(arguments.cvv))>
+            <cfif arguments.number NEQ local.cardNumber>
+                <cfset local.result.message = "Invalid Card Number">
+            <cfelseif arguments.month NEQ local.month>
+                <cfset local.result.message = "Invalid Month">
+            <cfelseif arguments.year NEQ local.year>
+                <cfset local.result.message = "Invalid Year">
+            <cfelseif arguments.cvv NEQ local.cvv>
+                <cfset local.result.message = "Invalid CVV">
+            <cfelse>
+                <cfset local.result.success = true>
+                <cfset local.result.message = "successfully verified">
+            </cfif>
+        </cfif>
+            <cfreturn local.result>
     </cffunction>
 </cfcomponent>

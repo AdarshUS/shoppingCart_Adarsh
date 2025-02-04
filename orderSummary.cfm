@@ -1,4 +1,6 @@
 <cfset selectedAddress = application.objProfile.fetchAddress(url.addressId)>
+<cfparam name="url.productId" type="string" default="">
+<cfparam name="product" type="struct" default="#StructNew()#">
 <!DOCTYPE html>
 <cfoutput>
 <html lang="en">
@@ -74,22 +76,33 @@
                 <div class="modal-body">
                     <div class="mb-3 cardFeild">
                         <input type="text" class="form-control" name="cardNumber" id="cardNumber" placeholder="Card Number">
+                        <div id ="cardNoError" class="error"></div>
                     </div>
                     <div class="mb-3 cardFeild card_date">
                         <input type="text" class="form-control cardMonth" name="cardMonth" id="cardMonth" placeholder="month">
                         <input type="text" class="form-control cardYear" name="cardYear" id="cardYear" placeholder="year">
                     </div>
+                        <div class="errorCntr cardFeild d-flex justify-content-between">
+                            <div id ="cardMonthError"  class="error"></div>
+                            <div id ="cardYearError"  class="error"></div>
+                        </div>
                     <div class="mb-3 cardFeild cvvCntr">
                         <input type="text" class="form-control" name="cardcvv" id="cardcvv" placeholder="CVV">
                         <div class="cvvText">3 or 4 digits usually found on the signature strip</div>
                     </div>
-                    <button class="cardButton cardproceedBtn">
-                        Proceed
-                    </button>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                        <div id ="cardCvvError"  class="error"></div>
+                    <cfif structKeyExists(url,"type")>
+                            buy now
+                          <button class="cardButton cardproceedBtn" onclick="checkout('#url.addressId#','#url.productId#',#payableAmount#,#product.data.unitPrice#,#product.data.unitTax#)">
+                            Proceed
+                        </button>
+                    <cfelse>
+                        cart
+                        <button class="cardButton cardproceedBtn" onclick="checkout('#url.addressId#','#url.productId#',#payableAmount#)">
+                            Proceed
+                        </button>
+                    </cfif>
+                    <div id="cardVerify"></div>
                 </div>
             </div>
         </div>
