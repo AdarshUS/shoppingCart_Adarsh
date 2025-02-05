@@ -423,7 +423,7 @@
         </cfif>
         <cfset local.result = {
             "success": false,
-            "data": [],
+            "products": [],
             "message":""
          }>
         <cftry>
@@ -476,7 +476,7 @@
             </cfquery>
             <cfif local.fetchProducts.recordCount gt 0>
                 <cfloop query="local.fetchProducts">
-                    <cfset arrayAppend(local.result.data, {
+                    <cfset arrayAppend(local.result.products, {
                         "productId": application.objUser.encryptId(local.fetchProducts.fldProduct_Id),
                         "subCategoryId": application.objUser.encryptId(local.fetchProducts.fldSubCategoryId),
                         "productName": local.fetchProducts.fldProductName,

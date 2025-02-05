@@ -94,12 +94,13 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-success" id="addAddressBtn" name="submit">Add Address</button>
+                    <button type="button" class="btn btn-success" id="addAddressBtn" name="submit" data-bs-toggle="modal" data-bs-target="##addressAddModal">Add Address</button>
                     <button type="button" class="btn btn-primary" id="submit" name="submit" onclick="redirectCartToorder()">Payment Details</button>
                 </div>
             </div>
         </div>
     </div>
+    <cfinclude template="addAdress.cfm">
       <script src="./Script/jquery-3.7.1.min.js"></script>
       <script src="./Script/bootstrapScript.js"></script>
       <script src="./Script/userPageScript.js"></script>

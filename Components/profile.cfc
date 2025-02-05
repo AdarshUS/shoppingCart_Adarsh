@@ -134,18 +134,30 @@
         <cfargument name="email" type="string" required="true">
         <cfargument name="phone" type="string" required="true" >
         <cftry>
-            <cfquery>
-                UPDATE
+            <cfquery name="checkExistingEmailPhone">
+                SELECT
+                    1
+                FROM
                     tbluser
-                SET
-                    fldFirstName = <cfqueryparam value="#arguments.firstName#" cfsqltype="varchar">,
-                    fldLastName = <cfqueryparam value="#arguments.lastName#" cfsqltype="varchar">,
-                    fldEmail = <cfqueryparam value="#arguments.email#" cfsqltype="varchar">,
-                    fldPhone = <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">
+                WHERE
+                    (fldEmail = <cfqueryparam value="#arguments.email#" cfsqltype="varchar">
+                    OR fldPhone = <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">)
+                    AND fldUser_Id NEQ <cfqueryparam value="#session.loginuserId#" cfsqltype="varchar">
             </cfquery>
+            <cfif NOT checkExistingEmailPhone.RecordCount>
+                <cfquery datasource="#application.datasource#">
+                    UPDATE
+                        tbluser
+                    SET
+                        fldFirstName = <cfqueryparam value="#arguments.firstName#" cfsqltype="varchar">,
+                        fldLastName = <cfqueryparam value="#arguments.lastName#" cfsqltype="varchar">,
+                        fldEmail = <cfqueryparam value="#arguments.email#" cfsqltype="varchar">,
+                        fldPhone = <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">
+                </cfquery>
+            </cfif>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject=cfcatch.message, 
+                subject=cfcatch.message,
                 body = "#cfcatch#"
             )>
         </cfcatch>

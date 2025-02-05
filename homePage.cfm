@@ -16,7 +16,7 @@
       </div>
       <h5 class="productText">Random Products</h5>
       <div class="randomProducts d-flex flex-wrap">
-         <cfloop array = "#randomProducts.data#" item = product>
+         <cfloop array = "#randomProducts.products#" item = product>
                <a class="productBox" href="productDetails.cfm?productId=#URLEncodedFormat(product.productId)#">
                   <div class="productImage">
                      <img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" alt="productImage"  class="prodimg">

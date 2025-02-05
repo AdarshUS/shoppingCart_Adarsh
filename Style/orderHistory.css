@@ -1,0 +1,60 @@
+.form-control {
+	width: 30%;
+}
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        .order-header span {
+            font-size: 14px;
+            color: #555;
+        }
+        .order-status {
+            color: orange;
+            font-weight: bold;
+        }
+        .order-item {
+            display: flex;
+            gap: 15px;
+            border-bottom: 1px solid #ddd;
+            padding: 15px 0;
+        }
+        .order-item img {
+            width: 80px;
+            height: 80px;
+            border-radius: 5px;
+        }
+        .order-item-info {
+            flex: 1;
+        }
+        .order-item-info h4 {
+            margin: 0 0 5px;
+        }
+        .order-item-info p {
+            font-size: 14px;
+            color: #777;
+            margin: 5px 0;
+        }
+        .order-price {
+            font-weight: bold;
+            color: #000;
+        }
+        .order-actions a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+            margin-right: 10px;
+        }

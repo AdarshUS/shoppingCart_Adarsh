@@ -1,7 +1,7 @@
 <cfoutput>
 <cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfset brandsResult = application.objProductManagement.fetchBrands()>
-<cfset products = application.objProductManagement.fetchProducts(subCategoryId =url.subCategoryId)>
+<cfset productDetails = application.objProductManagement.fetchProducts(subCategoryId =url.subCategoryId)>
 <cfif structKeyExists(form,"submit")>
    <cfif LEN(form.hiddenValue) GT 0>
       <cfset application.objProductManagement.updateProduct(productId = form.hiddenValue,subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,productDescription = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>      
@@ -39,7 +39,7 @@
             <h5>products</h5>
             <button data-bs-toggle="modal" data-bs-target="##productModal" class="productAddbtn" onclick="createproduct()"><span>Add</span><i class="fa-solid fa-plus productPlus"></i></button>
          </div>
-          <cfloop array = "#products.data#"  index="product">
+          <cfloop array = "#productDetails.products#"  index="product">
             <div class="productBody" id="#product.productId#">
                <div class="productItem">
                   <div class="productItemLeft">

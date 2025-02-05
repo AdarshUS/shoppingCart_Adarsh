@@ -1,28 +1,25 @@
-function decreaseQuantity()
-{
+function decreaseQuantity() {
     let qnty = document.getElementById("orderInput").value;
-    if(qnty == 1)
-    {
+    if (qnty == 1) {
         document.getElementById("decreaseQntyBtnCart").disabled = true;
         return;
     }
-    let actualPrice = parseInt(document.getElementById("payableAmt").innerHTML)/qnty;
+    let actualPrice = parseInt(document.getElementById("payableAmt").innerHTML) / qnty;
     qnty--;
     document.getElementById("orderInput").value = qnty;
-    document.getElementById("payableAmt").innerHTML = actualPrice*qnty;
+    document.getElementById("payableAmt").innerHTML = actualPrice * qnty;
 }
 
-function increaseQuantity()
-{
+function increaseQuantity() {
     document.getElementById("decreaseQntyBtnCart").disabled = false;
     let qnty = document.getElementById("orderInput").value;
-    let actualPrice = parseInt(document.getElementById("payableAmt").innerHTML)/qnty;
+    let actualPrice = parseInt(document.getElementById("payableAmt").innerHTML) / qnty;
     qnty++;
     document.getElementById("orderInput").value = qnty;
-    document.getElementById("payableAmt").innerHTML = actualPrice*qnty;
+    document.getElementById("payableAmt").innerHTML = actualPrice * qnty;
 }
 
-function checkout(addressId,productId,totalAmnt,unitPrice,totalTax){
+function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
     let isValidData = true;
     let cardNumber = document.getElementById("cardNumber").value.trim();
     let cardYear = parseInt(document.getElementById("cardYear").value.trim(), 10);
@@ -31,13 +28,11 @@ function checkout(addressId,productId,totalAmnt,unitPrice,totalTax){
     let today = new Date();
     let qnty = document.getElementById("orderInput").value;
 
-    // Reset error messages
     document.getElementById("cardNoError").innerHTML = "";
     document.getElementById("cardMonthError").innerHTML = "";
     document.getElementById("cardCvvError").innerHTML = "";
     document.getElementById("cardYearError").innerHTML = "";
 
-    // Card Number Validation
     if (cardNumber === "") {
         document.getElementById("cardNoError").innerHTML = "Enter Card Number";
         isValidData = false;
@@ -46,13 +41,11 @@ function checkout(addressId,productId,totalAmnt,unitPrice,totalTax){
         isValidData = false;
     }
 
-    // Year Validation
     if (isNaN(cardYear) || cardYear < today.getFullYear()) {
         document.getElementById("cardYearError").innerHTML = "Enter year";
         isValidData = false;
     }
 
-    // Month Validation
     if (isNaN(cardMonth) || cardMonth < 1 || cardMonth > 12) {
         document.getElementById("cardMonthError").innerHTML = "Enter a valid month";
         isValidData = false;
@@ -61,7 +54,6 @@ function checkout(addressId,productId,totalAmnt,unitPrice,totalTax){
         isValidData = false;
     }
 
-    // CVV Validation
     if (cvv === "") {
         document.getElementById("cardCvvError").innerHTML = "Enter CVV";
         isValidData = false;
@@ -70,67 +62,70 @@ function checkout(addressId,productId,totalAmnt,unitPrice,totalTax){
         isValidData = false;
     }
 
+    if (isValidData) {
+        $.ajax({
+            url: 'components/profile.cfc?method=ValidateCardDetails',
+            type: 'POST',
+            data: {
+                number: cardNumber,
+                month: cardMonth,
+                year: cardYear,
+                cvv: cvv
+            },
+            success: function(result) {
+                let verifycardDetails = JSON.parse(result);
 
-    if(isValidData)
-    {
-        $.ajax({		
-        url: 'components/profile.cfc?method=ValidateCardDetails',
-        type: 'POST',
-        data: {number:cardNumber,month:cardMonth,year:cardYear,cvv:cvv},
-        success: function(result) {
-            let verifycardDetails = JSON.parse(result);
-            
-            if(verifycardDetails.success === true)
-            {
-                if(productId.trim() === "")
-                {
-                    $.ajax({		
-                    url: 'components/order.cfc?method=addOrderCart',
-                    type: 'POST',
-                    data: {addressId:addressId,cardnumber:cardNumber},
-                    success: function(result) 
-                    {
-                        location.href = "orderConfirmation.cfm"
-                    },
-                    error: function() 
-                    {
+                if (verifycardDetails.success === true) {
+                    if (productId.trim() === "") {
+                        $.ajax({
+                            url: 'components/order.cfc?method=addOrderCart',
+                            type: 'POST',
+                            data: {
+                                addressId: addressId,
+                                cardnumber: cardNumber
+                            },
+                            success: function(result) {
+                                location.href = "orderConfirmation.cfm"
+                            },
+                            error: function() {
 
+                            }
+                        });
+                    } else {
+                        console.log(totalTax);
+                        $.ajax({
+                            url: 'components/order.cfc?method=addOrder',
+                            type: 'POST',
+                            data: {
+                                addressId: addressId,
+                                cardnumber: cardNumber,
+                                totalPrice: totalAmnt,
+                                totalTax: totalTax,
+                                productId: productId,
+                                quantity: qnty,
+                                unitPrice: unitPrice,
+                                unitTax: totalTax
+                            },
+                            success: function(result) {
+                                location.href = "orderConfirmation.cfm"
+                            },
+                            error: function() {
+
+                            }
+                        });
                     }
-                });
+                } else {
+                    document.getElementById("cardVerify").innerHTML = verifycardDetails.message;
                 }
-                else{
-                    console.log(totalTax);
-                     $.ajax({		
-                    url: 'components/order.cfc?method=addOrder',
-                    type: 'POST',
-                    data: {addressId:addressId,cardnumber:cardNumber,totalPrice:totalAmnt,totalTax:totalTax,productId:productId,quantity:qnty,unitPrice:unitPrice,unitTax:totalTax},
-                    success: function(result) 
-                    {
-                        location.href = "orderConfirmation.cfm"
-                    },
-                    error: function() 
-                    {
-
-                    }
-                });
-                }
-            }
-            else
-            {
-                document.getElementById("cardVerify").innerHTML = verifycardDetails.message;
-            }
-        },
-        error: function() {
-        }
+            },
+            error: function() {}
         });
     }
 }
 
-$('.place-order').click(function(){
+$('.place-order').click(function() {
     document.getElementById("cardNoError").innerHTML = "";
     document.getElementById("cardMonthError").innerHTML = "";
     document.getElementById("cardCvvError").innerHTML = "";
     document.getElementById("cardYearError").innerHTML = "";
 })
-
-

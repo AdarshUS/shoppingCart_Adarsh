@@ -141,4 +141,94 @@
             Your order with orderId : #arguments.orderId# is confirmed.
         </cfmail>
     </cffunction>
+
+    <cffunction name="getOrderedItems" access="public" returntype="struct">
+        <cfset local.result = {
+            "success": false,
+            "orderDetails": [],
+            "message":""
+         }>
+         <cfdump var="#session.loginuserId#" >
+       <!---  <cftry> --->
+            <cfquery name="local.fetchOrderItems" datasource="#application.datasource#">
+                SELECT  
+	                O.fldOrder_Id,  
+	                O.fldTotalPrice, 
+	                O.fldTotalTax, 
+	                O.fldOrderDate, 
+	                A.fldFirstName, 
+	                A.fldLastName, 
+	                A.fldAddressLine1, 
+	                A.fldAddressLine2, 
+	                A.fldCity, 
+	                A.fldState, 
+	                A.fldPincode, 
+	                A.fldPhone,
+	                GROUP_CONCAT(OI.fldProductId) AS productId, 
+	                GROUP_CONCAT(OI.fldQuantity) AS productQuantity,
+	                GROUP_CONCAT(OI.fldUnitPrice) AS unitPrice, 
+	                GROUP_CONCAT(OI.fldUnitTax) AS unitTax,  
+	                GROUP_CONCAT(P.fldProductName) AS productName, 
+	                GROUP_CONCAT(PI.fldImageFilePath) AS productImage,
+	                GROUP_CONCAT(B.fldBrandName) AS brandName
+                FROM
+                	tblorder O
+                INNER JOIN tblorderitems OI ON OI.fldOrderId = O.fldOrder_Id
+                INNER JOIN tbladdress A ON A.fldAddress_Id = O.fldAddressId
+                INNER JOIN tblproduct P ON P.fldProduct_Id = OI.fldProductId
+                LEFT JOIN tblproductimages PI ON PI.fldProductId = P.fldProduct_Id AND fldDefaultImage = 1
+                INNER JOIN tblbrand B ON B.fldBrand_Id = P.fldBrandId
+                WHERE
+                    O.fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="varchar">
+                	AND A.fldActive = 1
+                	AND P.fldActive = 1
+                GROUP BY
+                	O.fldOrder_Id,
+                	O.fldTotalPrice,
+                	O.fldTotalTax,
+                	O.fldOrderDate,
+                    A.fldFirstName,
+                	A.fldLastName,
+                	A.fldAddressLine1,
+                	A.fldAddressLine2,
+                	A.fldCity,
+                	A.fldState,
+                	A.fldPincode,
+                	A.fldPhone
+                </cfquery>
+            <cfif local.fetchOrderItems.recordCount gt 0>
+                <cfloop query="local.fetchOrderItems">
+                    <cfset arrayAppend(local.result.orderDetails, {
+                        "orderId": local.fetchOrderItems.fldOrder_Id,
+                        "orderDate": local.fetchOrderItems.fldOrderDate,
+                        "imagefilepath": local.fetchOrderItems.productImage,
+                        "productName": local.fetchOrderItems.productName,
+                        "productId": application.objUser.encryptId(local.fetchOrderItems.productId),
+                        "brandName": local.fetchOrderItems.brandName,
+                        "quantity": local.fetchOrderItems.productQuantity,
+                        "unitPrice": local.fetchOrderItems.unitPrice,
+                        "unittax": local.fetchOrderItems.unitTax,
+                        "totalPrice": local.fetchOrderItems.fldTotalPrice,
+                        "totalTax": local.fetchOrderItems.fldTotalTax,
+                        "firstName": local.fetchOrderItems.fldFirstName,
+                        "lastName": local.fetchOrderItems.fldLastName,
+                        "address1": local.fetchOrderItems.fldAddressLine1,
+                        "address2": local.fetchOrderItems.fldAddressLine2,
+                        "city": local.fetchOrderItems.fldCity,
+                        "state": local.fetchOrderItems.fldState,
+                        "pincode": local.fetchOrderItems.fldPincode
+                    })>
+                </cfloop>
+            </cfif>
+            <cfset local.result.success = true>
+            <cfset local.result.message = "successful Operation">
+        <!--- <cfcatch>
+            <cfset application.objProductManagement.sendErrorEmail(
+                subject=cfcatch.message, 
+                body = "#cfcatch#"
+            )>
+        </cfcatch>
+        </cftry> --->
+        <cfreturn local.result>
+    </cffunction>
 </cfcomponent>

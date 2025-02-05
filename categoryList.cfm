@@ -31,7 +31,7 @@
             <a class="subcategoryName p-3" href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(subCategory.subcategoryId)#">#subCategory.subcategoryName#</a>
             <div class="productContainer d-flex gap-3 p-3">
                <cfset randProducts = application.objProductManagement.fetchProducts(subCategoryId = subCategory.subCategoryId,random=true)>
-               <cfloop array = "#randProducts.data#" item = "product">
+               <cfloop array = "#randProducts.products#" item = "product">
                    <a class="productBox" href="productDetails.cfm?productId=#URLEncodedFormat(product.productId)#">
                      <div class="productImage"><img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" alt="productImage" class="prodimg"></div>
                      <div class="productName">#product.productName#</div>

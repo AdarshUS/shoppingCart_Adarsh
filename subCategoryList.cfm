@@ -1,7 +1,7 @@
 <cfoutput>
 <cfparam name="url.sort" default="ASC">
 <cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
-<cfset products = application.objProductManagement.fetchProducts(subCategoryId = url.subCategoryId,limit = 4,sort = url.sort)>
+<cfset productDetails = application.objProductManagement.fetchProducts(subCategoryId = url.subCategoryId,limit = 4,sort = url.sort)>
 <!Doctype html>
 <html>
    <head>
@@ -28,10 +28,10 @@
          </cfloop>
       </div>
       <main>
-         <cfif arrayIsEmpty(products.data)>
+         <cfif arrayIsEmpty(productDetails.products)>
             <h4 class="subcategoryname">No Items Found</h4>
          <cfelse>
-            <h4 class="subcategoryname">#products.data[1].subcategoryName#</h4>
+            <h4 class="subcategoryname">#productDetails.products[1].subcategoryName#</h4>
              <div class="priceFilterContainer">
             <div class="priceSort">
                <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(url.subcategoryId)#&sort=ASC">price: Low to High</a>
@@ -57,7 +57,7 @@
          </cfif>
          <div class="viewMoreBtn" id="viewMoreBtn"><span onclick="toggleProducts('#url.subcategoryId#','#url.sort#')">view All<i class="fa-solid fa-caret-down"></i></span></div>
          <div class="productContainer" id="productContainer">
-            <cfloop array = "#products.data#" item = product>
+            <cfloop array = "#productDetails.products#" item = product>
                   <a class="productBox" id="productBox" href="productDetails.cfm?productId=#URLEncodedFormat(product.productId)#">
                      <div class="productImage"><img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" alt="productImage" class="prodimg" id="prodimg"></div>
                      <div class="productName" id="productName">#product.productName#</div>
