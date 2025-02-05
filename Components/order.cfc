@@ -14,7 +14,7 @@
         <cfset local.decryptedUserId = application.objUser.decryptId(session.loginuserId)>
         <cfset local.orderId = createUUID()>
 
-        <cftry>
+        <!--- <cftry> --->
             <cfquery datasource="#application.datasource#">
                 INSERT INTO  tblorder (
                     fldOrder_Id,
@@ -51,13 +51,13 @@
                     <cfqueryparam value="#arguments.unitTax#" cfsqltype="integer">
                 )
             </cfquery>
-        <cfcatch>
-            <cfset applicationobjProductManagement.sendErrorEmail(
+        <!--- <cfcatch>
+            <cfset application.objProductManagement.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
-        </cftry>
+        </cftry> --->
     </cffunction>
 
     <cffunction name="addOrderCart" access="remote" returntype="void" >
@@ -74,7 +74,7 @@
             <cfset local.totalActualPrice+=cartItem.unitPrice>
             <cfset local.totalTax+=cartItem.unitTax>
         </cfloop>
-        <cftry>
+        <!--- <cftry> --->
             <cfquery datasource="#application.datasource#">
                 INSERT INTO  tblorder (
                     fldOrder_Id,
@@ -121,12 +121,12 @@
                 WHERE
                     fldUserId = <cfqueryparam value="#local.decryptedUserId#" cfsqltype="integer">
             </cfquery>
-        <cfcatch>
-            <cfset applicationobjProductManagement.sendErrorEmail(
+        <!--- <cfcatch>
+            <cfset application.objProductManagement.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
-        </cftry>
+        </cftry> --->
     </cffunction>
 </cfcomponent>

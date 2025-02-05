@@ -1,10 +1,13 @@
 <cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfset productDetails = application.objProductManagement.getProductDetails(productId = url.productId)>
-<cfset addresses = application.objProfile.fetchAddress()>
-
+<cfif structKeyExists(session, "loginuserId")>
+    <cfset addresses = application.objProfile.fetchAddress()>
+ <cfelse>
+    <cfset addresses = []>
+ </cfif>
 <cfif structKeyExists(form, "submitBtn")>
    <cfif NOT structKeyExists(session, "loginuserId")>
-      <cflocation url = "userLogin.cfm?productId=#URLEncodedFormat(productDetails.data.productId)#" addToken = "no">
+      <cflocation url = "userLogin.cfm?productId=#URLEncodedFormat(productDetails.data.productId)#&redirect=cart" addToken = "no">
    <cfelse>
       <cfset result = application.objCart.addTocart(productId = url.productId, quantity = 1)>
       <cfif result.success>
@@ -83,7 +86,15 @@
                </div>
                <form method="post">
                   <div class="buttonContainer">
-                     <button type="button" class="btn btn-info p-2" data-bs-toggle="modal" data-bs-target="##selectAddressModal">Buy Now</button>
+                    <cfif NOT structKeyExists(session, "loginuserId")>
+                        <button type="button" class="btn btn-info p-2" onclick="window.location.href='userLogin.cfm?productId=#URLEncodedFormat(productDetails.data.productId)#&redirect=product'">
+                           Buy Now
+                        </button>
+                     <cfelse>
+                        <button type="button" class="btn btn-info p-2" data-bs-toggle="modal" data-bs-target="##selectAddressModal">
+                            Buy Now
+                        </button>
+                     </cfif>
                      <button class="btn btn-success p-2" name="submitBtn">Add to Cart</button>
                   </div>
                </form>

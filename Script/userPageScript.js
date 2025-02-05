@@ -283,26 +283,18 @@ function deleteCartItem(cartId)
     }
 }
 
-function visiblePassword()
-{   
-    let x = document.getElementById("userPassword");
-  if (x.type === "password")
-   {
-    x.type = "text";
-  } else {
-    x.type = "password";
-  }
-}
-
-function hidePassword()
-{
-     let x = document.getElementById("userPassword");
-     if (x.type === "password")
-   {
-    x.type = "text";
-  } else {
-    x.type = "password";
-  }
+function togglePassword() {
+    var passwordField = document.getElementById("userPassword");
+    var icon = document.querySelector(".passwordToggle i");
+    if (passwordField.type === "password") {
+       passwordField.type = "text";
+       icon.classList.remove("fa-eye");
+       icon.classList.add("fa-eye-slash");
+    } else {
+       passwordField.type = "password";
+       icon.classList.remove("fa-eye-slash");
+       icon.classList.add("fa-eye");
+    }
 }
 
 function calculateTotalPrice()

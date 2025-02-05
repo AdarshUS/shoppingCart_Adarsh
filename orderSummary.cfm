@@ -1,6 +1,7 @@
 <cfset selectedAddress = application.objProfile.fetchAddress(url.addressId)>
 <cfparam name="url.productId" type="string" default="">
 <cfparam name="product" type="struct" default="#StructNew()#">
+<cfset payableAmount = 0>
 <!DOCTYPE html>
 <cfoutput>
 <html lang="en">
@@ -28,6 +29,7 @@
             <div class="pincode">#selectedAddress.Address[1].pincode#</div>
         </div>
         <cfif structKeyExists(url,"type") AND url.type EQ "cart">
+            <cfset payableAmount = 0>
             <cfset cartItems = application.objCart.fetchCart()>
             <cfloop array="#cartItems.data#" item="product">
                 <div class="product">
@@ -47,6 +49,7 @@
                 </div>
             </cfloop>
         <cfelse>
+            <cfset payableAmount = 0>
             <cfset product = application.objProductManagement.getProductDetails(url.productId)>
             <cfset payableAmount = product.data.unitPrice + (product.data.unitPrice * product.data.unitTax / 100)>
             <div class="product">
@@ -91,7 +94,7 @@
                         <div class="cvvText">3 or 4 digits usually found on the signature strip</div>
                     </div>
                         <div id ="cardCvvError"  class="error"></div>
-                    <cfif structKeyExists(url,"type")>
+                    <cfif structKeyExists(url,"type") AND url.type EQ "single">
                             buy now
                           <button class="cardButton cardproceedBtn" onclick="checkout('#url.addressId#','#url.productId#',#payableAmount#,#product.data.unitPrice#,#product.data.unitTax#)">
                             Proceed
