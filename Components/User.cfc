@@ -35,6 +35,7 @@
             </cfif>
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
+            <cfset application.objProductManagement.sendErrorEmail(subject = "Error in function: adminLogin",body = cfcatch)>
         </cfcatch>
         </cftry>
         <cfreturn local.result>
@@ -102,7 +103,7 @@
             	<cfset arrayAppend(local.result.errors, "*Please enter a valid password (minimum 6 characters, 1 lowercase, 1 uppercase)")>
             </cfif>
             <cfset local.saltString = generateSecretKey("AES")>
-            <cfset local.hashedPassword =hmac(arguments.password,local.saltString,"hmacSHA256")>        
+            <cfset local.hashedPassword =hmac(arguments.password,local.saltString,"hmacSHA256")>
             <cfquery name="checkUniqueEmailPhone" datasource="#application.datasource#">
                 SELECT
                     1
@@ -141,7 +142,7 @@
             </cfif>
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
-            <cfset application.objProductManagement.sendErrorEmail(subject = "Error in function:decryptId",body = cfcatch)>
+            <cfset application.objProductManagement.sendErrorEmail(subject = "Error in function: registerUser",body = cfcatch)>
         </cfcatch>
         </cftry>
         <cfreturn local.result>
@@ -180,6 +181,7 @@
                         <cfset session.loginuserId = application.objUser.encryptId(local.getUserDetails.fldUser_Id)>
                         <cfset session.loginuserfirstName = local.getUserDetails.fldFirstName>
                         <cfset session.loginuserlastName = local.getUserDetails.fldLastName>
+                        <cfset session.loginuserMail = local.getUserDetails.fldEmail>
                         <cfset local.result.message = "Login successful.">
                     <cfelse>
                         <cfset local.result.message = "Invalid password.">
@@ -190,7 +192,7 @@
             </cfif>
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
-            <cfset application.objProductManagement.sendErrorEmail(subject = "Error in function:userLogin",body = cfcatch)>
+            <cfset application.objProductManagement.sendErrorEmail(subject = "Error in function: userLogin",body = cfcatch)>
         </cfcatch>
         </cftry>
         <cfreturn local.result>
@@ -230,7 +232,7 @@
             <cfset local.result.message = "successful Operation">
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = "Error in function: fetchUserDetails", 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -257,7 +259,7 @@
             </cfquery>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = "Error in function: updateProfile", 
                 body = "#cfcatch#"
             )>
         </cfcatch>

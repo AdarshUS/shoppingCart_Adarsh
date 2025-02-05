@@ -13,8 +13,7 @@
         <cfset local.decryptedProductId = application.objUser.decryptId(arguments.productId)>
         <cfset local.decryptedUserId = application.objUser.decryptId(session.loginuserId)>
         <cfset local.orderId = createUUID()>
-
-        <!--- <cftry> --->
+        <cftry>
             <cfquery datasource="#application.datasource#">
                 INSERT INTO  tblorder (
                     fldOrder_Id,
@@ -51,16 +50,17 @@
                     <cfqueryparam value="#arguments.unitTax#" cfsqltype="integer">
                 )
             </cfquery>
-        <!--- <cfcatch>
+            <cfset sendOrderConfirmationMail(local.orderId)>
+        <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
-        </cftry> --->
+        </cftry>
     </cffunction>
 
-    <cffunction name="addOrderCart" access="remote" returntype="void" >
+    <cffunction name="addOrderCart" access="remote" returntype="void">
         <cfargument name="addressId" type="string" required="true">
         <cfargument name="cardnumber" type="string" required="true">
 
@@ -74,7 +74,7 @@
             <cfset local.totalActualPrice+=cartItem.unitPrice>
             <cfset local.totalTax+=cartItem.unitTax>
         </cfloop>
-        <!--- <cftry> --->
+        <cftry>
             <cfquery datasource="#application.datasource#">
                 INSERT INTO  tblorder (
                     fldOrder_Id,
@@ -121,12 +121,24 @@
                 WHERE
                     fldUserId = <cfqueryparam value="#local.decryptedUserId#" cfsqltype="integer">
             </cfquery>
-        <!--- <cfcatch>
+            <cfset sendOrderConfirmationMail(local.orderId)>
+        <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
-        </cftry> --->
+        </cftry>
+    </cffunction>
+
+    <cffunction name="sendOrderConfirmationMail" access="public" returntype="void">
+        <cfargument name="orderId" type="string" required="true">
+        <cfset local.sender = "adarshus1999@gmail.com">
+        <cfset local.receiver = "#session.loginuserMail#">
+        <cfset local.subject = "order confirmation mail">
+
+        <cfmail from="#local.sender#" subject="#local.subject#" to="#local.receiver#">
+            Your order with orderId : #arguments.orderId# is confirmed.
+        </cfmail>
     </cffunction>
 </cfcomponent>

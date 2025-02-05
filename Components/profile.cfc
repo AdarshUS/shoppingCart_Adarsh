@@ -96,7 +96,6 @@
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
         <cfcatch>
-            <cfdump var="#cfcatch#" >
             <cfset applicationobjProductManagement.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"

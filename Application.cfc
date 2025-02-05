@@ -17,12 +17,12 @@
 
     <cffunction name="onRequestStart" returnType="void">
         <cfargument name="requestname" required="true">
-        <cfif structKeyExists(url,"reload") AND url.reload EQ 1 <!--- AND structKeyExists(session,"loginuserId") --->>
+        <cfif structKeyExists(url,"reload") AND url.reload EQ 1 AND structKeyExists(session,"loginuserId")>
             <cfset onApplicationStart()>
         </cfif>
         <cfset local.pages = ["admin.cfm","userSignUp.cfm","userLogin.cfm","homePage.cfm","categoryList.cfm","subCategoryList.cfm","productDetails.cfm","cart.cfm"]>
-       <!---  <cfif NOT structKeyExists(session,"loginuserId") AND NOT arrayFindNoCase(local.pages, ListLast(CGI.SCRIPT_NAME,'/'))>
+        <cfif NOT structKeyExists(session,"loginuserId") AND NOT arrayFindNoCase(local.pages, ListLast(CGI.SCRIPT_NAME,'/'))>
 	    	 <cflocation url="admin.cfm" addToken="no">
-	    </cfif> --->
+	    </cfif>
     </cffunction>
 </cfcomponent> 

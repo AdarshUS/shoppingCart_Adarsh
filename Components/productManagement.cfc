@@ -147,7 +147,7 @@
         <cfcatch type="any">
             <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset sendErrorEmail(
-                subject=cfcatch.message, 
+                subject= "Error in function: deleteCategory "&cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -193,7 +193,7 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset sendErrorEmail(
-                subject=cfcatch.message, 
+                subject= "Error in function: addSubCategory "&cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -232,7 +232,7 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = "Error in function: fetchSubCategories "&cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -274,7 +274,7 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = "Error in function: updateSubCategory "&cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -304,7 +304,7 @@
             <cfset local.result.message = "successful Operation">
         <cfcatch>
             <cfset sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = "Error in function: DeleteSubCategory "&cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -371,7 +371,7 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = "Error in function: addProduct "&cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -403,7 +403,7 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset sendErrorEmail(
-                 subject=cfcatch.message, 
+                 subject = "Error in function: fetchBrands "&cfcatch.message, 
                  body = "#cfcatch#"
              )>
         </cfcatch>
@@ -494,7 +494,7 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset sendErrorEmail(
-            subject=cfcatch.message, 
+            subject = "Error in function: fetchProducts "&cfcatch.message, 
             body = "#cfcatch#"
         )>
         </cfcatch>
@@ -582,14 +582,13 @@
         <cfcatch>
             <cfset local.result.message = "An error occurred">
             <cfset sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = "Error in function: getProductDetails "&cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
         </cftry>
         <cfreturn local.result>
     </cffunction>
-    
 
     <cffunction name="updateProduct" access="public" returntype="void">
         <cfargument name="productId" required="true" type="string">
@@ -645,7 +644,7 @@
         <cfcatch>
             <cfset local.structProduct = {"message": cfcatch.message}>
             <cfset sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = "Error in function: updateProduct "&cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -697,7 +696,7 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = "Error in function: deleteProduct "&cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -725,10 +724,11 @@
                     fldDefaultImage = 1
                 WHERE
                     fldImageFilePath = <cfqueryparam value = #arguments.productImage# cfsqltype="varchar">
+                    AND fldDefaultImage = 0
             </cfquery>
         <cfcatch>
             <cfset sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = "Error in function: updateDefaultImage "&cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -757,10 +757,9 @@
              file = "#local.imagePath#"
             >
         <cfcatch>
-            <cfdump var="#cfcatch#" abort>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = "Error in function: deleteProductImage "&cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -769,14 +768,25 @@
   
     <cffunction name="sendErrorEmail" access="public" returntype="void" output="false">
         <cfargument name="subject" type="string" required="true">
-        <cfargument name="body" type="string" required="true">
+        <cfargument name="body" type="any" required="true">
         <cfset local.sender = "adarshus1999@gmail.com">
         <cfset local.receiverAddress = "adarsh.us@techversantinfotech.com">
+        <cfset local.errorMessage = "">
+        <cfif isStruct(arguments.body)>
+            <cfset local.errorMessage = 
+                "Error Type: #arguments.body.type#<br>
+                Message: #arguments.body.message#<br>
+                Detail: #arguments.body.detail#<br>
+                StackTrace: #arguments.body.stackTrace#">
+        <cfelse>
+            <cfset local.errorMessage = arguments.body>
+        </cfif>
         <cfmail 
-            from = local.sender 
-            to = local.receiverAddress 
-            subject="#arguments.subject#">
-            #arguments.body#
+            from = "#local.sender#" 
+            to = "#local.receiverAddress#" 
+            subject = "#arguments.subject#" 
+            type="html">
+            #local.errorMessage#
         </cfmail>
     </cffunction>
 

@@ -15,7 +15,6 @@
       </cfif>
    </cfif>
 </cfif>
-
 <!DOCTYPE html>
 <cfoutput>
    <html lang="en">

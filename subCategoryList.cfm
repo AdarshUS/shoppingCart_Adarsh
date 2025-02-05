@@ -1,7 +1,6 @@
 <cfoutput>
 <cfparam name="url.sort" default="ASC">
 <cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
-
 <cfset products = application.objProductManagement.fetchProducts(subCategoryId = url.subCategoryId,limit = 4,sort = url.sort)>
 <!Doctype html>
 <html>

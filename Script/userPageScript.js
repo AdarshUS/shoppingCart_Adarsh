@@ -319,7 +319,6 @@ function calculateTotalPrice()
 
 function validateAddress()
 {
-    
     let validAddress = true;
     const firstName = document.getElementById("firstName").value;
     const phone = document.getElementById("phone").value;
@@ -386,7 +385,6 @@ function validateAddress()
 
 function deleteAddress(addressId)
 {
-    
     if(confirm("Are you sure you want to delete")) 
     {
         $.ajax({

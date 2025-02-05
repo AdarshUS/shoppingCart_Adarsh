@@ -2,7 +2,6 @@
     <cffunction name="addTocart" access="public" returntype="struct">
         <cfargument name = "productId" required="true" type="string">
         <cfargument name = "quantity" required="true" type="integer">
-        <cfdump var="#arguments.productId#">
         <cfset local.result = {
             success = false,
             message = ""

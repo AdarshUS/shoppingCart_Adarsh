@@ -29,7 +29,6 @@ function checkout(addressId,productId,totalAmnt,unitPrice,totalTax){
     let cardMonth = parseInt(document.getElementById("cardMonth").value.trim(), 10);
     let cvv = document.getElementById("cardcvv").value.trim();
     let today = new Date();
-    let expireDay = new Date(cardYear, cardMonth, 0); 
     let qnty = document.getElementById("orderInput").value;
 
     // Reset error messages
