@@ -1,5 +1,15 @@
 <cfif structKeyExists(form,"submit")>
-    <cfset result = application.objProfile.addAddress(firstName = form.firstName,lastName = form.lastName,phone = form.phone,address1 = form.address1,address2 = form.address2,city = form.city,state = form.state,pincode = form.pincode)>    
+    <cfset variables.addressData = {
+        "firstName" : form.firstName,
+        "lastName" : form.lastName,
+        "phone" : form.phone,
+        "address1" : form.address1,
+        "address2" : form.address2,
+        "city" : form.city,
+        "state": form.state,
+        "pincode" : form.pincode
+    }>
+    <cfset result = application.objUser.addAddress(argumentCollection={ "addressData" = addressData })>
 </cfif>
 <!DOCTYPE html>
 <html lang="en">

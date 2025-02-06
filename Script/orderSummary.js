@@ -78,7 +78,7 @@ function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
                 if (verifycardDetails.success === true) {
                     if (productId.trim() === "") {
                         $.ajax({
-                            url: 'components/order.cfc?method=addOrderCart',
+                            url: 'components/order.cfc?method=placeOrder',
                             type: 'POST',
                             data: {
                                 addressId: addressId,

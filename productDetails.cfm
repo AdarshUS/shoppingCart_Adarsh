@@ -1,7 +1,7 @@
 <cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfset productDetails = application.objProductManagement.getProductDetails(productId = url.productId)>
 <cfif structKeyExists(session, "loginuserId")>
-    <cfset addresses = application.objProfile.fetchAddress()>
+    <cfset addresses = application.objUser.fetchAddress()>
  <cfelse>
     <cfset addresses = []>
  </cfif>

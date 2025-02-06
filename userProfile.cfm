@@ -1,5 +1,5 @@
 <cfset userdetailsResult = application.objUser.fetchUserDetails()>
-<cfset addressResult = application.objProfile.fetchAddress()>
+<cfset addressResult = application.objUser.fetchAddress()>
 <cfif structKeyExists(form,"editSubmitBtn")>
     <cfset application.objUser.updateProfile(firstName = form.firstName,lastName = form.lastName,email = form.email,phone = form.phone)>
      <cflocation url="userProfile.cfm" addtoken="no">

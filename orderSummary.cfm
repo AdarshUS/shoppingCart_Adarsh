@@ -1,4 +1,4 @@
-<cfset selectedAddress = application.objProfile.fetchAddress(url.addressId)>
+<cfset selectedAddress = application.objUser.fetchAddress(url.addressId)>
 <cfparam name="url.productId" type="string" default="">
 <cfparam name="product" type="struct" default="#StructNew()#">
 <cfset payableAmount = 0>

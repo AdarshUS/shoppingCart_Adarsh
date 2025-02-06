@@ -8,14 +8,14 @@
         <cftry>
             <cfquery name="local.checkCategory" datasource="#application.datasource#">
                 SELECT
-                    1
+                    count(*) AS categoryCount
                 FROM
                     tblcategory
                 WHERE
                     fldCategoryName = <cfqueryparam value="#arguments.categoryName#" cfsqltype="varchar">
                     AND fldActive = 1;
             </cfquery>
-            <cfif local.checkCategory.RecordCount>
+            <cfif local.checkCategory.categoryCount>
                 <cfset local.result.message = "Category Already Exist">
             <cfelse>
                 <cfquery datasource="#application.datasource#">
@@ -92,14 +92,14 @@
         <cftry>
             <cfquery name="checkExistingCategory" datasource="#application.datasource#">
                 SELECT
-                    1
+                    count(*) AS categoryCount
                 FROM
                     tblcategory
                 WHERE
                     fldCategoryName = <cfqueryparam value="#arguments.newCategory#" cfsqltype="varchar">
                     AND fldactive = 1
             </cfquery>
-            <cfif checkExistingCategory.RecordCount>
+            <cfif checkExistingCategory.categoryCount>
                 <cfset local.result.message = "this category Already Exist">
             <cfelse>
                 <cfquery datasource="#application.datasource#">
@@ -800,7 +800,6 @@
             result="local.newPath"
         >
         <cfset result = local.newPath>
-    
     <cfreturn result>
     </cffunction>
 </cfcomponent>

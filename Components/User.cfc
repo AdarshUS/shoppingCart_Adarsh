@@ -265,4 +265,160 @@
         </cfcatch>
         </cftry>
     </cffunction>
+
+    <cffunction name="addAddress" access="public" returntype="struct">
+        <cfargument name="addressData" required="true" type="struct">
+        <cfset local.result = {
+            'success':'false',
+            'message':''
+        }>
+        <cftry>
+            <cfquery datasource="#application.datasource#">
+                INSERT INTO tbladdress (
+                    fldUserId,
+                    fldFirstName,
+                    fldLastName,
+                    fldAddressLine1,
+                    fldAddressLine2,
+                    fldCity,
+                    fldPhone,
+                    fldState,
+                    fldPincode,
+                    fldCreatedDate
+                )
+                VALUES(
+                    <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">,
+                    <cfqueryparam value="#addressData.firstName#" cfsqltype="varchar">,
+                    <cfqueryparam value="#addressData.lastName#" cfsqltype="varchar">,
+                    <cfqueryparam value="#addressData.address1#" cfsqltype="varchar">,
+                    <cfqueryparam value="#addressData.address2#" cfsqltype="varchar">,
+                    <cfqueryparam value="#addressData.city#" cfsqltype="varchar">,
+                    <cfqueryparam value="#addressData.phone#" cfsqltype="varchar">,
+                    <cfqueryparam value="#addressData.state#" cfsqltype="varchar">,
+                    <cfqueryparam value="#addressData.pincode#" cfsqltype="varchar">,
+                    now()
+                )
+            </cfquery>
+            <cfset local.result.success = true>
+            <cfset local.result.message = "successfully Added">
+        <cfcatch>
+            <cfset application.objProductManagement.sendErrorEmail(
+                subject=cfcatch.message, 
+                body = "#cfcatch#"
+            )>
+        </cfcatch>
+        </cftry>
+        <cfreturn local.result>
+    </cffunction>
+
+    <cffunction name="fetchAddress" access="public" returntype="struct">
+        <cfargument name="addressId" required="false" type="string">
+        <cfset local.result = {
+            'success':'false',
+            'message':'',
+            'address':[]
+        }>
+        
+        <cftry>
+            <cfquery name="local.fetchAllAddress" datasource="#application.datasource#">
+                SELECT
+                    fldAddress_Id,
+                    fldFirstName,
+                    fldLastName,
+                    fldAddressLine1,
+                    fldAddressLine2,
+                    fldCity,
+                    fldState,
+                    fldPincode,
+                    fldPhone
+                FROM
+                    tbladdress
+                WHERE
+                    fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
+                    AND fldActive = 1
+                    <cfif structKeyExists(arguments,"addressId")>
+                        AND fldAddress_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.addressId)#" cfsqltype="integer">
+                    </cfif>
+            </cfquery>
+            <cfloop query="local.fetchAllAddress">
+                <cfset arrayAppend(local.result.address, {
+                        "firstName": local.fetchAllAddress.fldFirstName,
+                        "lastName": local.fetchAllAddress.fldLastName,
+                        "addressline1": local.fetchAllAddress.fldAddressLine1,
+                        "addressline2": local.fetchAllAddress.fldAddressLine2,
+                        "city": local.fetchAllAddress.fldCity,
+                        "state": local.fetchAllAddress.fldState,
+                        "pincode": local.fetchAllAddress.fldPincode,
+                        "phone": local.fetchAllAddress.fldPhone,
+                        "addressId": application.objUser.encryptId(local.fetchAllAddress.fldAddress_Id)
+                })>
+            </cfloop>
+            <cfset local.result.success = true>
+            <cfset local.result.message = "successful Operation">
+        <cfcatch>
+            <cfset application.objProductManagement.sendErrorEmail(
+                subject=cfcatch.message, 
+                body = "#cfcatch#"
+            )>
+        </cfcatch>
+        </cftry>
+        <cfreturn local.result>
+    </cffunction>
+
+    <cffunction name="deleteAddress" access="remote" returntype="void">
+        <cfargument name="addessId" type="string" required="true">
+        <cfset local.decryptedAddressId = application.objUser.decryptId(arguments.addessId)>
+        <cftry>
+            <cfquery datasource="#application.datasource#">
+                UPDATE
+                    tbladdress
+                SET
+                    fldActive = 0,
+                    fldDeactivatedDate = now()
+                WHERE
+                    fldAddress_Id = <cfqueryparam value="#local.decryptedAddressId#" cfsqltype="integer">
+                    AND fldActive = 1
+                    AND fldUserId = <cfqueryparam value="#session.loginuserId#" cfsqltype="integer">
+            </cfquery>
+        <cfcatch>
+            <cfset application.objProductManagement.sendErrorEmail(
+                subject=cfcatch.message, 
+                body = "#cfcatch#"
+            )>
+        </cfcatch>
+        </cftry>
+    </cffunction>
+
+    <cffunction name="ValidateCardDetails" access="remote" returntype="struct" returnformat="JSON">
+        <cfargument name="number" required="true" type="string">
+        <cfargument name="month" required="true" type="string">
+        <cfargument name="year" required="true" type="string">
+        <cfargument name="cvv" required="true" type="string">
+        
+        <cfset local.result = {
+            'success':'false',
+            'message':'',
+            'arguments':'#arguments#'
+        }>
+        <cfset local.cardNumber = 9526001384666666>
+        <cfset local.month = 12>
+        <cfset local.year = 2027>
+        <cfset local.cvv = 123>
+
+        <cfif len(trim(arguments.number)) NEQ 0 AND len(trim(arguments.month)) NEQ 0 AND len(trim(arguments.year)) NEQ 0 AND len(trim(arguments.cvv))>
+            <cfif arguments.number NEQ local.cardNumber>
+                <cfset local.result.message = "Invalid Card Number">
+            <cfelseif arguments.month NEQ local.month>
+                <cfset local.result.message = "Invalid Month">
+            <cfelseif arguments.year NEQ local.year>
+                <cfset local.result.message = "Invalid Year">
+            <cfelseif arguments.cvv NEQ local.cvv>
+                <cfset local.result.message = "Invalid CVV">
+            <cfelse>
+                <cfset local.result.success = true>
+                <cfset local.result.message = "successfully verified">
+            </cfif>
+        </cfif>
+            <cfreturn local.result>
+    </cffunction>
 </cfcomponent>

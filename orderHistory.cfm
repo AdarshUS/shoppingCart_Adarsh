@@ -20,7 +20,7 @@
             <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
     </div>
-    <cfset variables.orderHistory = application.objOrder.getOrderedItems()>
+    <cfset variables.orderHistory = application.objCart.getOrderedItems()>
     <cfloop array = "#variables.orderHistory.orderDetails#" item = "order">
         <cfset variables.productId = listToArray(order.productId)>
         <cfset variables.productNames = listToArray(order.productName)>

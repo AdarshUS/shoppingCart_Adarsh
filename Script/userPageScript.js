@@ -370,7 +370,7 @@ function validateAddress() {
 function deleteAddress(addressId) {
     if (confirm("Are you sure you want to delete")) {
         $.ajax({
-            url: 'components/profile.cfc?method=deleteAddress',
+            url: 'components/User.cfc?method=deleteAddress',
             type: 'POST',
             data: {
                 addessId: addressId
