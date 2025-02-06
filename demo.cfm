@@ -1,0 +1,1 @@
+<cfset application.objOrder.getOrderHistoryPdf()>

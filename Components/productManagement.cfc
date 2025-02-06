@@ -772,15 +772,11 @@
         <cfset local.sender = "adarshus1999@gmail.com">
         <cfset local.receiverAddress = "adarsh.us@techversantinfotech.com">
         <cfset local.errorMessage = "">
-        <cfif isStruct(arguments.body)>
             <cfset local.errorMessage = 
                 "Error Type: #arguments.body.type#<br>
                 Message: #arguments.body.message#<br>
                 Detail: #arguments.body.detail#<br>
                 StackTrace: #arguments.body.stackTrace#">
-        <cfelse>
-            <cfset local.errorMessage = arguments.body>
-        </cfif>
         <cfmail 
             from = "#local.sender#" 
             to = "#local.receiverAddress#" 

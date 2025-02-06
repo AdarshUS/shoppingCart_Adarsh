@@ -53,7 +53,7 @@
                     </div>
                 </cfloop>
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="##addressAddModal">Add New Address</button>
-                <button class="btn btn-info">order Details</button>
+                <a class="btn btn-info" href="./orderhistory.cfm">order Details</a>
             </div>
         </div>
     </main>

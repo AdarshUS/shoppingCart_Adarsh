@@ -104,7 +104,7 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset application.objProductManagement.sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>

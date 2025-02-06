@@ -148,21 +148,20 @@
             "orderDetails": [],
             "message":""
          }>
-         <cfdump var="#session.loginuserId#" >
-       <!---  <cftry> --->
+        <cftry>
             <cfquery name="local.fetchOrderItems" datasource="#application.datasource#">
                 SELECT  
-	                O.fldOrder_Id,  
-	                O.fldTotalPrice, 
-	                O.fldTotalTax, 
-	                O.fldOrderDate, 
-	                A.fldFirstName, 
-	                A.fldLastName, 
-	                A.fldAddressLine1, 
-	                A.fldAddressLine2, 
-	                A.fldCity, 
-	                A.fldState, 
-	                A.fldPincode, 
+	                O.fldOrder_Id,
+	                O.fldTotalPrice,
+	                O.fldTotalTax,
+	                O.fldOrderDate,
+	                A.fldFirstName,
+	                A.fldLastName,
+	                A.fldAddressLine1,
+	                A.fldAddressLine2,
+	                A.fldCity,
+	                A.fldState,
+	                A.fldPincode,
 	                A.fldPhone,
 	                GROUP_CONCAT(OI.fldProductId) AS productId, 
 	                GROUP_CONCAT(OI.fldQuantity) AS productQuantity,
@@ -176,8 +175,8 @@
                 INNER JOIN tblorderitems OI ON OI.fldOrderId = O.fldOrder_Id
                 INNER JOIN tbladdress A ON A.fldAddress_Id = O.fldAddressId
                 INNER JOIN tblproduct P ON P.fldProduct_Id = OI.fldProductId
-                LEFT JOIN tblproductimages PI ON PI.fldProductId = P.fldProduct_Id AND fldDefaultImage = 1
                 INNER JOIN tblbrand B ON B.fldBrand_Id = P.fldBrandId
+                LEFT JOIN tblproductimages PI ON PI.fldProductId = P.fldProduct_Id AND fldDefaultImage = 1
                 WHERE
                     O.fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="varchar">
                 	AND A.fldActive = 1
@@ -203,7 +202,7 @@
                         "orderDate": local.fetchOrderItems.fldOrderDate,
                         "imagefilepath": local.fetchOrderItems.productImage,
                         "productName": local.fetchOrderItems.productName,
-                        "productId": application.objUser.encryptId(local.fetchOrderItems.productId),
+                        "productId": local.fetchOrderItems.productId,
                         "brandName": local.fetchOrderItems.brandName,
                         "quantity": local.fetchOrderItems.productQuantity,
                         "unitPrice": local.fetchOrderItems.unitPrice,
@@ -222,13 +221,69 @@
             </cfif>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
-        <!--- <cfcatch>
+        <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
-        </cftry> --->
+        </cftry>
         <cfreturn local.result>
     </cffunction>
+
+    <cffunction name="getOrderHistoryPdf">
+        <cfset local.orderHistory = getOrderedItems()>
+        <cfset local.fileName = "orderSummary.pdf">
+        <cfset local.pdfFilePath = "../Assets/Files/" & local.fileName>
+        <cfdocument 
+            format="PDF" 
+            filename="#local.pdfFilePath#" 
+            overwrite="yes">
+            <h1>Order Invoice</h1>
+            <cfloop array = "#local.orderHistory.orderDetails#" item = "order">
+                <cfset local.productId = listToArray(order.productId)>
+                <cfset local.productNames = listToArray(order.productName)>
+                <cfset local.quantity = listToArray(order.quantity)>
+                <cfset local.unitPrices = listToArray(order.unitPrice)>
+                <cfset local.unitTaxes = listToArray(order.unittax)>
+                <cfset local.imagePath = listToArray(order.imagefilepath)>
+                <cfset local.brandNames= listToArray(order.brandName)>
+                <div class="order_container">
+                    <div class="order-header">
+                        <span>Order Number: <strong>#order.orderId#</strong></span>
+                        <span>Order Date: <strong>#order.orderDate#</strong></span>
+                        <span>Total Amount: <strong>#order.totalPrice#</strong></span>
+                        <span class="order-status text-success">Processed</span>
+                    </div>
+                    <cfloop array="#local.productId#" item="product" index="i">
+                        <cfset totalPrice = local.unitPrices[i] + (local.unitTaxes[i] / 100) * local.unitPrices[i]>
+                        <div class="order-item">
+                            <div class="order-item-info">
+                                <h4>#local.productNames[i]#</h4>
+                                <p>Brand: #local.brandNames[i]#</p>
+                                <p>Quantity: #local.quantity[i]#</p>
+                            </div>
+                            <div class="priceCntr">
+                                <span class="order-Actualprice"><span class="priceCntrText">Actual Price:</span>#local.unitPrices[i]#</span>
+                                <span class="order-ActualTax"><span class="priceCntrText">Tax: </span>#local.unitTaxes[i]#%</span>
+                                <span class="order-Total"><span class="priceCntrText">Total: </span>#totalPrice#</span>
+                            </div>
+                        </div>
+                    </cfloop>
+                    <div class="order-footer">
+                    <div>
+                        <div>Shipping Address :</div>
+                        <span><strong>#order.address1#</strong></span>
+                        <span><strong>#order.address2#</strong></span>
+                        <span><strong>#order.city#</strong></span>
+                        <span><strong>#order.state#</strong></span>
+                        <span><strong>#order.pincode#</strong></span>
+                    </div>
+                </div>
+            </cfloop>
+        </cfdocument>
+      <cfset local.currentTime= dateTimeFormat(now(),"dd-mm-yyyy-HH-nn-ss")>
+      <cfset local.pdfFileName = "#session.loginuserfirstName# #session.loginuserlastName# #local.currentTime#">
+   </cffunction>
+   
 </cfcomponent>

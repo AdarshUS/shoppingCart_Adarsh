@@ -22,36 +22,50 @@
     </div>
     <cfset variables.orderHistory = application.objOrder.getOrderedItems()>
     <cfloop array = "#variables.orderHistory.orderDetails#" item = "order">
-        <div class="order-card">
-        <div class="order-header">
-            <span class="order-id">#order.orderId#</span>
-            <span class="order-time">
-                #order.orderDate#
-            </span>
-        </div>
-        <cfloop array = "#variables.orderHistory.orderDetails#" item = "product">
-            <cfif product.orderId EQ order.orderId>
-                <div class="product-details">
-                    <img class="product-img" src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imagefilepath#" alt="">
-                    <div class="product-info">
-                        <a href="" class="product-title">#product.productName#</a><br>
-                        <span>Brand: #product.brandName#</span><br>
-                        <span>Quantity: #product.quantity#</span>
+        <cfset variables.productId = listToArray(order.productId)>
+        <cfset variables.productNames = listToArray(order.productName)>
+        <cfset variables.quantity = listToArray(order.quantity)>
+        <cfset variables.unitPrices = listToArray(order.unitPrice)>
+        <cfset variables.unitTaxes = listToArray(order.unittax)>
+        <cfset variables.imagePath = listToArray(order.imagefilepath)>
+        <cfset variables.brandNames= listToArray(order.brandName)>
+        <div class="order_container">
+            <div class="order-header">
+                <span>Order Number: <strong>#order.orderId#</strong></span>
+                <span>Order Date: <strong>#order.orderDate#</strong></span>
+                <span>Total Amount: <strong>#order.totalPrice#</strong></span>
+                <span class="order-status text-success">Processed</span>
+            </div>
+            <cfloop array="#variables.productId#" item="product" index="i">
+                <cfset totalPrice = variables.unitPrices[i] + (variables.unitTaxes[i] / 100) * variables.unitPrices[i]>
+                <div class="order-item">
+                    <img src="./Assets/uploads/product#variables.productId[i]#/#variables.imagePath[i]#" alt="product">
+                    <div class="order-item-info">
+                        <h4>#variables.productNames[i]#</h4>
+                        <p>Brand: #variables.brandNames[i]#</p>
+                        <p>Quantity: #variables.quantity[i]#</p>
                     </div>
-                    <div class="price-details">
-                        <div>Actual Price: #product.unitPrice#</div>
-                        <div>Tax: #product.unittax#</div>
-                        <div class="total-price">Total Price: </div>
+                    <div class="priceCntr">
+                        <span class="order-Actualprice"><span class="priceCntrText">Actual Price:</span>#variables.unitPrices[i]#</span>
+                        <span class="order-ActualTax"><span class="priceCntrText">Tax: </span>#variables.unitTaxes[i]#%</span>
+                        <span class="order-Total"><span class="priceCntrText">Total: </span>#totalPrice#</span>
                     </div>
                 </div>
-            </cfif>
-        </cfloop>
-        <div class="total-cost">Total Cost: </div>
-        <div class="shipping-info">
-            <b>Shipping Address:</b> gsfgdxv adfszfd, szsfvs, asfasfSd 123123<br>
-            <b>Contact:</b> ewrwe - 1234567890
+            </cfloop>
+            <div class="order-footer">
+            <div>
+                <div>Shipping Address :</div>
+                <span><strong>#order.address1#</strong></span>
+                <span><strong>#order.address2#</strong></span>
+                <span><strong>#order.city#</strong></span>
+                <span><strong>#order.state#</strong></span>
+                <span><strong>#order.pincode#</strong></span>
+            </div>
+            <button>
+                <img src="./Assets/Images/pdfIcon.png" alt="pdfIcon" width="60">
+            </button>
         </div>
-    </div>
+        </div>
     </cfloop>
 </body>
 </html>
