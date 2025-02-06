@@ -78,7 +78,7 @@ function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
                 if (verifycardDetails.success === true) {
                     if (productId.trim() === "") {
                         $.ajax({
-                            url: 'components/order.cfc?method=placeOrder',
+                            url: 'components/cart.cfc?method=placeOrder',
                             type: 'POST',
                             data: {
                                 addressId: addressId,
@@ -94,7 +94,7 @@ function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
                     } else {
                         console.log(totalTax);
                         $.ajax({
-                            url: 'components/order.cfc?method=addOrder',
+                            url: 'components/cart.cfc?method=addOrder',
                             type: 'POST',
                             data: {
                                 addressId: addressId,
@@ -129,3 +129,28 @@ $('.place-order').click(function() {
     document.getElementById("cardCvvError").innerHTML = "";
     document.getElementById("cardYearError").innerHTML = "";
 })
+
+function getOrderInvoicePdf(orderId)
+{
+     $.ajax({
+        url: 'components/cart.cfc?method=getOrderHistoryPdf',
+        type: 'POST',
+        data: {
+            orderId : orderId
+        },
+        success: function(result) {
+            let jsonObj = JSON.parse(result);
+            console.log(jsonObj.FILEPATH)
+            console.log(jsonObj)
+		    let a = document.createElement("a");
+		    a.download = jsonObj.FILENAME;
+		    a.href = jsonObj.FILEPATH;
+		    a.click();
+        },
+        error: function()
+        {
+
+        }
+        })
+    
+}

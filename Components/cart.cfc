@@ -312,7 +312,6 @@
             "orderDetails": [],
             "message":""
          }>
-        <cfdump var="#arguments.orderId#" abort>
         <cftry>
             <cfquery name="local.fetchOrderItems" datasource="#application.datasource#">
                 SELECT  
@@ -367,7 +366,7 @@
                 <cfloop query="local.fetchOrderItems">
                     <cfset arrayAppend(local.result.orderDetails, {
                         "orderId": local.fetchOrderItems.fldOrder_Id,
-                        "orderDate": local.fetchOrderItems.fldOrderDate,
+                        "orderDate": dateTimeFormat(local.fetchOrderItems.fldOrderDate.toString()),
                         "imagefilepath": local.fetchOrderItems.productImage,
                         "productName": local.fetchOrderItems.productName,
                         "productId": local.fetchOrderItems.productId,
@@ -399,60 +398,76 @@
         <cfreturn local.result>
     </cffunction>
 
-    <cffunction name="getOrderHistoryPdf">
-        <cfset local.orderHistory = getOrderedItems()>
-        <cfdump var="#local.orderHistory#">
+    <cffunction name="getOrderHistoryPdf" access="remote" returntype="struct" returnformat="JSON">
+        <cfargument name="orderId" required="true" type="string">
+        <cfset local.orderHistory = getOrderedItems( orderId = arguments.orderId)>
         <cfset local.fileName = "orderSummary.pdf">
         <cfset local.pdfFilePath = "../Assets/Files/" & local.fileName>
-        <cfdocument 
-            format="PDF" 
-            filename="#local.pdfFilePath#" 
-            overwrite="yes">
-            <h1>Order Invoice</h1>
-            <cfloop array = "#local.orderHistory.orderDetails#" item = "order">
-                <cfset local.productId = listToArray(order.productId)>
-                <cfset local.productNames = listToArray(order.productName)>
-                <cfset local.quantity = listToArray(order.quantity)>
-                <cfset local.unitPrices = listToArray(order.unitPrice)>
-                <cfset local.unitTaxes = listToArray(order.unittax)>
-                <cfset local.imagePath = listToArray(order.imagefilepath)>
-                <cfset local.brandNames= listToArray(order.brandName)>
-                <div class="order_container">
-                    <div class="order-header">
-                        <span>Order Number: <strong>#order.orderId#</strong></span>
-                        <span>Order Date: <strong>#order.orderDate#</strong></span>
-                        <span>Total Amount: <strong>#order.totalPrice#</strong></span>
-                        <span class="order-status text-success">Processed</span>
-                    </div>
-                    <cfloop array="#local.productId#" item="product" index="i">
-                        <cfset totalPrice = local.unitPrices[i] + (local.unitTaxes[i] / 100) * local.unitPrices[i]>
-                        <div class="order-item">
-                            <div class="order-item-info">
-                                <h4>#local.productNames[i]#</h4>
-                                <p>Brand: #local.brandNames[i]#</p>
-                                <p>Quantity: #local.quantity[i]#</p>
-                            </div>
-                            <div class="priceCntr">
-                                <span class="order-Actualprice"><span class="priceCntrText">Actual Price:</span>#local.unitPrices[i]#</span>
-                                <span class="order-ActualTax"><span class="priceCntrText">Tax: </span>#local.unitTaxes[i]#%</span>
-                                <span class="order-Total"><span class="priceCntrText">Total: </span>#totalPrice#</span>
-                            </div>
-                        </div>
-                    </cfloop>
-                    <div class="order-footer">
-                    <div>
-                        <div>Shipping Address :</div>
-                        <span><strong>#order.address1#</strong></span>
-                        <span><strong>#order.address2#</strong></span>
-                        <span><strong>#order.city#</strong></span>
-                        <span><strong>#order.state#</strong></span>
-                        <span><strong>#order.pincode#</strong></span>
-                    </div>
-                </div>
-            </cfloop>
-        </cfdocument>
+        <cfset local.pdfdownloadStruct = {}>
+        <cfoutput>
+            <cfdocument 
+    format="PDF" 
+    filename="#local.pdfFilePath#" 
+    overwrite="yes">
+
+    <h1>Order Invoice</h1>
+
+    <cfset local.productId = listToArray(local.orderHistory.orderDetails[1].productId)>
+    <cfset local.productNames = listToArray(local.orderHistory.orderDetails[1].productName)>
+    <cfset local.quantity = listToArray(local.orderHistory.orderDetails[1].quantity)>
+    <cfset local.unitPrices = listToArray(local.orderHistory.orderDetails[1].unitPrice)>
+    <cfset local.unitTaxes = listToArray(local.orderHistory.orderDetails[1].unittax)>
+    <cfset local.brandNames = listToArray(local.orderHistory.orderDetails[1].brandName)>
+
+    <div class="order_container">
+        <div class="order-header">
+            <p><strong>Order Number:</strong> #local.orderHistory.orderDetails[1].orderId#</p>
+            <p><strong>Order Date:</strong> #local.orderHistory.orderDetails[1].orderDate#</p>
+            <p><strong>Total Amount:</strong> #local.orderHistory.orderDetails[1].totalPrice#</p>
+            <p class="order-status text-success"><strong>Status:</strong> Processed</p>
+        </div>
+
+        <table border="1" cellspacing="0" cellpadding="5" width="100%">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Brand</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Tax (%)</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <cfloop array="#local.productId#" item="product" index="i">
+                    <cfset totalPrice = local.unitPrices[i] + (local.unitTaxes[i] / 100) * local.unitPrices[i]>
+                    <tr>
+                        <td>#local.productNames[i]#</td>
+                        <td>#local.brandNames[i]#</td>
+                        <td>#local.quantity[i]#</td>
+                        <td>#local.unitPrices[i]#</td>
+                        <td>#local.unitTaxes[i]#%</td>
+                        <td>#totalPrice#</td>
+                    </tr>
+                </cfloop>
+            </tbody>
+        </table>
+
+        <div class="order-footer">
+            <h3>Shipping Address:</h3>
+            <p>#local.orderHistory.orderDetails[1].address1#</p>
+            <p>#local.orderHistory.orderDetails[1].address2#</p>
+            <p>#local.orderHistory.orderDetails[1].city#, #local.orderHistory.orderDetails[1].state# - #local.orderHistory.orderDetails[1].pincode#</p>
+        </div>
+    </div>
+</cfdocument>
+
+        </cfoutput>
       <cfset local.currentTime= dateTimeFormat(now(),"dd-mm-yyyy-HH-nn-ss")>
       <cfset local.pdfFileName = "#session.loginuserfirstName# #session.loginuserlastName# #local.currentTime#">
+      <cfset local.pdfdownloadStruct.fileName = local.pdfFileName>
+      <cfset local.pdfdownloadStruct.filepath = "./Assets/Files/" & local.fileName>
+      <cfreturn local.pdfdownloadStruct>
    </cffunction>
 
 </cfcomponent>

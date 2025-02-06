@@ -1,3 +1,6 @@
+<cfif structKeyExists(form,"submit")>
+    <cflocation url="orderSearchResult.cfm?orderId=#form.orderId#" addtoken="no">
+</cfif>
 <!DOCTYPE html>
 <cfoutput>
 <html lang="en">
@@ -14,10 +17,10 @@
     <cfinclude template = "header.cfm">
     <cfinclude template = "navbar.cfm">
     <div class="mb-4 m-3">
-        <form class="d-flex align-items-center">
+        <form class="d-flex align-items-center" method="post">
             <span class="font-weight-bold">Order History</span>
-            <input class="form-control me-2" type="search" placeholder="Search orderId" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
+            <input class="form-control me-2" type="search" placeholder="Search orderId" aria-label="Search" name ="orderId">
+            <button class="btn btn-outline-success" type="submit" name="submit">Search</button>
         </form>
     </div>
     <cfset variables.orderHistory = application.objCart.getOrderedItems()>
@@ -61,12 +64,14 @@
                 <span><strong>#order.state#</strong></span>
                 <span><strong>#order.pincode#</strong></span>
             </div>
-            <button>
+            <button onclick="getOrderInvoicePdf('#order.orderId#')">
                 <img src="./Assets/Images/pdfIcon.png" alt="pdfIcon" width="60">
             </button>
         </div>
         </div>
     </cfloop>
+    <script src="./Script/jquery-3.7.1.min.js"></script>
+    <script src="./Script/orderSummary.js"></script>
 </body>
 </html>
 </cfoutput>
