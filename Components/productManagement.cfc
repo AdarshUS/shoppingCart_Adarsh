@@ -169,7 +169,7 @@
                     tblsubcategory
                 WHERE
                     fldSubCategoryName = <cfqueryparam value="#arguments.subcategoryName#" cfsqltype="varchar">
-                    AND fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="varchar">
+                    AND fldCategoryId = <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="integer">
                     AND fldActive = 1
             </cfquery>
             <cfif local.checkSubCategory.subcategoryCount>
@@ -182,7 +182,7 @@
                             ,fldCreatedBy
                         )
                     VALUES(
-                        <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
+                        <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="integer">
                         ,<cfqueryparam value="#arguments.subcategoryName#" cfsqltype="varchar">
                         ,<cfqueryparam value="#application.objUser.decryptId(session.loginAdminId)#" cfsqltype="integer">
                     )
@@ -244,7 +244,7 @@
     <cffunction name="updateSubCategory" access="public" returntype="struct">
         <cfargument name="subCategoryId" type="numeric" required="true">
         <cfargument name="newCategoryName" type="string" required="true">
-        <cfargument name="categoryId" type="numeric" required="true">
+        <cfargument name="categoryId" type="string" required="true">
         <cfset local.result = {success = false}>
         <cftry>
             <cfquery name="checkExistingSubCategory" datasource="#application.datasource#">
@@ -254,7 +254,7 @@
                     tblsubcategory
                 WHERE
                     fldSubCategoryName = <cfqueryparam value="#arguments.newCategoryName#" cfsqltype="varchar">
-                    AND fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
+                    AND fldCategoryId = <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="integer">
                     AND fldSubcategory_Id != #arguments.subCategoryId#
             </cfquery>
             <cfif checkExistingSubCategory.subCategoryCount>
@@ -266,7 +266,7 @@
                         tblsubcategory
                     SET
                         fldSubCategoryName = <cfqueryparam value="#arguments.newCategoryName#" cfsqltype="varchar">,
-                        fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">,
+                        fldCategoryId = <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="integer">,
                         fldUpdatedDate = now(),
                         fldUpdatedBy = <cfqueryparam value="#application.objUser.decryptId(session.loginAdminId)#" cfsqltype="integer">
                     WHERE

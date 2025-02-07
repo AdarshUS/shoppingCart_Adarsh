@@ -47,7 +47,7 @@
                     <div class="categoryItemRight">
                         <button data-bs-toggle="modal" data-bs-target="##subCategoryModal"
                             class="categoryBtn"
-                            value="#application.objUser.decryptId(subCategory.subcategoryId)#"
+                            value="#subCategory.subcategoryId#"
                             onclick="editSubCategory({
                                 categoryId: '#application.objUser.decryptId(url.categoryId)#',
                                 subCategoryName: '#JSStringFormat(subCategory.subCategoryName)#',
@@ -80,9 +80,13 @@
                         <div class="mb-3">
                               <label for="categoryNameSelect" class="form-label">Select Category Name</label>
                               <select class="form-control" id="categoryNameSelect" name = "selectCategory">
-                                 <option>--</option>
-                                 <cfloop array ="#categoriesResult.categories#" index = i item = category>
-                                    <option value="#application.objUser.decryptId(category.categoryId)#">#category.categoryName#</option>
+                                 <option value="0">--</option>
+                                 <cfloop array ="#categoriesResult.categories#" item = category>
+                                    <option value="#category.categoryId#"
+                                        <cfif category.categoryId EQ url.categoryId>
+                                            selected
+                                        </cfif>
+                                    >#category.categoryName#</option>
                                  </cfloop>
                               </select>
                               <div id = "categorySelectError" class = "error"></div>

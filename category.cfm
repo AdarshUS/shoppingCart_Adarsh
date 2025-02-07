@@ -43,12 +43,12 @@
           </div>
        </div>
     </main>
-    <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+    <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="categoryModalLabel">Add Category</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="resetErrorMsg()"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
@@ -59,10 +59,9 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="resetErrorMsg()">Close</button>
                 <button type="button" class="btn btn-primary" class="insertBtn" onclick="insertEditCategory()">Save changes</button>
             </div>
-            <div class="categoryExistError" id="categoryExistError"></div>
         </div>
        </div>
     </div>

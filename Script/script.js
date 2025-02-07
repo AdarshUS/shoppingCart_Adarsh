@@ -21,6 +21,11 @@ function validate() {
     return validInput;
 }
 
+function resetErrorMsg()
+{
+    document.getElementById("categoryError").innerHTML = " ";
+}
+
 function validateSubCategory() {
     let validSubCategory = true;
     let categoryName = document.getElementById("categoryNameSelect").value;
@@ -186,7 +191,7 @@ function createCategory() {
 function editSubCategory(subCategory) {
     console.log(subCategory)
     document.getElementById("subCategoryName").value = subCategory.subCategoryName;
-    document.getElementById("categoryNameSelect").value = subCategory.categoryId;
+    /* document.getElementById("categoryNameSelect").value = subCategory.categoryId; */
     document.getElementById("subCategoryModalLabel").innerHTML = "Edit SubCategory";
     document.getElementById('distinguishSubCreateEdit').value = subCategory.subCategoryId;
 }
@@ -194,7 +199,7 @@ function editSubCategory(subCategory) {
 $(".subcategoryAddbtn").click(function() {
     document.getElementById("subCategoryModalLabel").innerHTML = "Create SubCategory";
     document.getElementById("subCategoryName").value = "";
-    document.getElementById("categoryNameSelect").value = "";
+    /* document.getElementById("categoryNameSelect").value = ""; */
 });
 
 function deleteSubCategory(subCategoryId, categoryId) {
@@ -217,6 +222,9 @@ function deleteSubCategory(subCategoryId, categoryId) {
 }
 
 $("#categoryNameSelectPr").change(function() {
+    getSubcategory();
+});
+function getSubcategory(){
     let categorySelected = $('#categoryNameSelectPr').val();
     let subCategoryElement = document.getElementById("selectSubCategory");
     if (categorySelected === "--") {
@@ -245,8 +253,7 @@ $("#categoryNameSelectPr").change(function() {
             }
         });
     }
-});
-
+}
 function validateProduct() {
     let validProduct = true;
     let categoryName = document.getElementById("categoryNameSelectPr").value;
@@ -333,6 +340,7 @@ function createproduct() {
     unitTaxError.innerHTML = "";
     productImageError.innerHTML = "";
     document.getElementById('productForm').reset();
+    getSubcategory();
 }
 
 function editProduct(editObj) {
