@@ -85,7 +85,17 @@ function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
                                 cardnumber: cardNumber
                             },
                             success: function(result) {
-                                location.href = "orderConfirmation.cfm"
+                                Swal.fire({
+                                    position: "top-end",
+                                    icon: "success",
+                                    title: "Your order is confirmed",
+                                    showConfirmButton: false,
+                                    timer: 1500,
+                                    imageUrl: "https://unsplash.it/400/200",
+                                    imageWidth: 400,
+                                    imageHeight: 200,
+                                    imageAlt: "Custom image"
+                                });
                             },
                             error: function() {
 
@@ -107,7 +117,13 @@ function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
                                 unitTax: totalTax
                             },
                             success: function(result) {
-                                location.href = "orderConfirmation.cfm"
+                                Swal.fire({
+                                    position: "center",
+                                    icon: "success",
+                                    title: "Your order is confirmed",
+                                    showConfirmButton: false,
+                                    imageAlt: "Custom image"
+                                });
                             },
                             error: function() {
 

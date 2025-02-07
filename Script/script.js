@@ -52,7 +52,7 @@ $(".logout").click(function() {
                 location.reload();
             },
             error: function() {
-
+                console.error("Error in logout.");
             }
         });
     }
@@ -91,7 +91,9 @@ function insertEditCategory() {
                 }
 
             },
-            error: function() {}
+            error: function() {
+                onsole.error("Error in insertion.");
+            }
         });
     } else {
         console.log(hiddenValue);
@@ -111,7 +113,9 @@ function insertEditCategory() {
                     document.getElementById("categoryError").innerHTML = result.MESSAGE;
                 }
             },
-            error: function() {}
+            error: function() {
+                onsole.error("Error in deletion.");
+            }
         });
     }
 }
@@ -129,8 +133,7 @@ function editCategory(editBtn) {
             let parsedResult = JSON.parse(result);
             let categoryId = parsedResult.CATEGORIES[0].categoryId;
             let categoryName = parsedResult.CATEGORIES[0].categoryName;
-
-            // Nested AJAX call for decryption
+            
             $.ajax({
                 url: 'components/User.cfc?method=decryptId',
                 data: {
@@ -139,9 +142,8 @@ function editCategory(editBtn) {
                 type: 'POST',
                 success: function(decryptResult) {
                     let decryptedId = JSON.parse(decryptResult);
-                    console.log(decryptedId); // Now, this will have the correct value.
+                    console.log(decryptedId);
 
-                    // Set the input values inside this callback
                     document.getElementById("categoryInput").value = categoryName;
                     document.getElementById("distinguishCreateEdit").value = decryptedId;
                 },
@@ -156,7 +158,6 @@ function editCategory(editBtn) {
     });
 }
 
-
 function deleteCategory(dltBtn) {
     if (confirm("Are you sure you want to delete")) {
 
@@ -170,7 +171,9 @@ function deleteCategory(dltBtn) {
                 console.log(dltBtn.value);
                 document.getElementById(dltBtn.value).remove();
             },
-            error: function() {}
+            error: function() {
+                console.error("Error deleting category");
+            }
         });
     }
 }
@@ -206,7 +209,9 @@ function deleteSubCategory(subCategoryId, categoryId) {
             success: function() {
                 document.getElementById(subCategoryId).remove();
             },
-            error: function() {}
+            error: function() {
+                console.error("Error deleting SubCategory");
+            }
         });
     }
 }
@@ -235,7 +240,9 @@ $("#categoryNameSelectPr").change(function() {
                     subCategoryElement.appendChild(opt);
                 }
             },
-            error: function() {}
+            error: function() {
+                console.error("Error fetching SubCategory");
+            }
         });
     }
 });
@@ -363,11 +370,13 @@ function editProduct(editObj) {
                         subCategoryElement.appendChild(opt);
                     }
                 },
-                error: function() {}
+                error: function() {
+                    console.error("Error fetching SubCategory");
+                }
             });
         },
         error: function() {
-
+            alert("Failed to edit product");
         }
     });
 }
@@ -383,7 +392,9 @@ function deleteProduct(productId) {
             success: function() {
                 document.getElementById(productId).remove();
             },
-            error: function() {}
+            error: function() {
+                alert("Failed to delete product");
+            }
         });
     }
 }
@@ -464,13 +475,13 @@ function setThumbnail(productImage, productId) {
         },
         success: function() {
             editImages(productId);
+            location.reload()
         },
         error: function() {
             alert("Error setting thumbnail.");
         }
     });
 }
-
 
 function deleteProductImage(productImage, productId) {
     $.ajax({
@@ -483,6 +494,8 @@ function deleteProductImage(productImage, productId) {
         success: function() {
             editImages(productId);
         },
-        error: function() {}
+        error: function() {
+            alert("Error deleting image.");
+        }
     });
 }

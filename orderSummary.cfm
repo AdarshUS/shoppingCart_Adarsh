@@ -1,7 +1,7 @@
-<cfset selectedAddress = application.objUser.fetchAddress(url.addressId)>
+<cfset variables.selectedAddress = application.objUser.fetchAddress(url.addressId)>
 <cfparam name="url.productId" type="string" default="">
 <cfparam name="product" type="struct" default="#StructNew()#">
-<cfset payableAmount = 0>
+<cfset variables.payableAmount = 0>
 <!DOCTYPE html>
 <cfoutput>
 <html lang="en">
@@ -21,25 +21,25 @@
         <div class="address">
             <span class="firstName">#session.loginuserfirstName#</span>
             <span class="lastName">#session.loginuserlastName#</span>
-            <span class="phone">#selectedAddress.Address[1].phone#</span>
-            <div class="addressLine1">#selectedAddress.Address[1].addressline1#</div>
-            <div class="addressLine2">#selectedAddress.Address[1].addressline2#</div>
-            <div class="city">#selectedAddress.Address[1].city#</div>
-            <div class="state">#selectedAddress.Address[1].state#</div>
-            <div class="pincode">#selectedAddress.Address[1].pincode#</div>
+            <span class="phone">#variables.selectedAddress.Address[1].phone#</span>
+            <div class="addressLine1">#variables.selectedAddress.Address[1].addressline1#</div>
+            <div class="addressLine2">#variables.selectedAddress.Address[1].addressline2#</div>
+            <div class="city">#variables.selectedAddress.Address[1].city#</div>
+            <div class="state">#variables.selectedAddress.Address[1].state#</div>
+            <div class="pincode">#variables.selectedAddress.Address[1].pincode#</div>
         </div>
         <cfif structKeyExists(url,"type") AND url.type EQ "cart">
-            <cfset payableAmount = 0>
-            <cfset cartItems = application.objCart.fetchCart()>
-            <cfloop array="#cartItems.data#" item="product">
+            <cfset variables.payableAmount = 0>
+            <cfset variables.cartItems = application.objCart.fetchCart()>
+            <cfloop array="#variables.cartItems.data#" item="product">
                 <div class="product">
                     <img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" alt="productImage">
                     <div class="details">
-                        <cfset payableAmount = product.unitPrice + (product.unitPrice * product.unitTax / 100) * product.quantity>
+                        <cfset variables.payableAmount = product.unitPrice + (product.unitPrice * product.unitTax / 100) * product.quantity>
                         <p><strong>#product.productName#</strong></p>
                         <p class="price">Actual Price: <i class="fa-solid fa-indian-rupee-sign"></i>#product.unitPrice#</p>
                         <p>Tax: #product.unitTax#%</p>
-                        <p class="payable">Payable amount: <i class="fa-solid fa-indian-rupee-sign"></i><span id="payableAmt">#payableAmount#</span></p>
+                        <p class="payable">Payable amount: <i class="fa-solid fa-indian-rupee-sign"></i><span id="payableAmt">#variables.payableAmount#</span></p>
                         <div class="quantity">
                             <button>-</button>
                             <input type="text" name="" id="orderInput" class="orderInput" value="#product.quantity#">
@@ -49,16 +49,16 @@
                 </div>
             </cfloop>
         <cfelse>
-            <cfset payableAmount = 0>
-            <cfset product = application.objProductManagement.getProductDetails(url.productId)>
-            <cfset payableAmount = product.data.unitPrice + (product.data.unitPrice * product.data.unitTax / 100)>
+            <cfset variables.payableAmount = 0>
+            <cfset variables.product = application.objProductManagement.getProductDetails(url.productId)>
+            <cfset variables.payableAmount =  variables.product.data.unitPrice + ( variables.product.data.unitPrice *  variables.product.data.unitTax / 100)>
             <div class="product">
-                <img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.data.productId)#/#product.data.defaultImagePath#" alt="productImage">
+                <img src="#'./Assets/uploads/product'&application.objUser.decryptId(variables.product.data.productId)#/#variables.product.data.defaultImagePath#" alt="productImage">
                 <div class="details">
-                    <p><strong>#product.data.productName#</strong></p>
-                    <p class="price">Actual Price: <i class="fa-solid fa-indian-rupee-sign"></i> #product.data.unitPrice#</p>
-                    <p>Tax: #product.data.unitTax#%</p>
-                    <p class="payable">Payable amount: <i class="fa-solid fa-indian-rupee-sign"></i><span id="payableAmt">#payableAmount#</span></p>
+                    <p><strong>#variables.product.data.productName#</strong></p>
+                    <p class="price">Actual Price: <i class="fa-solid fa-indian-rupee-sign"></i> #variables.product.data.unitPrice#</p>
+                    <p>Tax: #variables.product.data.unitTax#%</p>
+                    <p class="payable">Payable amount: <i class="fa-solid fa-indian-rupee-sign"></i><span id="payableAmt">#variables.payableAmount#</span></p>
                     <div class="quantity">
                         <button onclick="decreaseQuantity()" id="decreaseQntyBtnCart">-</button>
                         <input type="text" name="" id="orderInput" class="orderInput" value="1">
@@ -95,13 +95,11 @@
                     </div>
                         <div id ="cardCvvError"  class="error"></div>
                     <cfif structKeyExists(url,"type") AND url.type EQ "single">
-                            buy now
-                          <button class="cardButton cardproceedBtn" onclick="checkout('#url.addressId#','#url.productId#',#payableAmount#,#product.data.unitPrice#,#product.data.unitTax#)">
+                        <button class="cardButton cardproceedBtn" onclick="checkout('#url.addressId#','#url.productId#',#variables.payableAmount#,#product.data.unitPrice#,#product.data.unitTax#)">
                             Proceed
                         </button>
                     <cfelse>
-                        cart
-                        <button class="cardButton cardproceedBtn" onclick="checkout('#url.addressId#','#url.productId#',#payableAmount#)">
+                        <button class="cardButton cardproceedBtn" onclick="checkout('#url.addressId#','#url.productId#',#variables.payableAmount#)">
                             Proceed
                         </button>
                     </cfif>
@@ -109,9 +107,10 @@
                 </div>
             </div>
         </div>
-</div>
+    </div>
     <script src="./Script/jquery-3.7.1.min.js"></script>
     <script src="./Script/bootstrapScript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="./Script/orderSummary.js"></script>
 </body>
 </html>

@@ -21,7 +21,7 @@
                     <cfif structKeyExists(session,"loginuserId")>
                         <cfset numberOfCartItems = application.objCart.getNumberOfCartItems()>
                         <cfif numberOfCartItems GT 0>
-                            <div class="itemcount">
+                            <div class="itemcount" id="itemcount">
                                 #numberOfCartItems#
                             </div>
                         </cfif>

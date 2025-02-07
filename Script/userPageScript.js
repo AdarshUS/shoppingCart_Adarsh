@@ -270,6 +270,7 @@ function deleteCartItem(cartId) {
             success: function(result) {
                 console.log("successful Operation");
                 document.getElementById(cartId).remove();
+                document.getElementById("itemcount").innerHTML = parseInt( document.getElementById("itemcount").innerHTML) - 1;
                 calculateTotalPrice();
             },
             error: function() {

@@ -516,8 +516,7 @@
             data: {}
         }>
         <cfset local.images = []>
-        <cfset local.defaultImagePath = ""> 
-        
+        <cfset local.defaultImagePath = "">
         <cftry>
             <cfquery name="local.fetchProduct" datasource="#application.datasource#">
                 SELECT
@@ -583,7 +582,6 @@
             <cfelse>
                 <cfset local.result.message = "No product found">
             </cfif>
-            
         <cfcatch>
             <cfset local.result.message = "An error occurred">
             <cfset sendErrorEmail(

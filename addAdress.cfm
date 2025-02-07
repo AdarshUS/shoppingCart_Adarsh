@@ -9,7 +9,8 @@
         "state": form.state,
         "pincode" : form.pincode
     }>
-    <cfset result = application.objUser.addAddress(argumentCollection={ "addressData" = addressData })>
+    <cfset application.objUser.addAddress(argumentCollection={ "addressData" = addressData })>
+    <cflocation url="#cgi.script_name#" addtoken="false">
 </cfif>
 <!DOCTYPE html>
 <html lang="en">
