@@ -64,7 +64,7 @@ function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
 
     if (isValidData) {
         $.ajax({
-            url: 'components/profile.cfc?method=ValidateCardDetails',
+            url: 'components/User.cfc?method=ValidateCardDetails',
             type: 'POST',
             data: {
                 number: cardNumber,

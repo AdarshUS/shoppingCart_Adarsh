@@ -367,7 +367,6 @@
 
     <cffunction name="deleteAddress" access="remote" returntype="void">
         <cfargument name="addessId" type="string" required="true">
-        <cfset local.decryptedAddressId = application.objUser.decryptId(arguments.addessId)>
         <cftry>
             <cfquery datasource="#application.datasource#">
                 UPDATE
@@ -376,9 +375,9 @@
                     fldActive = 0,
                     fldDeactivatedDate = now()
                 WHERE
-                    fldAddress_Id = <cfqueryparam value="#local.decryptedAddressId#" cfsqltype="integer">
+                    fldAddress_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.addessId)#" cfsqltype="integer">
                     AND fldActive = 1
-                    AND fldUserId = <cfqueryparam value="#session.loginuserId#" cfsqltype="integer">
+                    AND fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
             </cfquery>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(

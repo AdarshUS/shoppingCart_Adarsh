@@ -1,3 +1,6 @@
+<cfif NOT structKeyExists(session,"loginuserId")>
+    <cflocation url="userLogin.cfm" addtoken="no">
+</cfif>
 <cfset userdetailsResult = application.objUser.fetchUserDetails()>
 <cfset addressResult = application.objUser.fetchAddress()>
 <cfif structKeyExists(form,"editSubmitBtn")>

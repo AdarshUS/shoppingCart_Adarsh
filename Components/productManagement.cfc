@@ -154,7 +154,7 @@
         </cftry>
     </cffunction>
 
-    <cffunction name="addSubCategory" access="public" returntype="void">
+    <cffunction name="addSubCategory" access="public" returntype="struct">
         <cfargument name="categoryId" type="string" required="true">
         <cfargument name="subcategoryName"  type="string" required="true">
         <cfset local.result = {
@@ -164,7 +164,7 @@
         <cftry>
             <cfquery name="local.checkSubCategory" datasource="#application.datasource#">
                 SELECT
-                    1
+                    count(*) AS subcategoryCount
                 FROM
                     tblsubcategory
                 WHERE
@@ -172,7 +172,7 @@
                     AND fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="varchar">
                     AND fldActive = 1
             </cfquery>
-            <cfif local.checkSubCategory.RecordCount>
+            <cfif local.checkSubCategory.subcategoryCount>
                 <cfset local.result.message = "SubCategory Already Exist"> 
             <cfelse>
                 <cfquery datasource="#application.datasource#">
@@ -198,6 +198,7 @@
             )>
         </cfcatch>
         </cftry>
+        <cfreturn local.result>
     </cffunction>
 
     <cffunction name="fetchSubCategories" access="remote" returntype="struct" returnformat="JSON">
@@ -240,7 +241,7 @@
         <cfreturn local.result>
     </cffunction>
 
-    <cffunction name="updateSubCategory" access="public" returntype="void">
+    <cffunction name="updateSubCategory" access="public" returntype="struct">
         <cfargument name="subCategoryId" type="numeric" required="true">
         <cfargument name="newCategoryName" type="string" required="true">
         <cfargument name="categoryId" type="numeric" required="true">
@@ -248,14 +249,18 @@
         <cftry>
             <cfquery name="checkExistingSubCategory" datasource="#application.datasource#">
                 SELECT
-                    1
+                    count(*) AS subCategoryCount
                 FROM
                     tblsubcategory
                 WHERE
                     fldSubCategoryName = <cfqueryparam value="#arguments.newCategoryName#" cfsqltype="varchar">
-                    AND fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer"> 
+                    AND fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
+                    AND fldSubcategory_Id != #arguments.subCategoryId#
             </cfquery>
-            <cfif NOT checkExistingSubCategory.RecordCount>
+            <cfif checkExistingSubCategory.subCategoryCount>
+                <cfset local.result.success = false>
+                <cfset local.result.message = "this subcategory Already Exist">
+            <cfelse>
                 <cfquery datasource="#application.datasource#">
                     UPDATE
                         tblsubcategory
@@ -266,11 +271,10 @@
                         fldUpdatedBy = <cfqueryparam value="#application.objUser.decryptId(session.loginAdminId)#" cfsqltype="integer">
                     WHERE
                         fldSubCategory_Id = <cfqueryparam value="#arguments.subCategoryId#" cfsqltype="integer">
-                        AND fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
                 </cfquery>
+                <cfset local.result.success = true>
+                <cfset local.result.message = "successful Operation">
             </cfif>
-            <cfset local.result.success = true>
-            <cfset local.result.message = "successful Operation">
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset sendErrorEmail(
@@ -279,6 +283,7 @@
             )>
         </cfcatch>
         </cftry>
+        <cfreturn local.result>
     </cffunction>
 
     <cffunction name="DeleteSubCategory" access="remote" returntype="void">

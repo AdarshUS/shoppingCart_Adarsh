@@ -1,9 +1,12 @@
 <cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
+<cfset variables.message = "">
 <cfif structKeyExists(form,"submit")>
     <cfif LEN(form.distinguishSubCreateEdit) GT 0>
-        <cfset application.objProductManagement.updateSubCategory(subCategoryId = form.distinguishSubCreateEdit,newCategoryName = form.subCategoryName,categoryId = form.selectCategory)>      
+        <cfset variables.result =  application.objProductManagement.updateSubCategory(subCategoryId = form.distinguishSubCreateEdit,newCategoryName = form.subCategoryName,categoryId = form.selectCategory)>
+        <cfset variables.message = "#variables.result.message#">
     <cfelse>
-        <cfset application.objProductManagement.addSubCategory(categoryId = form.selectCategory,subcategoryName = form.subCategoryName)>
+        <cfset  variables.result = application.objProductManagement.addSubCategory(categoryId = form.selectCategory,subcategoryName = form.subCategoryName)>
+        <cfset variables.message = "#variables.result.message#">
     </cfif>
 </cfif>
 <cfset subcategoriesResult = application.objProductManagement.fetchSubCategories(categoryId = url.categoryId)>
@@ -61,8 +64,11 @@
                </div>
             </cfloop>
          </div>
-      </div>   
-   </main>  
+      </div>
+    </main>
+    <cfif len(trim(variables.message)) GT 0>
+        <div class="alert alert-danger">#variables.message#</div>
+    </cfif>
    <div class="modal fade" id="subCategoryModal" tabindex="-1" aria-labelledby="subCategoryModalLabel" aria-hidden="true">
       <div class="modal-dialog">
          <div class="modal-content">
