@@ -4,8 +4,8 @@
       <cfif len(trim(form.searchInput)) EQ 0>
          <cflocation url="homePage.cfm" addtoken="no">
       </cfif>
-      <cfset products =  application.objProductManagement.fetchProducts(searchText = form.searchInput)>
-      <cfif ArrayIsEmpty(products.data)>
+      <cfset productDetails =  application.objProductManagement.fetchProducts(searchText = form.searchInput)>
+      <cfif ArrayIsEmpty(productDetails.products)>
          <cfset message = "No Results Found for ""<span class=""searchText"">#form.searchInput#</span>""">
       <cfelse>
          <cfset message = "Search Result for ""<span class=""searchText"">#form.searchInput#</span>""">
@@ -25,9 +25,9 @@
          <cfinclude template = "header.cfm">
          <div class="searchResultText">#message#</div>
          <div class="productContainer" id="productContainer">
-            <cfloop array = "#products.data#" item = product>
+            <cfloop array = "#productDetails.products#" item = product>
                <a class="productBox" id="productBox" href="productDetails.cfm?productId=#product.productId#">
-                  <div class="productImage"><img src="./Assets/uploads/product#product.productId#/#product.imageFilePath#" alt="productImage" class="prodimg" id="prodimg"></div>
+                  <div class="productImage"><img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" alt="productImage" class="prodimg" id="prodimg"></div>
                   <div class="productName" id="productName">#product.productName#</div>
                   <div class="productPrice" id="productPrice"><i class="fa-solid fa-indian-rupee-sign"></i>#product.unitPrice#</div>
                </a>

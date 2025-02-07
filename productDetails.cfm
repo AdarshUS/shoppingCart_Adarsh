@@ -1,12 +1,18 @@
-<cfset categories = application.objProductManagement.fetchAllCategories()>
-<cfset productDetails = application.objProductManagement.fetchSingleProduct(productId = url.productId,allImagesNeeded = true)>
-<cfif  structKeyExists(form, "submitBtn")>
+<cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
+<cfset productDetails = application.objProductManagement.getProductDetails(productId = url.productId)>
+<cfif structKeyExists(session, "loginuserId")>
+    <cfset addresses = application.objUser.fetchAddress()>
+ <cfelse>
+    <cfset addresses = []>
+ </cfif>
+<cfif structKeyExists(form, "submitBtn")>
    <cfif NOT structKeyExists(session, "loginuserId")>
-      <cflocation url = "userLogin.cfm" addToken = "no">
-   </cfif>
-   <cfset result =  application.objProductManagement.addCart(userId = application.objUser.decryptId(session.loginuserId),productId = url.productId,quantity = 1)>
-   <cfif result.success>
-      <cflocation url = "cart.cfm" addtoken = no>
+      <cflocation url = "userLogin.cfm?productId=#URLEncodedFormat(productDetails.data.productId)#&redirect=cart" addToken = "no">
+   <cfelse>
+      <cfset result = application.objCart.addTocart(productId = url.productId, quantity = 1)>
+      <cfif result.success>
+         <cflocation url = "cart.cfm" addtoken = "no">
+      </cfif>
    </cfif>
 </cfif>
 <!DOCTYPE html>
@@ -24,15 +30,15 @@
       <body>
         <cfinclude template = "header.cfm">
          <div class="categoriesContainer">
-            <cfloop array="#categories.categoryId#" index="i" item="category">
+            <cfloop array="#categoriesResult.categories#" item="category">
                <div class="dropdown">
-                  <a class="category"  aria-expanded="false" href="categoryList.cfm?categoryId=#URLEncodedFormat(application.objUser.encryptId(categories.categoryId[i]))#">
-                  #categories.categories[i]#
+                  <a class="category"  aria-expanded="false" href="categoryList.cfm?categoryId=#URLEncodedFormat(category.categoryId)#">
+                    #category.categoryName#
                   </a>
-                  <cfset subCategories = application.objProductManagement.fetchSubCategories(categories.categoryId[i])>
+                  <cfset subCategoriesResult = application.objProductManagement.fetchSubCategories(category.categoryId)>
                   <ul class="dropdown-menu">
-                     <cfloop array = #subCategories.subCategoryNames# index = i item = subcategory>
-                        <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(application.objUser.encryptId(subCategories.subCategoryIds[i]))#">#subCategories.subCategoryNames[i]#</a></li>
+                     <cfloop array = #subCategoriesResult.subCategory# item = subcategory>
+                        <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(subcategory.subCategoryId)#">#subcategory.subCategoryName#</a></li>
                      </cfloop>
                   </ul>
                </div>
@@ -40,16 +46,16 @@
          </div>
          <div class="productContainer">
             <div class="productImageBox">
-               <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+               <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel"> 
                   <div class="carousel-inner">
                      <cfloop array="#productDetails.data.images#" item = image>
                         <cfif image EQ productDetails.data.defaultImagePath>
                            <div class="carousel-item active">
-                              <img src="./Assets/uploads/product#productDetails.data.productId#/#image#">
+                              <img src="#'./Assets/uploads/product'&application.objUser.decryptId(productDetails.data.productId)#/#image#">
                            </div>
                            <cfelse>
                            <div class="carousel-item">
-                              <img src="./Assets/uploads/product#productDetails.data.productId#/#image#">
+                              <img src="#'./Assets/uploads/product'&application.objUser.decryptId(productDetails.data.productId)#/#image#">
                            </div>
                         </cfif>
                      </cfloop>
@@ -66,8 +72,8 @@
             </div>
             <div class="productDetail">
                <div class="pathtext">
-                  <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(application.objUser.encryptId(productDetails.data.subcategoryId))#">#productDetails.data.subcategoryName#</a><i class="fa-solid fa-angle-right"></i>
-                  <a href="./categoryList.cfm?categoryId=#URLEncodedFormat(application.objUser.encryptId(productDetails.data.categoryId))#">#productDetails.data.categoryName#</a><i class="fa-solid fa-angle-right"></i>
+                  <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(productDetails.data.subcategoryId)#">#productDetails.data.subcategoryName#</a><i class="fa-solid fa-angle-right"></i>
+                  <a href="./categoryList.cfm?categoryId=#URLEncodedFormat(productDetails.data.categoryId)#">#productDetails.data.categoryName#</a><i class="fa-solid fa-angle-right"></i>
                   <a href="">#productDetails.data.productName#</a>
                </div>
                <h4 class="productName">#productDetails.data.productName#</h4>
@@ -79,7 +85,15 @@
                </div>
                <form method="post">
                   <div class="buttonContainer">
-                     <button class="btn btn-info p-2">Buy Now</button>
+                    <cfif NOT structKeyExists(session, "loginuserId")>
+                        <button type="button" class="btn btn-info p-2" onclick="window.location.href='userLogin.cfm?productId=#URLEncodedFormat(productDetails.data.productId)#&redirect=product'">
+                           Buy Now
+                        </button>
+                     <cfelse>
+                        <button type="button" class="btn btn-info p-2" data-bs-toggle="modal" data-bs-target="##selectAddressModal">
+                            Buy Now
+                        </button>
+                     </cfif>
                      <button class="btn btn-success p-2" name="submitBtn">Add to Cart</button>
                   </div>
                </form>
@@ -166,6 +180,41 @@
             <div>
             </div>
          </footer>
+         <div class="modal fade" id="selectAddressModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <div class="selectAddress"></div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="savedAddressText">Saved Addresses</div>
+                        <cfloop array = #addresses.address# item = "address">
+                            <div class="addressItem">
+                                <input type="radio" name="address" id="address" value=#urlEncodedFormat(address.addressId)#>
+                                <div class="addressContent">
+                                    <div>
+                                        <span class="firstName">#address.firstName#</span>
+                                        <span class="lastName">#address.lastName#</span>
+                                        <span class="phone">#address.phone#</span>
+                                        <div class="addressLine1">#address.addressline1#</div>
+                                        <div class="addressLine2">#address.addressline2#</div>
+                                        <div class="city">#address.city#</div>
+                                        <div class="state">#address.state#</div>
+                                        <div class="pincode">#address.pincode#</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </cfloop>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-success" id="addAddressBtn" name="submit">Add Address</button>
+                        <button type="button" class="btn btn-primary" id="submit" name="submit" onclick="redirectToOrder('#urlEncodedFormat(url.productId)#')">Payment Details</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <cfinclude  template="addAdress.cfm">
          <script src="./Script/jquery-3.7.1.min.js"></script>
          <script src="./Script/bootstrapScript.js"></script>
           <script src="./Script/userPageScript.js"></script>

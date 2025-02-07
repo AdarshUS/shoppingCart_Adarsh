@@ -30,13 +30,13 @@
             <button data-bs-toggle="modal" data-bs-target="##categoryModal" class="categoryAddbtn" onclick="createCategory()"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>         
          </div>
          <div class="categoryBody">
-            <cfloop array="#result.categories#" index="i" item="category">
-               <div class="categoryItem" id="#result.categoryId[i]#">
-                  <div class="categoryItemText">#result.categories[i]#</div>
+            <cfloop array="#result.categories#" item="category">
+               <div class="categoryItem" id="#category.categoryId#">
+                  <div class="categoryItemText">#category.categoryName#</div>
                   <div class="categoryItemRight">
-                     <button data-bs-toggle="modal" data-bs-target="##categoryModal" onclick="editCategory(this)" value = #result.categoryId[i]# class="categoryBtn"><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
-                     <button class="categoryBtn" onclick="deleteCategory(this)" value = #result.categoryId[i]#><i class="fa-solid fa-trash categoryfns"></i></button>
-                     <a class="categoryBtn" href="./subcategory.cfm?categoryId=#URLEncodedFormat(application.objUser.encryptId(result.categoryId[i]))#"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></a>
+                     <button data-bs-toggle="modal" data-bs-target="##categoryModal" onclick="editCategory(this)" value = #application.objUser.decryptId(category.categoryId)# class="categoryBtn"><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
+                     <button class="categoryBtn" onclick="deleteCategory(this)" value = #category.categoryId#><i class="fa-solid fa-trash categoryfns"></i></button>
+                     <a class="categoryBtn" href="./subcategory.cfm?categoryId=#URLEncodedFormat(category.categoryId)#"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></a>
                   </div>
                </div>
             </cfloop>

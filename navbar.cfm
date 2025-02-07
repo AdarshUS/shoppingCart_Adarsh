@@ -1,16 +1,15 @@
-<cfset categories = application.objProductManagement.fetchAllCategories()>
-
+<cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfoutput >
 <div class="categoriesContainer">
-         <cfloop array="#categories.categoryId#" index="i" item="category">
+         <cfloop array="#categoriesResult.categories#" item="category">
             <div class="dropdown">
-               <a class="category"  aria-expanded="false" href="categoryList.cfm?categoryId=#URLEncodedFormat(application.objUser.encryptId(categories.categoryId[i]))#">
-                 #categories.categories[i]#
+               <a class="category"  aria-expanded="false" href="categoryList.cfm?categoryId=#URLEncodedFormat(category.categoryId)#">
+                 #category.categoryName#
                </a>
-               <cfset subCategories = application.objProductManagement.fetchSubCategories(application.objUser.encryptId(categories.categoryId[i]))>
+               <cfset subcategoriesResult = application.objProductManagement.fetchSubCategories(category.categoryId)>
                <ul class="dropdown-menu">
-                  <cfloop array = #subCategories.subCategoryNames# index = i item = subcategory>
-                     <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(application.objUser.encryptId(subCategories.subCategoryIds[i]))#">#subCategories.subCategoryNames[i]#</a></li>
+                  <cfloop array = #subcategoriesResult.subcategory# item = subcategory>
+                     <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(subcategory.subCategoryId)#">#subCategory.subCategoryname#</a></li>
                   </cfloop>
                </ul>
             </div>

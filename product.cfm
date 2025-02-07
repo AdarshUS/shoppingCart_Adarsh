@@ -1,12 +1,12 @@
 <cfoutput>
-<cfset categoriesStruct = application.objProductManagement.fetchAllCategories()>
-<cfset brands = application.objProductManagement.fetchBrands()>
-<cfset products = application.objProductManagement.fetchProducts(subCategoryId =url.subCategoryId)>
+<cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
+<cfset brandsResult = application.objProductManagement.fetchBrands()>
+<cfset productDetails = application.objProductManagement.fetchProducts(subCategoryId =url.subCategoryId)>
 <cfif structKeyExists(form,"submit")>
    <cfif LEN(form.hiddenValue) GT 0>
       <cfset application.objProductManagement.updateProduct(productId = form.hiddenValue,subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,productDescription = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>      
    <cfelse>
-      <cfset application.objProductManagement.insertProduct(subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,description = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>
+      <cfset application.objProductManagement.addProduct(subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,description = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>
       <cflocation url="product.cfm?subCategoryId=#url.subCategoryId#&categoryId=#url.categoryId#" addtoken="false">
    </cfif>
 </cfif>
@@ -39,7 +39,7 @@
             <h5>products</h5>
             <button data-bs-toggle="modal" data-bs-target="##productModal" class="productAddbtn" onclick="createproduct()"><span>Add</span><i class="fa-solid fa-plus productPlus"></i></button>
          </div>
-          <cfloop array = "#products.data#"  index="product">
+          <cfloop array = "#productDetails.products#"  index="product">
             <div class="productBody" id="#product.productId#">
                <div class="productItem">
                   <div class="productItemLeft">
@@ -47,12 +47,24 @@
                      <h6 class="productBrand">#product.brandName#</h6>
                      <div class="productprice"><i class="fa-solid fa-indian-rupee-sign">#product.unitPrice#</i></div>
                   </div>
-                  <div class="productItemImage" data-bs-toggle="modal" data-bs-target="##imageModal" onclick="editImages(#product.productId#)">
-                     <img src="./Assets/uploads/product#product.productId#/#product.imageFilePath#" alt="productImage">
+                  <div class="productItemImage" data-bs-toggle="modal" data-bs-target="##imageModal" onclick="editImages('#product.productId#')">
+                     <img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" alt="productImage">
                   </div>
                   <div class="productItemRight">
-                     <button class="productfnBtn" data-bs-toggle="modal" data-bs-target="##productModal" id="editProductBtn" value="#product.productId#" onclick="editProduct({productId :#product.productId#,categoryId:#application.objUser.decryptId(url.categoryId)#,subCategoryId:#application.objUser.decryptId(url.subCategoryId)#})"><i class="fa-solid fa-pen-to-square productfns" ></i></button>
-                     <button class="productfnBtn" onclick="deleteProduct(#product.productId#)"><i class="fa-solid fa-trash productfns"></i></button>
+                    <button class="productfnBtn" 
+        data-bs-toggle="modal" 
+        data-bs-target="##productModal" 
+        id="editProductBtn" 
+        value="#product.productId#" 
+        onclick="editProduct({ 
+            productId: '#product.productId#', 
+            categoryId: '#url.categoryId#', 
+            subCategoryId: '#url.subCategoryId#' 
+        })">
+    <i class="fa-solid fa-pen-to-square productfns"></i>
+</button>
+
+                    <button class="productfnBtn" onclick="deleteProduct('#product.productId#')"><i class="fa-solid fa-trash productfns"></i></button>
                   </div>
                </div>
             </div>
@@ -72,8 +84,8 @@
                      <label for="categoryNameSelectPr" class="form-label">Select Category Name</label>
                      <select class="form-control" id="categoryNameSelectPr" name = "categoryNameSelectPr">
                         <option>--</option> 
-                        <cfloop array="#categoriesStruct.categories#" index="i" item="category">
-                           <option value="#categoriesStruct.categoryId[i]#">#categoriesStruct.categories[i]#</option>
+                        <cfloop array="#categoriesResult.categories#" item="category">
+                           <option value="#category.categoryId#">#category.categoryName#</option>
                         </cfloop>
                      </select>
                      <div id="categorySelectError" class="error"></div>
@@ -94,8 +106,8 @@
                      <label for="brandName" class="form-label">Enter Product Brand</label>
                      <select class="form-control" id="brandName" name = "brandName">
                         <option id="0">--</option> 
-                        <cfloop  array="#brands.brandIds#" index="i" item="brand">
-                           <option value="#brands.brandIds[i]#">#brands.brandNames[i]#</option>
+                        <cfloop  array="#brandsResult.brands#" item="brand">
+                           <option value="#brand.brandId#">#brand.brandName#</option>
                         </cfloop>
                      </select>
                      <div id="brandNameError" class="error"></div>

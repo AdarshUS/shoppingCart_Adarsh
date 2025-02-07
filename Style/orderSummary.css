@@ -1,0 +1,120 @@
+body {
+    font-family: Arial, sans-serif;   
+    margin: 0;
+    padding: 0;
+}
+.order-summary {
+    background: #ffffff;
+    border-radius: 5px;
+    padding: 20px;
+    max-width: 500px;
+    margin: auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 60px;
+}
+.order-summary h2 {
+    background: #000000;
+    color: #fff;
+    padding: 10px;
+    margin: -20px -20px 10px -20px;
+    text-align: center;
+}
+.address {
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+.product {
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #ddd;
+    padding-top: 15px;
+}
+.product img {
+    width: 80px;
+    height: auto;
+    margin-right: 15px;
+    border-radius: 5px;
+}
+.details {
+    flex-grow: 1;
+}
+.price {
+    font-weight: bold;
+}
+.payable {
+    color: red;
+    font-size: 18px;
+}
+.quantity {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+.quantity button {
+    background: #eee;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+.place-order {
+    display: block;
+    width: 100%;
+    background: #0b0b0b;
+    color: white;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+.place-order:hover {
+   background-color: blue;
+}
+
+.orderInput{
+    width: 40px;
+    text-align: center;
+    border: 1px solid #ddd;
+    margin: 0 5px;
+}
+
+.card_date{
+    display: flex;
+    gap: 20px;
+}
+
+.cardFeild{
+    width: 60%;
+}
+
+.modal-body{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cvvCntr{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cardButton{
+    width: 59%;
+    margin: 10px;
+    padding: 8px;
+}
+
+.cardproceedBtn{
+    background-color: #7dc754;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+}
+
+.cvvText{
+    font-size: 9px;
+    font-weight: 700;
+}
+
