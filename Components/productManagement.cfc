@@ -139,7 +139,7 @@
                     fldUpdatedBy = <cfqueryparam value="#application.objUser.decryptId(session.loginAdminId)#" cfsqltype="integer">,
                     fldUpdatedDate = now()
                 WHERE
-                    fldCategory_Id = <cfqueryparam value="#local.decryptedCategoryId#" cfsqltype="integer">
+                    fldCategory_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="integer">
                     AND fldActive = 1
             </cfquery>
             <cfset local.result.success = true>
@@ -203,7 +203,6 @@
 
     <cffunction name="fetchSubCategories" access="remote" returntype="struct" returnformat="JSON">
         <cfargument name="categoryId" type="string" required="false">
-        <cfset local.decryptedCategoryId = application.objUser.decryptId(arguments.categoryId)>
         <cfset  local.result =
         {
             success = false,
@@ -220,7 +219,7 @@
                     tblsubcategory
                WHERE
                     fldActive = 1
-                    AND fldCategoryId = <cfqueryparam value="#local.decryptedCategoryId#" cfsqltype="varchar">
+                    AND fldCategoryId = <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="varchar">
             </cfquery>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful operation">
@@ -243,21 +242,21 @@
 
     <cffunction name="updateSubCategory" access="public" returntype="struct">
         <cfargument name="subCategoryId" type="numeric" required="true">
-        <cfargument name="newCategoryName" type="string" required="true">
+        <cfargument name="newSubCategoryName" type="string" required="true">
         <cfargument name="categoryId" type="string" required="true">
         <cfset local.result = {success = false}>
         <cftry>
-            <cfquery name="checkExistingSubCategory" datasource="#application.datasource#">
+            <cfquery name="local.checkExistingSubCategory" datasource="#application.datasource#">
                 SELECT
                     count(*) AS subCategoryCount
                 FROM
                     tblsubcategory
                 WHERE
-                    fldSubCategoryName = <cfqueryparam value="#arguments.newCategoryName#" cfsqltype="varchar">
+                    fldSubCategoryName = <cfqueryparam value="#arguments.newSubCategoryName#" cfsqltype="varchar">
                     AND fldCategoryId = <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="integer">
                     AND fldSubcategory_Id != #arguments.subCategoryId#
             </cfquery>
-            <cfif checkExistingSubCategory.subCategoryCount>
+            <cfif local.checkExistingSubCategory.subCategoryCount>
                 <cfset local.result.success = false>
                 <cfset local.result.message = "this subcategory Already Exist">
             <cfelse>
@@ -265,7 +264,7 @@
                     UPDATE
                         tblsubcategory
                     SET
-                        fldSubCategoryName = <cfqueryparam value="#arguments.newCategoryName#" cfsqltype="varchar">,
+                        fldSubCategoryName = <cfqueryparam value="#arguments.newSubCategoryName#" cfsqltype="varchar">,
                         fldCategoryId = <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="integer">,
                         fldUpdatedDate = now(),
                         fldUpdatedBy = <cfqueryparam value="#application.objUser.decryptId(session.loginAdminId)#" cfsqltype="integer">

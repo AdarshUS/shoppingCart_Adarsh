@@ -2,7 +2,7 @@
 <cfset variables.message = "">
 <cfif structKeyExists(form,"submit")>
     <cfif LEN(form.distinguishSubCreateEdit) GT 0>
-        <cfset variables.result =  application.objProductManagement.updateSubCategory(subCategoryId = form.distinguishSubCreateEdit,newCategoryName = form.subCategoryName,categoryId = form.selectCategory)>
+        <cfset variables.result =  application.objProductManagement.updateSubCategory(subCategoryId = form.distinguishSubCreateEdit,newSubCategoryName = form.subCategoryName,categoryId = form.selectCategory)>
         <cfset variables.message = "#variables.result.message#">
     <cfelse>
         <cfset  variables.result = application.objProductManagement.addSubCategory(categoryId = form.selectCategory,subcategoryName = form.subCategoryName)>

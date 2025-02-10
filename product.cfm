@@ -4,13 +4,11 @@
 <cfset variables.productDetails = application.objProductManagement.fetchProducts(subCategoryId =url.subCategoryId)>
 <cfif structKeyExists(form,"submit")>
     <cfif LEN(form.hiddenValue) GT 0>
-        <cfset application.objProductManagement.updateProduct(productId = form.hiddenValue,subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,productDescription = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>      
-        <cflocation url="#cgi.script_name#" addtoken="false">
+        <cfset application.objProductManagement.updateProduct(productId = form.hiddenValue,subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,productDescription = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>       
     <cfelse>
         <cfset application.objProductManagement.addProduct(subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,description = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>
-        <cflocation url="product.cfm?subCategoryId=#url.subCategoryId#&categoryId=#url.categoryId#" addtoken="false">
-        <cflocation url="#cgi.script_name#" addtoken="false">
    </cfif>
+   <cflocation url="#cgi.script_name#?subCategoryId=#URLEncodedFormat(url.subCategoryId)#&categoryId=#URLEncodedFormat(url.categoryId)#" addtoken="false">
 </cfif>
 <!DOCTYPE html>
 <html lang="en">

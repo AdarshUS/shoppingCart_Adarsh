@@ -188,31 +188,57 @@ function toggleLessProducts(subcategoryId) {
     document.getElementById("viewMoreBtn").style.display = "flex";
 }
 
-function increaseQuantity(cartId, step) {
-    document.getElementById("decreaseQntyBtn").disabled = false;
-    let qnty = document.getElementById("qntyNo" + cartId).value;
-    qnty++;
-    document.getElementById("qntyNo" + cartId).value = qnty;
+ function handleCartAction(productId) {
+        $.ajax({
+            url: 'components/cart.cfc?method=addTocart',
+            type: 'POST',
+            data: {productId : productId,quantity:1},
+            success: function(response) {
+                let result = JSON.parse(response);
+                location.reload();
+            },
+            error: function() {
+                console.error("Error in LogOut");
+            }
+        });
+        let cartButton = document.getElementById("cartButton");
+        cartButton.textContent = "Go to Cart";
+        cartButton.onclick = function () {
+            window.location.href = "cart.cfm";
+        };
+    }
 
-    $.ajax({
-        url: 'components/cart.cfc?method=updateCart',
-        type: 'POST',
-        data: {
-            cartId: cartId,
-            step: step
-        },
-        success: function(result) {
-        },
-        error: function() {
-            console.error("failed to Update")
-        }
-    });
-    document.getElementById("totalPrice" + cartId).innerHTML =
-        document.getElementById("qntyNo" + cartId).value *
-        document.getElementById("productPrice" + cartId).innerHTML;
-    checkQnty();
-    calculateTotalPrice();
-}
+    function buyItem(productId)
+    {
+        handleCartAction(productId);
+        window.location.href = "cart.cfm";
+    }
+
+    function increaseQuantity(cartId, step) {
+        document.getElementById("decreaseQntyBtn").disabled = false;
+        let qnty = document.getElementById("qntyNo" + cartId).value;
+        qnty++;
+        document.getElementById("qntyNo" + cartId).value = qnty;
+    
+        $.ajax({
+            url: 'components/cart.cfc?method=updateCart',
+            type: 'POST',
+            data: {
+                cartId: cartId,
+                step: step
+            },
+            success: function(result) {
+            },
+            error: function() {
+                console.error("failed to Update")
+            }
+        });
+        document.getElementById("totalPrice" + cartId).innerHTML =
+            document.getElementById("qntyNo" + cartId).value *
+            document.getElementById("productPrice" + cartId).innerHTML;
+        checkQnty();
+        calculateTotalPrice();
+    }
 
 function decreaseQuantity(cartId, step) {
     let qnty = document.getElementById("qntyNo" + cartId).value;

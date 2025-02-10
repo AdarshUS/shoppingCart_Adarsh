@@ -3,16 +3,8 @@
 <cfset addresses = {}>
 <cfif structKeyExists(session, "loginuserId")>
     <cfset addresses = application.objUser.fetchAddress()>
-</cfif>
-<cfif structKeyExists(form, "submitBtn")>
-    <cfif NOT structKeyExists(session, "loginuserId")>
-        <cflocation url = "userLogin.cfm?productId=#URLEncodedFormat(productDetails.data.productId)#&redirect=cart" addToken = "no">
-    <cfelse>
-        <cfset result = application.objCart.addTocart(productId = url.productId, quantity = 1)>
-        <cfif result.success>
-           <cflocation url = "cart.cfm" addtoken = "no">
-        </cfif>
-    </cfif>
+<cfelse>
+     <cflocation url = "userLogin.cfm?productId=#URLEncodedFormat(productDetails.data.productId)#&redirect=cart" addToken = "no">
 </cfif>
 <!DOCTYPE html>
 <cfoutput>
@@ -85,15 +77,18 @@
                     <form method="post">
                         <div class="buttonContainer">
                             <cfif NOT structKeyExists(session, "loginuserId")>
-                                <button type="button" class="btn btn-info p-2" onclick="window.location.href='userLogin.cfm?productId=#URLEncodedFormat(productDetails.data.productId)#&redirect=product'">
+                                <button type="button" class="btn btn-info p-2" 
+                                onclick="window.location.href='userLogin.cfm?productId=#URLEncodedFormat(productDetails.data.productId)#&redirect=product'">
                                     Buy Now
                                 </button>
                             <cfelse>
-                                <button type="button" class="btn btn-info p-2" data-bs-toggle="modal" data-bs-target="##selectAddressModal">
+                                <button type="button" class="btn btn-info p-2" onclick = "buyItem('#productDetails.data.productId#')">
                                     Buy Now
                                 </button>
                             </cfif>
-                           <button class="btn btn-success p-2" name="submitBtn">Add to Cart</button>
+                            <button type="button" class="btn btn-success p-2" id="cartButton" onclick="handleCartAction('#productDetails.data.productId#')">
+                                Add to Cart
+                            </button>
                         </div>
                     </form>
                </div>

@@ -63,8 +63,7 @@
                <p>TotalTax: <strong><i class="fa-solid fa-indian-rupee-sign"></i><span id="totalTax"></span>%</strong></p>
                <p>Shipping: <strong>Free</strong></p>
                <p>Subtotal: <strong><i class="fa-solid fa-indian-rupee-sign"></i><span id="subtotal"></span></strong></p>
-               <p><span class="coupon-code">Add coupon code</span></p>
-               <button class="checkout-btn" data-bs-toggle="modal" data-bs-target="##selectAddressModal">Bought Together</button>
+               <button class="checkout-btn" data-bs-toggle="modal" data-bs-target="##selectAddressModal">CheckOut</button>
             </div>
         </div>
         <div class="modal fade" id="selectAddressModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
