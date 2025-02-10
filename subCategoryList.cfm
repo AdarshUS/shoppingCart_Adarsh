@@ -37,20 +37,35 @@
                    <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(url.subcategoryId)#&sort=ASC">price: Low to High</a>
                    <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(url.subcategoryId)#&sort=DESC">price :High to Low</a>
                 </div>
-                <div class="filterBox">
-                    <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle filterBtn" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                            Filter<i class="fa-solid fa-filter"></i>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                            <li><input type="radio" name="filterPrice" id="filterPrice1"  class="dropdown-item" value="0 AND 1000"><span>0 to 1000</span></li>
-                            <li><input type="radio" name="filterPrice" id="filterPrice2"  class="dropdown-item" value="1000 AND 10000"><span>1000 to 10,000</span></li>
-                            <li><input type="radio" name="filterPrice" id="filterPrice3"  class="dropdown-item" value = "10000 AND 15000"><span>10,000 to 15,000</span></li>
-                            <li><input type="radio" name="filterPrice" id="filterPrice4"  class="dropdown-item" value = "15000 AND 25000"><span>15,000 to 25,000</span></li>
-                            <label for="minimumPrice"></label><input type="number" id="minimumPrice">
-                            <label for="maxPrice"></label><input type="number" id="maxPrice">
-                            <button class="btn btn-secondary" onclick="filterPrices('#url.subcategoryId#')">Submit</button>
-                        </ul>
+                <div class="dropdown">
+                    <button class="btn btn-dark dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Filter by Price
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="filterDropdown">
+                        <h6 class="dropdown-header">Select Price Range</h6>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="filterPrice" id="price1" value="0 AND 1000">
+                            <label class="form-check-label" for="price1">0 to 1,000</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="filterPrice" id="price2" value="1000 AND 10000">
+                            <label class="form-check-label" for="price2">1,000 to 10,000</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="filterPrice" id="price3" value="10000 AND 15000">
+                            <label class="form-check-label" for="price3">10,000 to 15,000</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="filterPrice" id="price4" value="15000 AND 25000">
+                            <label class="form-check-label" for="price4">15,000 to 25,000</label>
+                        </div>
+                        <h6 class="mt-3">Custom Price</h6>
+                        <div class="d-flex gap-2">
+                            <input type="number" class="form-control" id="minimumPrice" placeholder="Min">
+                            <span class="align-self-center">-</span>
+                            <input type="number" class="form-control" id="maxPrice" placeholder="Max">
+                        </div>
+                        <button class="btn btn-dark mt-3 filter-btn" onclick="filterPrices('#url.subcategoryId#')">Apply Filter</button>
                     </div>
                 </div>
             </div>

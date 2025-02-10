@@ -39,7 +39,7 @@
         <div class="productContainer">
             <div class="productheader">
                 <h5>products</h5>
-                <button data-bs-toggle="modal" data-bs-target="##productModal" class="productAddbtn" onclick="createproduct()"><span>Add</span><i class="fa-solid fa-plus productPlus"></i></button>
+                <button data-bs-toggle="modal" data-bs-target="##productModal" class="productAddbtn" onclick="createproduct('#url.subCategoryId#')"><span>Add</span><i class="fa-solid fa-plus productPlus"></i></button>
             </div>
             <cfloop array = "#variables.productDetails.products#"  index="product">
                 <div class="productBody" id="#product.productId#">
@@ -98,7 +98,11 @@
                     <div class="mb-3">
                         <label for="selectSubCategory" class="form-label">Select SubCategory Name</label>
                         <select class="form-control" id="selectSubCategory" name = "selectSubCategory">
-                            <option>--</option>
+                            <option 
+                                <cfif category.categoryId EQ url.categoryId>
+                                    selected
+                                </cfif>
+                            >--</option>
                         </select>
                         <div id="subCategorySelectError" class="error"></div>
                     </div>

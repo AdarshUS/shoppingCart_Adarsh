@@ -197,23 +197,25 @@ header {
 }
 
 .priceFilterContainer {
-	display: flex;
-	justify-content: space-between;
+	display: flex;	
 	padding: 20px;
+    justify-content: space-between;
+    margin-right: 64px;
 }
 
-.fa-filter {
-	margin: 0 5px;
+.dropdown-menu {
+    width: 200px;
+    padding: 15px;
 }
-
-.filterBtn {
-	display: inline-block;
-	margin: 0px 54px;
+.custom-range input {
+    width: 30%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: center;
 }
-
-.dropdown-menu li {
-	display: flex;
-	align-items: center;
+.filter-btn {
+    width: 100%;
 }
 
 .header_searchBar form {

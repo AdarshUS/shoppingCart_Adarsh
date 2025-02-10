@@ -242,11 +242,6 @@ function decreaseQuantity(cartId, step) {
     calculateTotalPrice();
 }
 
-$(document).ready(function() {
-    checkQnty();
-    calculateTotalPrice();
-});
-
 function checkQnty() {
     let qnty = $(".qntyNo");
     for (let index = 0; index < qnty.length; index++) {

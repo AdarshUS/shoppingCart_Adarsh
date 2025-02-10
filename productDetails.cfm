@@ -1,9 +1,8 @@
 <cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfset productDetails = application.objProductManagement.getProductDetails(productId = url.productId)>
+<cfset addresses = {}>
 <cfif structKeyExists(session, "loginuserId")>
     <cfset addresses = application.objUser.fetchAddress()>
-<cfelse>
-    <cfset addresses = []>
 </cfif>
 <cfif structKeyExists(form, "submitBtn")>
     <cfif NOT structKeyExists(session, "loginuserId")>
@@ -188,23 +187,25 @@
                         </div>
                         <div class="modal-body">
                             <div class="savedAddressText">Saved Addresses</div>
-                            <cfloop array = #addresses.address# item = "address">
-                                <div class="addressItem">
-                                    <input type="radio" name="address" id="address" value=#urlEncodedFormat(address.addressId)#>
-                                    <div class="addressContent">
-                                        <div>
-                                            <span class="firstName">#address.firstName#</span>
-                                            <span class="lastName">#address.lastName#</span>
-                                            <span class="phone">#address.phone#</span>
-                                            <div class="addressLine1">#address.addressline1#</div>
-                                            <div class="addressLine2">#address.addressline2#</div>
-                                            <div class="city">#address.city#</div>
-                                            <div class="state">#address.state#</div>
-                                            <div class="pincode">#address.pincode#</div>
+                            <cfif structKeyExists(addresses, "address") AND isArray(addresses.address)>
+                                <cfloop array = #addresses.address# item = "address">
+                                    <div class="addressItem">
+                                        <input type="radio" name="address" id="address" value=#urlEncodedFormat(address.addressId)#>
+                                        <div class="addressContent">
+                                            <div>
+                                                <span class="firstName">#address.firstName#</span>
+                                                <span class="lastName">#address.lastName#</span>
+                                                <span class="phone">#address.phone#</span>
+                                                <div class="addressLine1">#address.addressline1#</div>
+                                                <div class="addressLine2">#address.addressline2#</div>
+                                                <div class="city">#address.city#</div>
+                                                <div class="state">#address.state#</div>
+                                                <div class="pincode">#address.pincode#</div>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </cfloop>
+                                </cfloop>
+                            </cfif>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

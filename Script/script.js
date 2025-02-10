@@ -224,7 +224,8 @@ function deleteSubCategory(subCategoryId, categoryId) {
 $("#categoryNameSelectPr").change(function() {
     getSubcategory();
 });
-function getSubcategory(){
+
+function getSubcategory(urlSubCategoryId){
     let categorySelected = $('#categoryNameSelectPr').val();
     let subCategoryElement = document.getElementById("selectSubCategory");
     if (categorySelected === "--") {
@@ -244,6 +245,13 @@ function getSubcategory(){
                 for (let i = 0; i < subcategories.length; i++) {
                     let opt = document.createElement('option');
                     opt.value = subcategories[i].subCategoryId;
+                    if(urlSubCategoryId != undefined)
+                    {
+                        if(urlSubCategoryId === opt.value)
+                        {
+                            opt.selected = true;
+                        }
+                    }
                     opt.innerHTML = subcategories[i].subCategoryName;
                     subCategoryElement.appendChild(opt);
                 }
@@ -321,7 +329,7 @@ function validateProduct() {
     return validProduct;
 }
 
-function createproduct() {
+function createproduct(subCategoryId) {
     let categorySelectError = document.getElementById("categorySelectError");
     let subCategorySelectError = document.getElementById("subCategorySelectError");
     let productNameError = document.getElementById("productNameError");
@@ -340,7 +348,7 @@ function createproduct() {
     unitTaxError.innerHTML = "";
     productImageError.innerHTML = "";
     document.getElementById('productForm').reset();
-    getSubcategory();
+    getSubcategory(subCategoryId);
 }
 
 function editProduct(editObj) {
