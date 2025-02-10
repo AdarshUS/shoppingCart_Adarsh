@@ -101,7 +101,6 @@ function insertEditCategory() {
             }
         });
     } else {
-        console.log(hiddenValue);
         $.ajax({
             url: 'components/ProductManagement.cfc?method=editCategory',
             data: {
@@ -147,8 +146,6 @@ function editCategory(editBtn) {
                 type: 'POST',
                 success: function(decryptResult) {
                     let decryptedId = JSON.parse(decryptResult);
-                    console.log(decryptedId);
-
                     document.getElementById("categoryInput").value = categoryName;
                     document.getElementById("distinguishCreateEdit").value = decryptedId;
                 },
@@ -173,7 +170,6 @@ function deleteCategory(dltBtn) {
                 categoryId: dltBtn.value
             },
             success: function() {
-                console.log(dltBtn.value);
                 document.getElementById(dltBtn.value).remove();
             },
             error: function() {
@@ -189,9 +185,7 @@ function createCategory() {
 }
 
 function editSubCategory(subCategory) {
-    console.log(subCategory)
     document.getElementById("subCategoryName").value = subCategory.subCategoryName;
-    /* document.getElementById("categoryNameSelect").value = subCategory.categoryId; */
     document.getElementById("subCategoryModalLabel").innerHTML = "Edit SubCategory";
     document.getElementById('distinguishSubCreateEdit').value = subCategory.subCategoryId;
 }
@@ -240,7 +234,6 @@ function getSubcategory(urlSubCategoryId){
             },
             success: function(result) {
                 let subcategories = JSON.parse(result).SUBCATEGORY;
-                console.log(subcategories)
                 subCategoryElement.innerHTML = "";
                 for (let i = 0; i < subcategories.length; i++) {
                     let opt = document.createElement('option');
@@ -361,7 +354,6 @@ function editProduct(editObj) {
         type: 'POST',
         success: function(result) {
             let product = JSON.parse(result);
-            console.log(product);
             document.getElementById("productName").value = product.DATA.productName;
             document.getElementById("brandName").value = product.DATA.brandId;
             document.getElementById("productDesc").value = product.DATA.description;
@@ -377,7 +369,6 @@ function editProduct(editObj) {
                 },
                 success: function(result) {
                     let subcategories = JSON.parse(result).SUBCATEGORY;
-                    console.log(subcategories)
                     subCategoryElement.innerHTML = "";
                     for (let i = 0; i < subcategories.length; i++) {
                         let opt = document.createElement('option');
@@ -424,7 +415,6 @@ function editImages(productId) {
         type: 'POST',
         success: function(result) {
             let productData = JSON.parse(result).DATA;
-            console.log(productData)
             let images = productData.images;
             let defaultImage = productData.defaultImagePath;
             $.ajax({

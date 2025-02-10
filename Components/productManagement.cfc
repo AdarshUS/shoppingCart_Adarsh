@@ -775,11 +775,11 @@
         <cfset local.sender = "adarshus1999@gmail.com">
         <cfset local.receiverAddress = "adarsh.us@techversantinfotech.com">
         <cfset local.errorMessage = "">
-            <cfset local.errorMessage = 
-                "Error Type: #arguments.body.type#<br>
-                Message: #arguments.body.message#<br>
-                Detail: #arguments.body.detail#<br>
-                StackTrace: #arguments.body.stackTrace#">
+        <cfset local.errorMessage = 
+            "Error Type: #arguments.body.type#<br>
+            Message: #arguments.body.message#<br>
+            Detail: #arguments.body.detail#<br>
+            StackTrace: #arguments.body.stackTrace#">
         <cfmail 
             from = "#local.sender#" 
             to = "#local.receiverAddress#" 

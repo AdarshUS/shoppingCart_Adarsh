@@ -116,7 +116,6 @@ function fetchProductsRemote(methodName, parameters) {
                         encryptedId: item.productId
                     },
                     success: function(decryptResult) {
-                        console.log(decryptResult);
                         let decryptedId = decryptResult.trim();
                         productBox.href = `./productDetails.cfm?productId=${item.productId}`;
 
@@ -180,7 +179,6 @@ function toggleProducts(subcategoryId, sort) {
 }
 
 function toggleLessProducts(subcategoryId) {
-    console.log(subcategoryId);
     fetchProductsRemote("fetchProducts", {
         subcategoryId: subcategoryId,
         limit: 4,
@@ -204,7 +202,6 @@ function increaseQuantity(cartId, step) {
             step: step
         },
         success: function(result) {
-            console.log("updated")
         },
         error: function() {
             console.error("failed to Update")
@@ -229,7 +226,6 @@ function decreaseQuantity(cartId, step) {
             step: step
         },
         success: function(result) {
-            console.log("successful Operation")
         },
         error: function() {
             console.error("failed")
@@ -245,7 +241,6 @@ function decreaseQuantity(cartId, step) {
 function checkQnty() {
     let qnty = $(".qntyNo");
     for (let index = 0; index < qnty.length; index++) {
-        console.log(qnty[index].value)
         if (qnty[index].value == 1) {
             qnty[index].previousElementSibling.disabled = true;
         } else {
@@ -253,6 +248,11 @@ function checkQnty() {
         }
     }
 }
+
+$(document).ready(function() {
+    checkQnty();
+    calculateTotalPrice();
+});
 
 function deleteCartItem(cartId) {
     if (confirm("Are you sure you want to delete")) {
@@ -263,7 +263,6 @@ function deleteCartItem(cartId) {
                 cartId: cartId
             },
             success: function(result) {
-                console.log("successful Operation");
                 document.getElementById(cartId).remove();
                 document.getElementById("itemcount").innerHTML = parseInt( document.getElementById("itemcount").innerHTML) - 1;
                 calculateTotalPrice();
@@ -298,7 +297,6 @@ function calculateTotalPrice() {
     let totalActual = 0;
     let totalTax = 0;
     for (let index = 0; index < productprices.length; index++) {
-        console.log(parseFloat(actualprices[index].innerHTML) * parseFloat(qnty[index].value));
         totalPrice += parseFloat(productprices[index].innerHTML);
         totalActual += parseFloat(actualprices[index].innerHTML) * parseFloat(qnty[index].value);
         totalTax += parseFloat(taxes[index].innerHTML);
@@ -359,7 +357,6 @@ function validateAddress() {
         document.getElementById("pincodeError").innerHTML = "Enter a valid pincode";
         validAddress = false;
     }
-    console.log(validAddress)
     return validAddress;
 }
 
@@ -372,7 +369,6 @@ function deleteAddress(addressId) {
                 addessId: addressId
             },
             success: function(result) {
-                console.log("successful Operation");
                 document.getElementById(addressId).remove();
             },
             error: function() {
@@ -404,6 +400,5 @@ function redirectToOrder(productId) {
 function redirectCartToorder() {
     let selectedAddress = document.querySelector('input[name="address"]:checked');
     let addressId = selectedAddress.value;
-    console.log(addressId)
     window.location.href = `orderSummary.cfm?addressId=${addressId}&type=cart`;
 }

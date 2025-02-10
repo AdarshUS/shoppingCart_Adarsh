@@ -15,7 +15,7 @@
 
     <cffunction name="onRequestStart" returnType="void">
         <cfargument name="requestname" required="true">
-        <cfif structKeyExists(url,"reload") AND url.reload EQ 1 <!--- AND structKeyExists(session,"loginuserId") --->>
+        <cfif structKeyExists(url,"reload") AND url.reload EQ 1 AND (structKeyExists(session,"loginuserId") OR structKeyExists(session,"loginAdminId"))>
             <cfset onApplicationStart()>
         </cfif>
         <cfset local.Adminpages = ["category.cfm","subcategory.cfm","product.cfm"]>

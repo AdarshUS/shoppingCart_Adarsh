@@ -6,7 +6,6 @@
             success = false,
             message = ""
         }>
-        <cfset local.decryptedProductId = application.objUser.decryptId(arguments.productId)>
         <cftry>
             <cfquery name = "local.checkProductExist" datasource="#application.datasource#">
                 SELECT
@@ -16,7 +15,7 @@
                 WHERE
                     fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
                     AND
-                    fldProductId = <cfqueryparam value="#local.decryptedProductId#" cfsqltype="integer">
+                    fldProductId = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">
             </cfquery>
             <cfif local.checkProductExist.existingProductCount>
                 <cfquery datasource="#application.datasource#">
@@ -180,6 +179,9 @@
         <cfargument name="unitPrice" type="integer" required="true">
         <cfargument name="unitTax" type="integer" required="true">
         <cfset local.orderId = createUUID()>
+        <cfset local.cardDigits = right(arguments.cardnumber,4)>
+        <cfset local.cardDigits = listInsertAt(local.cardDigits,1,'xxxxxxxxxxxx')>
+        <cfset local.cardDigits=listChangeDelims(local.cardDigits,'')>
         <cftry>
             <cfquery datasource="#application.datasource#">
                 INSERT INTO  tblorder (
@@ -195,7 +197,7 @@
                     <cfqueryparam value="#local.orderId#" cfsqltype="varchar">,
                     <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">,
                     <cfqueryparam value="#application.objUser.decryptId(arguments.addressId)#" cfsqltype="integer">,
-                    <cfqueryparam value="#arguments.cardnumber#" cfsqltype="varchar">,
+                    <cfqueryparam value="#local.cardDigits#" cfsqltype="varchar">,
                     <cfqueryparam value="#arguments.totalPrice#" cfsqltype="integer">,
                     <cfqueryparam value="#arguments.totalTax#" cfsqltype="integer">,
                     now()
@@ -234,8 +236,8 @@
         <cfset local.totalActualPrice = 0>
         <cfset local.totalTax = 0>
         <cfloop array="#local.cartDetails.data#" item="cartItem">
-            <cfset local.totalActualPrice+=cartItem.unitPrice>
-            <cfset local.totalTax+=cartItem.unitTax>
+            <cfset local.totalActualPrice+=cartItem.unitPrice * cartItem.quantity>
+            <cfset local.totalTax+=(cartItem.unitTax/100)*cartItem.unitPrice*cartItem.quantity>
         </cfloop>
         <cfset local.orderId = createUUID()>
         <cftry>
@@ -410,7 +412,7 @@
                     <div class="order-header">
                         <p><strong>Order Number:</strong> #local.orderHistory.orderDetails[1].orderId#</p>
                         <p><strong>Order Date:</strong> #local.orderHistory.orderDetails[1].orderDate#</p>
-                        <p><strong>Total Amount:</strong> #local.orderHistory.orderDetails[1].totalPrice#</p>
+                        <p><strong>Total Amount:</strong> #local.orderHistory.orderDetails[1].totalPrice+local.orderHistory.orderDetails[1].totalTax#</p>
                         <p class="order-status text-success"><strong>Status:</strong> Processed</p>
                     </div>
                     <table border="1" cellspacing="0" cellpadding="5" width="100%">
@@ -426,7 +428,7 @@
                         </thead>
                         <tbody>
                             <cfloop array="#local.productId#" item="product" index="i">
-                                <cfset totalPrice = local.unitPrices[i] + (local.unitTaxes[i] / 100) * local.unitPrices[i]>
+                                <cfset totalPrice = (local.unitPrices[i] + (local.unitTaxes[i] / 100) * local.unitPrices[i]) * local.quantity[i]>
                                 <tr>
                                     <td>#local.productNames[i]#</td>
                                     <td>#local.brandNames[i]#</td>

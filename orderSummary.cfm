@@ -29,13 +29,13 @@
             <div class="pincode">#variables.selectedAddress.Address[1].pincode#</div>
         </div>
         <cfif structKeyExists(url,"type") AND url.type EQ "cart">
-            <cfset variables.payableAmount = 0>
             <cfset variables.cartItems = application.objCart.fetchCart()>
             <cfloop array="#variables.cartItems.data#" item="product">
+            <cfset variables.payableAmount = 0>
                 <div class="product">
                     <img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" alt="productImage">
                     <div class="details">
-                        <cfset variables.payableAmount = product.unitPrice + (product.unitPrice * product.unitTax / 100) * product.quantity>
+                        <cfset variables.payableAmount = (product.unitPrice + (product.unitPrice * product.unitTax / 100) )* product.quantity>
                         <p><strong>#product.productName#</strong></p>
                         <p class="price">Actual Price: <i class="fa-solid fa-indian-rupee-sign"></i>#product.unitPrice#</p>
                         <p>Tax: #product.unitTax#%</p>
