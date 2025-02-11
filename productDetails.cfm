@@ -82,7 +82,7 @@
                                     Buy Now
                                 </button>
                             <cfelse>
-                                <button type="button" class="btn btn-info p-2" onclick = "buyItem('#productDetails.data.productId#')">
+                                <button type="button" class="btn btn-info p-2" data-bs-toggle="modal" data-bs-target="##selectAddressModal" onclick = "buyItem('#productDetails.data.productId#')">
                                     Buy Now
                                 </button>
                             </cfif>

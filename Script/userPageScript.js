@@ -211,7 +211,7 @@ function toggleLessProducts(subcategoryId) {
     function buyItem(productId)
     {
         handleCartAction(productId);
-        window.location.href = "cart.cfm";
+        window.location.href = `orderSummary.cfm?productId=${encodeURIComponent(productId)}&type=single`;
     }
 
     function increaseQuantity(cartId, step) {
@@ -315,22 +315,34 @@ function togglePassword() {
 }
 
 function calculateTotalPrice() {
-    let productprices = document.getElementsByClassName("totalPrice");
-    let actualprices = document.getElementsByClassName("actualPriceCart");
-    let qnty = document.getElementsByClassName("qntyNo");
+    let productPrices = document.getElementsByClassName("totalPrice");
+    let actualPrices = document.getElementsByClassName("actualPriceCart");
+    let quantities = document.getElementsByClassName("qntyNo");
     let taxes = document.getElementsByClassName("productTax");
+
     let totalPrice = 0;
     let totalActual = 0;
     let totalTax = 0;
-    for (let index = 0; index < productprices.length; index++) {
-        totalPrice += parseFloat(productprices[index].innerHTML);
-        totalActual += parseFloat(actualprices[index].innerHTML) * parseFloat(qnty[index].value);
-        totalTax += parseFloat(taxes[index].innerHTML);
+
+    for (let index = 0; index < productPrices.length; index++) {
+        let actualPrice = parseFloat(actualPrices[index].innerHTML);
+        let quantity = parseInt(quantities[index].value);
+        let taxPercentage = parseFloat(taxes[index].innerHTML);
+        
+        let actualTotal = actualPrice * quantity;
+        let taxAmount = (taxPercentage / 100) * actualTotal;
+        let totalItemPrice = actualTotal + taxAmount;
+
+        totalActual += actualTotal;
+        totalTax += taxAmount;
+        totalPrice += totalItemPrice;
     }
-    document.getElementById("totalActualprice").innerHTML = totalActual;
-    document.getElementById("totalTax").innerHTML = totalTax;
-    document.getElementById("subtotal").innerHTML = totalPrice;
+
+    document.getElementById("totalActualprice").innerHTML = totalActual.toFixed(2);
+    document.getElementById("totalTax").innerHTML = totalTax.toFixed(2);
+    document.getElementById("subtotal").innerHTML = totalPrice.toFixed(2);
 }
+
 
 function validateAddress() {
     let validAddress = true;

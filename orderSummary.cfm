@@ -29,6 +29,8 @@
             <div class="pincode">#variables.selectedAddress.Address[1].pincode#</div>
         </div>
         <cfif structKeyExists(url,"type") AND url.type EQ "cart">
+            <cfset variables.totalPrice = 0>
+            <cfset variables.totalTax = 0>
             <cfset variables.cartItems = application.objCart.fetchCart()>
             <cfloop array="#variables.cartItems.data#" item="product">
             <cfset variables.payableAmount = 0>
@@ -36,6 +38,8 @@
                     <img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" alt="productImage">
                     <div class="details">
                         <cfset variables.payableAmount = (product.unitPrice + (product.unitPrice * product.unitTax / 100) )* product.quantity>
+                        <cfset variables.totalPrice += product.unitPrice * product.quantity>
+                        <cfset variables.totalTax += (product.unitPrice * product.unitTax / 100) * product.quantity>
                         <p><strong>#product.productName#</strong></p>
                         <p class="price">Actual Price: <i class="fa-solid fa-indian-rupee-sign"></i>#product.unitPrice#</p>
                         <p>Tax: #product.unitTax#%</p>
@@ -48,6 +52,11 @@
                     </div>
                 </div>
             </cfloop>
+            <div class="totals">
+                <p class="totlPrice"><strong>Total Price: </strong><i class="fa-solid fa-indian-rupee-sign"></i> #variables.totalPrice#</p>
+                <p class="totlTax"><strong>Total Tax: </strong><i class="fa-solid fa-indian-rupee-sign"></i> #variables.totalTax#</p>
+                <p class="payable"><strong>Total Payable Amount: </strong><i class="fa-solid fa-indian-rupee-sign"></i> #variables.totalPrice + variables.totalTax#</p>
+            </div>
         <cfelse>
             <cfset variables.payableAmount = 0>
             <cfset variables.product = application.objProductManagement.getProductDetails(url.productId)>

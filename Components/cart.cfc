@@ -242,29 +242,18 @@
             <cfset local.totalTax+=(cartItem.unitTax/100)*cartItem.unitPrice*cartItem.quantity>
         </cfloop>
         <cfset local.cardDigits = right(arguments.cardnumber,4)>
-        <cfset local.cardDigits = listInsertAt(local.cardDigits,1,'xxxxxxxx')>
-        <cfset local.cardDigits=listChangeDelims(local.cardDigits,'')>
         <cfset local.orderId = createUUID()>
         <!--- <cftry> --->
-            <cfset cartItemsJson = SerializeJSON(local.cartDetails.data)>
             <cfquery datasource="#application.datasource#">
-                CALL PlaceOrder(
-                    <cfqueryparam value="#local.orderId#" cfsqltype="varchar">,
-                    <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">,
-                    <cfqueryparam value="#application.objUser.decryptId(arguments.addressId)#" cfsqltype="integer">,
-                    <cfqueryparam value="#local.cardDigits#" cfsqltype="varchar">,
-                    <cfqueryparam value="#local.totalActualPrice#" cfsqltype="decimal">,
-                    <cfqueryparam value="#local.totalTax#" cfsqltype="decimal">,
-                    <cfqueryparam value="#cartItemsJson#" cfsqltype="varchar">
-                )
+                CALL placeOrder(#Application.objUser.decryptId(session.loginuserId)#,#Application.objUser.decryptId(arguments.addressId)#,#local.cardDigits#,'#local.orderId#');
             </cfquery>
             <cfset sendOrderConfirmationMail(local.orderId)>
        <!---  <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
-            )>
-        </cfcatch>
+            )> --->
+        <!--- </cfcatch>
         </cftry> --->
     </cffunction>
 
@@ -385,7 +374,7 @@
                         <p><strong>Order Number:</strong> #local.orderHistory.orderDetails[1].orderId#</p>
                         <p><strong>Order Date:</strong> #local.orderHistory.orderDetails[1].orderDate#</p>
                         <p><strong>Total Amount:</strong> #local.orderHistory.orderDetails[1].totalPrice+local.orderHistory.orderDetails[1].totalTax#</p>
-                        <p class="order-status text-success"><strong>Status:</strong> Processed</p>
+                        <p class="order-status text-success"><strong>Status:</strong> Paid</p>
                     </div>
                     <table border="1" cellspacing="0" cellpadding="5" width="100%">
                         <thead>

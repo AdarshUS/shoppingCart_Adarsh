@@ -60,9 +60,9 @@
             <div class="order-summary">
                <h2>Order Summary</h2>
                <p>TotalActualPrice: <strong><i class="fa-solid fa-indian-rupee-sign"></i><span id="totalActualprice"></span></strong></p>
-               <p>TotalTax: <strong><i class="fa-solid fa-indian-rupee-sign"></i><span id="totalTax"></span>%</strong></p>
+               <p>TotalTax: <strong><i class="fa-solid fa-indian-rupee-sign"></i><span id="totalTax"></span></strong></p>
                <p>Shipping: <strong>Free</strong></p>
-               <p>Subtotal: <strong><i class="fa-solid fa-indian-rupee-sign"></i><span id="subtotal"></span></strong></p>
+               <p>Total: <strong><i class="fa-solid fa-indian-rupee-sign"></i><span id="subtotal"></span></strong></p>
                <button class="checkout-btn" data-bs-toggle="modal" data-bs-target="##selectAddressModal">CheckOut</button>
             </div>
         </div>
