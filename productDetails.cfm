@@ -3,8 +3,6 @@
 <cfset addresses = {}>
 <cfif structKeyExists(session, "loginuserId")>
     <cfset addresses = application.objUser.fetchAddress()>
-<cfelse>
-     <cflocation url = "userLogin.cfm?productId=#URLEncodedFormat(productDetails.data.productId)#&redirect=cart" addToken = "no">
 </cfif>
 <!DOCTYPE html>
 <cfoutput>
@@ -81,14 +79,17 @@
                                 onclick="window.location.href='userLogin.cfm?productId=#URLEncodedFormat(productDetails.data.productId)#&redirect=product'">
                                     Buy Now
                                 </button>
+                                <button type="button" class="btn btn-success p-2" id="cartButton" onclick="window.location.href='userLogin.cfm?productId=#URLEncodedFormat(productDetails.data.productId)#&redirect=cart'">
+                                    Add to Cart
+                                </button>
                             <cfelse>
-                                <button type="button" class="btn btn-info p-2" data-bs-toggle="modal" data-bs-target="##selectAddressModal" onclick = "buyItem('#productDetails.data.productId#')">
+                                <button type="button" class="btn btn-info p-2" data-bs-toggle="modal" data-bs-target="##selectAddressModal">
                                     Buy Now
                                 </button>
+                                 <button type="button" class="btn btn-success p-2" id="cartButton" onclick="handleCartAction('#productDetails.data.productId#')">
+                                    Add to Cart
+                                </button>
                             </cfif>
-                            <button type="button" class="btn btn-success p-2" id="cartButton" onclick="handleCartAction('#productDetails.data.productId#')">
-                                Add to Cart
-                            </button>
                         </div>
                     </form>
                </div>
@@ -205,7 +206,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                             <button type="button" class="btn btn-success" id="addAddressBtn" name="submit">Add Address</button>
-                            <button type="button" class="btn btn-primary" id="submit" name="submit" onclick="redirectToOrder('#urlEncodedFormat(url.productId)#')">Payment Details</button>
+                            <button type="button" class="btn btn-primary" id="submit" name="submit" onclick="redirectToOrder('#url.productId#')">Payment Details</button>
                         </div>
                     </div>
                 </div>

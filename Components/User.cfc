@@ -106,14 +106,14 @@
             <cfset local.hashedPassword =hmac(arguments.password,local.saltString,"hmacSHA256")>
             <cfquery name="local.checkUniqueEmailPhone" datasource="#application.datasource#">
                 SELECT
-                    count(*) AS emailPhCount
+                    1
                 FROM
                     tbluser
                 WHERE
                     fldEmail = <cfqueryparam value="#arguments.email#" cfsqltype="varchar">
                     OR fldPhone = <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">
             </cfquery>
-            <cfif local.checkUniqueEmailPhone.emailPhCount>
+            <cfif local.checkUniqueEmailPhone.recordCount>
                 <cfset local.result.success = false>
                 <cfset local.result.message = "Email or Phone Already Exist">
             <cfelse>

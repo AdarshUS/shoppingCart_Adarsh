@@ -20,12 +20,9 @@
                 <i class="fa-solid fa-cart-shopping">
                     <cfif structKeyExists(session,"loginuserId")>
                         <cfset numberOfCartItems = application.objCart.getNumberOfCartItems()>
-                        <cfif numberOfCartItems GT 0>
-                            <div class="itemcount" id="itemcount">
-                                #numberOfCartItems#
-                            </div>
-                        </cfif>
-                        
+                        <div class="itemcount" id="itemcount">
+                            #numberOfCartItems#
+                        </div>
                     </cfif>
                 </i>
             </a>

@@ -5,7 +5,7 @@
    <cflocation url="userLogin.cfm" addtoken="no">
 </cfif>
 <cfset variables.addresses = application.objUser.fetchAddress()>
-<cfset cart = application.objCart.fetchCart()>
+<cfset variables.cart = application.objCart.fetchCart()>
 <!DOCTYPE html>
 <cfoutput>
 <html lang="en">
@@ -33,7 +33,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <cfloop array = #cart.data# item = product>
+                        <cfloop array = #variables.cart.data# item = product>
                             <tr id="#product.cartId#">
                                 <td>
                                    <img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilepath#" alt="Analog Magazine Rack">

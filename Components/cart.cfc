@@ -1,15 +1,15 @@
 <cfcomponent>
-    <cffunction name="addTocart" access="remote" returntype="struct">
+    <cffunction name="addTocart" access="remote" returntype="struct" returnformat="JSON">
         <cfargument name = "productId" required="true" type="string">
         <cfargument name = "quantity" required="true" type="integer">
         <cfset local.result = {
             success = false,
-            message = ""
+            "message" = ""
         }>
         <cftry>
             <cfquery name = "local.checkProductExist" datasource="#application.datasource#">
                 SELECT
-                    count(*) AS existingProductCount
+                    fldCart_Id
                 FROM
                     tblcart
                 WHERE
@@ -17,17 +17,16 @@
                     AND
                     fldProductId = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">
             </cfquery>
-            <cfif local.checkProductExist.existingProductCount>
+            <cfif local.checkProductExist.RecordCount>
                 <cfquery datasource="#application.datasource#">
                     UPDATE
                         tblcart
                     SET
                         fldQuantity = fldQuantity + 1
                     WHERE
-                        fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
-                        AND
-                        fldProductId = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">
+                        fldCart_Id = <cfqueryparam value="#local.checkProductExist.fldCart_Id#">
                 </cfquery>
+                <cfset local.result.message = "product updated">
             <cfelse>
                 <cfquery datasource="#application.datasource#">
                     INSERT INTO tblcart(
@@ -41,9 +40,9 @@
                         <cfqueryparam value="#arguments.quantity#" cfsqltype="integer">
                     )
                 </cfquery>
+                <cfset local.result.message = "quantity Added">
             </cfif>
             <cfset local.result.success = true>
-            <cfset local.result.message = "successful Operation">
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset application.objProductManagement.sendErrorEmail(
@@ -72,8 +71,9 @@
                     C.fldQuantity,
                     C.fldCart_Id
                 FROM
-                    tblcart C INNER JOIN tblproduct P ON C.fldProductId = P.fldProduct_Id
-                    LEFT JOIN tblproductimages PI ON P.fldProduct_Id = PI.fldProductId AND fldDefaultImage = 1
+                    tblcart C 
+                INNER JOIN tblproduct P ON C.fldProductId = P.fldProduct_Id
+                LEFT JOIN tblproductimages PI ON P.fldProduct_Id = PI.fldProductId AND fldDefaultImage = 1
                 WHERE 
                     fldUserId = <cfqueryparam value = #application.objUser.decryptId(session.loginuserId)# cfsqltype="integer">
             </cfquery>
@@ -129,14 +129,16 @@
     </cffunction>
 
     <cffunction name="deleteCart" access="remote" returntype="void">
-        <cfargument name="cartId" required="true" type="string">
+        <cfargument name="cartId" required="false" type="string">
         <cftry>
             <cfquery datasource="#application.datasource#">
-                DELETE
-                FROM
-                    tblcart
-                WHERE
-                    fldCart_Id = <cfqueryparam value = #application.objUser.decryptId(arguments.cartId)# cfsqltype = "integer">
+                DELETE FROM tblcart
+            WHERE 
+                <cfif structKeyExists(arguments, "cartId") AND len(arguments.cartId)>
+                    fldCart_Id = <cfqueryparam value = "#application.objUser.decryptId(arguments.cartId)#" cfsqltype="integer">
+                <cfelseif structKeyExists(arguments, "productId") AND len(arguments.productId)>
+                    tblproductId = <cfqueryparam value = "#arguments.productId#" cfsqltype="integer">
+                </cfif>
             </cfquery>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
@@ -180,10 +182,8 @@
         <cfargument name="unitTax" type="integer" required="true">
         <cfset local.orderId = createUUID()>
         <cfset local.cardDigits = right(arguments.cardnumber,4)>
-        <cfset local.cardDigits = listInsertAt(local.cardDigits,1,'xxxxxxxxxxxx')>
-        <cfset local.cardDigits=listChangeDelims(local.cardDigits,'')>
-        <cfset local.totalTax = (arguments.unitTax/100)*arguments.unitPrice*arguments.quantity>
-        <cfset local.totalPrice = arguments.unitPrice * arguments.quantity>
+        <cfset local.totalTax = Round((arguments.unitTax/100)*arguments.unitPrice*arguments.quantity)>
+        <cfset local.totalPrice = round(arguments.unitPrice * arguments.quantity)>
         <cftry>
             <cfquery datasource="#application.datasource#">
                 INSERT INTO  tblorder (
@@ -221,6 +221,13 @@
                     <cfqueryparam value="#arguments.unitTax#" cfsqltype="integer">
                 )
             </cfquery>
+            <cfquery datasource="#application.datasource#">
+                DELETE 
+                FROM
+                    tblcart
+                WHERE
+                    fldProductId = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#">
+            </cfquery>
             <cfset sendOrderConfirmationMail(local.orderId)>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
@@ -243,18 +250,18 @@
         </cfloop>
         <cfset local.cardDigits = right(arguments.cardnumber,4)>
         <cfset local.orderId = createUUID()>
-        <!--- <cftry> --->
+        <cftry>
             <cfquery datasource="#application.datasource#">
                 CALL placeOrder(#Application.objUser.decryptId(session.loginuserId)#,#Application.objUser.decryptId(arguments.addressId)#,#local.cardDigits#,'#local.orderId#');
             </cfquery>
             <cfset sendOrderConfirmationMail(local.orderId)>
-       <!---  <cfcatch>
+        <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
-            )> --->
-        <!--- </cfcatch>
-        </cftry> --->
+            )>
+        </cfcatch>
+        </cftry>
     </cffunction>
 
     <cffunction name="sendOrderConfirmationMail" access="public" returntype="void">
@@ -306,8 +313,6 @@
                 LEFT JOIN tblproductimages PI ON PI.fldProductId = P.fldProduct_Id AND fldDefaultImage = 1
                 WHERE
                     O.fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="varchar">
-                	AND A.fldActive = 1
-                	AND P.fldActive = 1
                 <cfif structKeyExists(arguments,"orderId") AND arguments.orderId NEQ 0>
                     AND  O.fldOrder_Id = <cfqueryparam value="#arguments.orderId#" cfsqltype="varchar">
                 </cfif>
@@ -371,6 +376,7 @@
 
                 <div class="order_container">
                     <div class="order-header">
+                        <p><strong>Name:</strong>#local.orderHistory.orderDetails[1].firstName# #local.orderHistory.orderDetails[1].lastName#</p>
                         <p><strong>Order Number:</strong> #local.orderHistory.orderDetails[1].orderId#</p>
                         <p><strong>Order Date:</strong> #local.orderHistory.orderDetails[1].orderDate#</p>
                         <p><strong>Total Amount:</strong> #local.orderHistory.orderDetails[1].totalPrice+local.orderHistory.orderDetails[1].totalTax#</p>

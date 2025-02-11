@@ -195,10 +195,23 @@ function toggleLessProducts(subcategoryId) {
             data: {productId : productId,quantity:1},
             success: function(response) {
                 let result = JSON.parse(response);
-                location.reload();
+                console.log(result)
+                if(result.message === "quantity Added")
+                {
+                    console.log("inside");
+                    if(document.getElementById("itemcount").innerHTML === "")
+                    {
+                        document.getElementById("itemcount").innerHTML = 1;
+                    }
+                    else
+                    {
+                        document.getElementById("itemcount").innerHTML = parseInt( document.getElementById("itemcount").innerHTML) +1;
+                    }
+                    
+                }
             },
             error: function() {
-                console.error("Error in LogOut");
+                console.error("Error in addTocart");
             }
         });
         let cartButton = document.getElementById("cartButton");
@@ -206,12 +219,6 @@ function toggleLessProducts(subcategoryId) {
         cartButton.onclick = function () {
             window.location.href = "cart.cfm";
         };
-    }
-
-    function buyItem(productId)
-    {
-        handleCartAction(productId);
-        window.location.href = `orderSummary.cfm?productId=${encodeURIComponent(productId)}&type=single`;
     }
 
     function increaseQuantity(cartId, step) {
@@ -429,10 +436,10 @@ $(document).ready(function() {
 })
 
 function redirectToOrder(productId) {
-
     let selectedAddress = document.querySelector('input[name="address"]:checked');
     let addressId = selectedAddress.value;
-    window.location.href = `orderSummary.cfm?addressId=${addressId}&productId=${productId}&type=single`;
+    handleCartAction(productId);
+    window.location.href = `orderSummary.cfm?addressId=${addressId}&productId=${encodeURIComponent(productId)}&type=single`;
 }
 
 function redirectCartToorder() {

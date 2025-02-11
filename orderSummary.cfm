@@ -1,7 +1,8 @@
 <cfset variables.selectedAddress = application.objUser.fetchAddress(url.addressId)>
-<cfparam name="url.productId" type="string" default="">
 <cfparam name="product" type="struct" default="#StructNew()#">
+<cfparam name="url.productId" default="">
 <cfset variables.payableAmount = 0>
+<cfset variables.cancelOrderPath = "">
 <!DOCTYPE html>
 <cfoutput>
 <html lang="en">
@@ -32,6 +33,7 @@
             <cfset variables.totalPrice = 0>
             <cfset variables.totalTax = 0>
             <cfset variables.cartItems = application.objCart.fetchCart()>
+            <cfset variables.cancelOrderPath = "cart.cfm">
             <cfloop array="#variables.cartItems.data#" item="product">
             <cfset variables.payableAmount = 0>
                 <div class="product">
@@ -61,6 +63,7 @@
             <cfset variables.payableAmount = 0>
             <cfset variables.product = application.objProductManagement.getProductDetails(url.productId)>
             <cfset variables.payableAmount =  variables.product.data.unitPrice + ( variables.product.data.unitPrice *  variables.product.data.unitTax / 100)>
+            <cfset variables.cancelOrderPath = "productDetails.cfm?productId=#urlEncodedFormat(variables.product.data.productId)#">
             <div class="product">
                 <img src="#'./Assets/uploads/product'&application.objUser.decryptId(variables.product.data.productId)#/#variables.product.data.defaultImagePath#" alt="productImage">
                 <div class="details">
@@ -76,6 +79,7 @@
                 </div>
             </div>
         </cfif>
+        <button class="cancel-order" onclick="window.location.href='#variables.cancelOrderPath#'" type="button">cancelOrder</button>
         <button class="place-order" data-bs-toggle="modal" data-bs-target="##cardModal">Place Order</button>
     </div>
     <div class="modal fade" id="cardModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

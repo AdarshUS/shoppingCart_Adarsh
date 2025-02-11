@@ -24,24 +24,24 @@
         </div>
     </header>
     <main>
-       <div class="categoryContainer">
-          <div class="categoryheader">
-             <h5>Categories</h5>
-             <button data-bs-toggle="modal" data-bs-target="##categoryModal" class="categoryAddbtn" onclick="createCategory()"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>         
-          </div>
-          <div class="categoryBody">
-             <cfloop array="#variables.result.categories#" item="category">
-                <div class="categoryItem" id="#category.categoryId#">
-                   <div class="categoryItemText">#category.categoryName#</div>
-                   <div class="categoryItemRight">
-                      <button data-bs-toggle="modal" data-bs-target="##categoryModal" onclick="editCategory(this)" value = #application.objUser.decryptId(category.categoryId)# class="categoryBtn"><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
-                      <button class="categoryBtn" onclick="deleteCategory(this)" value = #category.categoryId#><i class="fa-solid fa-trash categoryfns"></i></button>
-                      <a class="categoryBtn" href="./subcategory.cfm?categoryId=#URLEncodedFormat(category.categoryId)#"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></a>
-                   </div>
-                </div>
-             </cfloop>
-          </div>
-       </div>
+        <div class="categoryContainer">
+            <div class="categoryheader">
+                <h5>Categories</h5>
+                <button data-bs-toggle="modal" data-bs-target="##categoryModal" class="categoryAddbtn" onclick="createCategory()"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>         
+            </div>
+            <div class="categoryBody">
+                <cfloop array="#variables.result.categories#" item="category">
+                    <div class="categoryItem" id="#category.categoryId#">
+                        <div class="categoryItemText">#category.categoryName#</div>
+                        <div class="categoryItemRight">
+                           <button data-bs-toggle="modal" data-bs-target="##categoryModal" onclick="editCategory(this)" value = #application.objUser.decryptId(category.categoryId)# class="categoryBtn"><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
+                           <button class="categoryBtn" onclick="deleteCategory(this)" value = #category.categoryId#><i class="fa-solid fa-trash categoryfns"></i></button>
+                           <a class="categoryBtn" href="./subcategory.cfm?categoryId=#URLEncodedFormat(category.categoryId)#"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></a>
+                        </div>
+                    </div>
+                </cfloop>
+            </div>
+        </div>
     </main>
     <div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog">

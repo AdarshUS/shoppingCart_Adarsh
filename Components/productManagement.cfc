@@ -248,7 +248,7 @@
         <cftry>
             <cfquery name="local.checkExistingSubCategory" datasource="#application.datasource#">
                 SELECT
-                    count(*) AS subCategoryCount
+                    1
                 FROM
                     tblsubcategory
                 WHERE
@@ -256,7 +256,7 @@
                     AND fldCategoryId = <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="integer">
                     AND fldSubcategory_Id != #arguments.subCategoryId#
             </cfquery>
-            <cfif local.checkExistingSubCategory.subCategoryCount>
+            <cfif local.checkExistingSubCategory.RecordCount>
                 <cfset local.result.success = false>
                 <cfset local.result.message = "this subcategory Already Exist">
             <cfelse>

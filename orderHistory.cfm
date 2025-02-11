@@ -34,7 +34,6 @@
         <cfset variables.brandNames= listToArray(order.brandName)>
         <div class="order_container">
             <div class="order-header">
-                <span>Name: <br><strong>#order.firstName# #order.lastName#</strong></span>
                 <span>Order Number: <br><strong>#order.orderId#</strong></span>
                 <span>Order Date: <br><strong>#order.orderDate#</strong></span>
                 <span>Total Amount: <br><strong>#order.totalPrice+order.totalTax#</strong></span>
