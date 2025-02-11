@@ -104,7 +104,7 @@
             </cfif>
             <cfset local.saltString = generateSecretKey("AES")>
             <cfset local.hashedPassword =hmac(arguments.password,local.saltString,"hmacSHA256")>
-            <cfquery name="checkUniqueEmailPhone" datasource="#application.datasource#">
+            <cfquery name="local.checkUniqueEmailPhone" datasource="#application.datasource#">
                 SELECT
                     1
                 FROM
@@ -113,7 +113,7 @@
                     fldEmail = <cfqueryparam value="#arguments.email#" cfsqltype="varchar">
                     OR fldPhone = <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">
             </cfquery>
-            <cfif checkUniqueEmailPhone.RecordCount>
+            <cfif local.checkUniqueEmailPhone.recordCount>
                 <cfset local.result.success = false>
                 <cfset local.result.message = "Email or Phone Already Exist">
             <cfelse>

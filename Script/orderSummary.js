@@ -85,14 +85,22 @@ function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
                                 cardnumber: cardNumber
                             },
                             success: function(result) {
-                                location.href = "orderConfirmation.cfm"
+                                Swal.fire({
+                                    position: "center",
+                                    icon: "success",
+                                    title: "Your order is confirmed",
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                            setTimeout(() => {
+                                location.href = "homePage.cfm";
+                            }, 1700); 
                             },
                             error: function() {
 
                             }
                         });
                     } else {
-                        console.log(totalTax);
                         $.ajax({
                             url: 'components/cart.cfc?method=addOrder',
                             type: 'POST',
@@ -107,7 +115,16 @@ function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
                                 unitTax: totalTax
                             },
                             success: function(result) {
-                                location.href = "orderConfirmation.cfm"
+                                Swal.fire({
+                                    position: "center",
+                                    icon: "success",
+                                    title: "Your order is confirmed",
+                                    showConfirmButton: false,
+                                    timer: 1500
+                                });
+                                setTimeout(() => {
+                                location.href = "homePage.cfm";
+                            }, 1700); 
                             },
                             error: function() {
 
@@ -140,8 +157,6 @@ function getOrderInvoicePdf(orderId)
         },
         success: function(result) {
             let jsonObj = JSON.parse(result);
-            console.log(jsonObj.FILEPATH)
-            console.log(jsonObj)
 		    let a = document.createElement("a");
 		    a.download = jsonObj.FILENAME;
 		    a.href = jsonObj.FILEPATH;

@@ -116,7 +116,6 @@ function fetchProductsRemote(methodName, parameters) {
                         encryptedId: item.productId
                     },
                     success: function(decryptResult) {
-                        console.log(decryptResult);
                         let decryptedId = decryptResult.trim();
                         productBox.href = `./productDetails.cfm?productId=${item.productId}`;
 
@@ -180,7 +179,6 @@ function toggleProducts(subcategoryId, sort) {
 }
 
 function toggleLessProducts(subcategoryId) {
-    console.log(subcategoryId);
     fetchProductsRemote("fetchProducts", {
         subcategoryId: subcategoryId,
         limit: 4,
@@ -190,32 +188,64 @@ function toggleLessProducts(subcategoryId) {
     document.getElementById("viewMoreBtn").style.display = "flex";
 }
 
-function increaseQuantity(cartId, step) {
-    document.getElementById("decreaseQntyBtn").disabled = false;
-    let qnty = document.getElementById("qntyNo" + cartId).value;
-    qnty++;
-    document.getElementById("qntyNo" + cartId).value = qnty;
+ function handleCartAction(productId) {
+        $.ajax({
+            url: 'components/cart.cfc?method=addTocart',
+            type: 'POST',
+            data: {productId : productId,quantity:1},
+            success: function(response) {
+                let result = JSON.parse(response);
+                console.log(result)
+                if(result.message === "quantity Added")
+                {
+                    console.log("inside");
+                    if(document.getElementById("itemcount").innerHTML === "")
+                    {
+                        document.getElementById("itemcount").innerHTML = 1;
+                    }
+                    else
+                    {
+                        document.getElementById("itemcount").innerHTML = parseInt( document.getElementById("itemcount").innerHTML) +1;
+                    }
+                    
+                }
+            },
+            error: function() {
+                console.error("Error in addTocart");
+            }
+        });
+        let cartButton = document.getElementById("cartButton");
+        cartButton.textContent = "Go to Cart";
+        cartButton.onclick = function () {
+            window.location.href = "cart.cfm";
+        };
+    }
 
-    $.ajax({
-        url: 'components/cart.cfc?method=updateCart',
-        type: 'POST',
-        data: {
-            cartId: cartId,
-            step: step
-        },
-        success: function(result) {
-            console.log("updated")
-        },
-        error: function() {
-            console.error("failed to Update")
-        }
-    });
-    document.getElementById("totalPrice" + cartId).innerHTML =
-        document.getElementById("qntyNo" + cartId).value *
-        document.getElementById("productPrice" + cartId).innerHTML;
-    checkQnty();
-    calculateTotalPrice();
-}
+    function increaseQuantity(cartId, step) {
+        document.getElementById("decreaseQntyBtn").disabled = false;
+        let qnty = document.getElementById("qntyNo" + cartId).value;
+        qnty++;
+        document.getElementById("qntyNo" + cartId).value = qnty;
+    
+        $.ajax({
+            url: 'components/cart.cfc?method=updateCart',
+            type: 'POST',
+            data: {
+                cartId: cartId,
+                step: step
+            },
+            success: function(result) {
+            },
+            error: function() {
+                console.error("failed to Update")
+            }
+        });
+        document.getElementById("totalPrice" + cartId).innerHTML =
+            document.getElementById("qntyNo" + cartId).value *
+            document.getElementById("productPrice" + cartId).innerHTML;
+        checkQnty();
+        calculateTotalPrice();
+    }
 
 function decreaseQuantity(cartId, step) {
     let qnty = document.getElementById("qntyNo" + cartId).value;
@@ -229,7 +259,6 @@ function decreaseQuantity(cartId, step) {
             step: step
         },
         success: function(result) {
-            console.log("successful Operation")
         },
         error: function() {
             console.error("failed")
@@ -242,15 +271,9 @@ function decreaseQuantity(cartId, step) {
     calculateTotalPrice();
 }
 
-$(document).ready(function() {
-    checkQnty();
-    calculateTotalPrice();
-});
-
 function checkQnty() {
     let qnty = $(".qntyNo");
     for (let index = 0; index < qnty.length; index++) {
-        console.log(qnty[index].value)
         if (qnty[index].value == 1) {
             qnty[index].previousElementSibling.disabled = true;
         } else {
@@ -258,6 +281,11 @@ function checkQnty() {
         }
     }
 }
+
+$(document).ready(function() {
+    checkQnty();
+    calculateTotalPrice();
+});
 
 function deleteCartItem(cartId) {
     if (confirm("Are you sure you want to delete")) {
@@ -268,8 +296,8 @@ function deleteCartItem(cartId) {
                 cartId: cartId
             },
             success: function(result) {
-                console.log("successful Operation");
                 document.getElementById(cartId).remove();
+                document.getElementById("itemcount").innerHTML = parseInt( document.getElementById("itemcount").innerHTML) - 1;
                 calculateTotalPrice();
             },
             error: function() {
@@ -294,23 +322,34 @@ function togglePassword() {
 }
 
 function calculateTotalPrice() {
-    let productprices = document.getElementsByClassName("totalPrice");
-    let actualprices = document.getElementsByClassName("actualPriceCart");
-    let qnty = document.getElementsByClassName("qntyNo");
+    let productPrices = document.getElementsByClassName("totalPrice");
+    let actualPrices = document.getElementsByClassName("actualPriceCart");
+    let quantities = document.getElementsByClassName("qntyNo");
     let taxes = document.getElementsByClassName("productTax");
+
     let totalPrice = 0;
     let totalActual = 0;
     let totalTax = 0;
-    for (let index = 0; index < productprices.length; index++) {
-        console.log(parseFloat(actualprices[index].innerHTML) * parseFloat(qnty[index].value));
-        totalPrice += parseFloat(productprices[index].innerHTML);
-        totalActual += parseFloat(actualprices[index].innerHTML) * parseFloat(qnty[index].value);
-        totalTax += parseFloat(taxes[index].innerHTML);
+
+    for (let index = 0; index < productPrices.length; index++) {
+        let actualPrice = parseFloat(actualPrices[index].innerHTML);
+        let quantity = parseInt(quantities[index].value);
+        let taxPercentage = parseFloat(taxes[index].innerHTML);
+        
+        let actualTotal = actualPrice * quantity;
+        let taxAmount = (taxPercentage / 100) * actualTotal;
+        let totalItemPrice = actualTotal + taxAmount;
+
+        totalActual += actualTotal;
+        totalTax += taxAmount;
+        totalPrice += totalItemPrice;
     }
-    document.getElementById("totalActualprice").innerHTML = totalActual;
-    document.getElementById("totalTax").innerHTML = totalTax;
-    document.getElementById("subtotal").innerHTML = totalPrice;
+
+    document.getElementById("totalActualprice").innerHTML = totalActual.toFixed(2);
+    document.getElementById("totalTax").innerHTML = totalTax.toFixed(2);
+    document.getElementById("subtotal").innerHTML = totalPrice.toFixed(2);
 }
+
 
 function validateAddress() {
     let validAddress = true;
@@ -363,7 +402,6 @@ function validateAddress() {
         document.getElementById("pincodeError").innerHTML = "Enter a valid pincode";
         validAddress = false;
     }
-    console.log(validAddress)
     return validAddress;
 }
 
@@ -376,7 +414,6 @@ function deleteAddress(addressId) {
                 addessId: addressId
             },
             success: function(result) {
-                console.log("successful Operation");
                 document.getElementById(addressId).remove();
             },
             error: function() {
@@ -399,15 +436,14 @@ $(document).ready(function() {
 })
 
 function redirectToOrder(productId) {
-
     let selectedAddress = document.querySelector('input[name="address"]:checked');
     let addressId = selectedAddress.value;
-    window.location.href = `orderSummary.cfm?addressId=${addressId}&productId=${productId}&type=single`;
+    handleCartAction(productId);
+    window.location.href = `orderSummary.cfm?addressId=${addressId}&productId=${encodeURIComponent(productId)}&type=single`;
 }
 
 function redirectCartToorder() {
     let selectedAddress = document.querySelector('input[name="address"]:checked');
     let addressId = selectedAddress.value;
-    console.log(addressId)
     window.location.href = `orderSummary.cfm?addressId=${addressId}&type=cart`;
 }

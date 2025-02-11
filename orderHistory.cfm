@@ -34,13 +34,13 @@
         <cfset variables.brandNames= listToArray(order.brandName)>
         <div class="order_container">
             <div class="order-header">
-                <span>Order Number: <strong>#order.orderId#</strong></span>
-                <span>Order Date: <strong>#order.orderDate#</strong></span>
-                <span>Total Amount: <strong>#order.totalPrice#</strong></span>
-                <span class="order-status text-success">Processed</span>
+                <span>Order Number: <br><strong>#order.orderId#</strong></span>
+                <span>Order Date: <br><strong>#order.orderDate#</strong></span>
+                <span>Total Amount: <br><strong>#order.totalPrice+order.totalTax#</strong></span>
+                <span class="order-status text-success">Paid</span>
             </div>
             <cfloop array="#variables.productId#" item="product" index="i">
-                <cfset totalPrice = variables.unitPrices[i] + (variables.unitTaxes[i] / 100) * variables.unitPrices[i]>
+                <cfset totalPrice = (variables.unitPrices[i] + (variables.unitTaxes[i] / 100) * variables.unitPrices[i]) * variables.quantity[i]>
                 <div class="order-item">
                     <img src="./Assets/uploads/product#variables.productId[i]#/#variables.imagePath[i]#" alt="product">
                     <div class="order-item-info">
