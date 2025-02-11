@@ -282,13 +282,16 @@
             "orderDetails": [],
             "message":""
          }>
-        <cftry>
+       <!---  <cftry> --->
             <cfquery name="local.fetchOrderItems" datasource="#application.datasource#">
-                SELECT  
+                SELECT
 	                O.fldOrder_Id,
 	                O.fldTotalPrice,
 	                O.fldTotalTax,
 	                O.fldOrderDate,
+                    OI.fldQuantity,
+                    OI.fldunitPrice,
+                    OI.fldunitTax,
 	                A.fldFirstName,
 	                A.fldLastName,
 	                A.fldAddressLine1,
@@ -297,13 +300,10 @@
 	                A.fldState,
 	                A.fldPincode,
 	                A.fldPhone,
-	                GROUP_CONCAT(OI.fldProductId) AS productId, 
-	                GROUP_CONCAT(OI.fldQuantity) AS productQuantity,
-	                GROUP_CONCAT(OI.fldUnitPrice) AS unitPrice, 
-	                GROUP_CONCAT(OI.fldUnitTax) AS unitTax,  
-	                GROUP_CONCAT(P.fldProductName) AS productName, 
-	                GROUP_CONCAT(PI.fldImageFilePath) AS productImage,
-	                GROUP_CONCAT(B.fldBrandName) AS brandName
+                    P.fldProductName,
+                    P.fldProduct_Id,
+                    PI.fldImageFilePath,
+                    B.fldBrandName
                 FROM
                 	tblorder O
                 INNER JOIN tblorderitems OI ON OI.fldOrderId = O.fldOrder_Id
@@ -316,21 +316,19 @@
                 <cfif structKeyExists(arguments,"orderId") AND arguments.orderId NEQ 0>
                     AND  O.fldOrder_Id = <cfqueryparam value="#arguments.orderId#" cfsqltype="varchar">
                 </cfif>
-                GROUP BY
-                	O.fldOrder_Id
             </cfquery>
             <cfif local.fetchOrderItems.recordCount>
                 <cfloop query="local.fetchOrderItems">
                     <cfset arrayAppend(local.result.orderDetails, {
                         "orderId": local.fetchOrderItems.fldOrder_Id,
                         "orderDate": dateTimeFormat(local.fetchOrderItems.fldOrderDate.toString()),
-                        "imagefilepath": local.fetchOrderItems.productImage,
-                        "productName": local.fetchOrderItems.productName,
-                        "productId": local.fetchOrderItems.productId,
-                        "brandName": local.fetchOrderItems.brandName,
-                        "quantity": local.fetchOrderItems.productQuantity,
-                        "unitPrice": local.fetchOrderItems.unitPrice,
-                        "unittax": local.fetchOrderItems.unitTax,
+                        "imagefilepath": local.fetchOrderItems.fldImageFilePath,
+                        "productName": local.fetchOrderItems.fldProductName,
+                        "productId": local.fetchOrderItems.fldProduct_Id,
+                        "brandName": local.fetchOrderItems.fldBrandName,
+                        "quantity": local.fetchOrderItems.fldQuantity,
+                        "unitPrice": local.fetchOrderItems.fldunitPrice,
+                        "unittax": local.fetchOrderItems.fldunitTax,
                         "totalPrice": local.fetchOrderItems.fldTotalPrice,
                         "totalTax": local.fetchOrderItems.fldTotalTax,
                         "firstName": local.fetchOrderItems.fldFirstName,
@@ -345,13 +343,13 @@
             </cfif>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
-        <cfcatch>
+        <!--- <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
                 subject=cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
-        </cftry>
+        </cftry> --->
         <cfreturn local.result>
     </cffunction>
 
