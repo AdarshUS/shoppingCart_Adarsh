@@ -21,6 +21,11 @@ function validate() {
     return validInput;
 }
 
+function resetErrorMsg()
+{
+    document.getElementById("categoryError").innerHTML = " ";
+}
+
 function validateSubCategory() {
     let validSubCategory = true;
     let categoryName = document.getElementById("categoryNameSelect").value;
@@ -52,7 +57,7 @@ $(".logout").click(function() {
                 location.reload();
             },
             error: function() {
-
+                console.error("Error in logout.");
             }
         });
     }
@@ -91,10 +96,11 @@ function insertEditCategory() {
                 }
 
             },
-            error: function() {}
+            error: function() {
+                onsole.error("Error in insertion.");
+            }
         });
     } else {
-        console.log(hiddenValue);
         $.ajax({
             url: 'components/ProductManagement.cfc?method=editCategory',
             data: {
@@ -111,7 +117,9 @@ function insertEditCategory() {
                     document.getElementById("categoryError").innerHTML = result.MESSAGE;
                 }
             },
-            error: function() {}
+            error: function() {
+                onsole.error("Error in deletion.");
+            }
         });
     }
 }
@@ -129,8 +137,7 @@ function editCategory(editBtn) {
             let parsedResult = JSON.parse(result);
             let categoryId = parsedResult.CATEGORIES[0].categoryId;
             let categoryName = parsedResult.CATEGORIES[0].categoryName;
-
-            // Nested AJAX call for decryption
+            
             $.ajax({
                 url: 'components/User.cfc?method=decryptId',
                 data: {
@@ -139,9 +146,6 @@ function editCategory(editBtn) {
                 type: 'POST',
                 success: function(decryptResult) {
                     let decryptedId = JSON.parse(decryptResult);
-                    console.log(decryptedId); // Now, this will have the correct value.
-
-                    // Set the input values inside this callback
                     document.getElementById("categoryInput").value = categoryName;
                     document.getElementById("distinguishCreateEdit").value = decryptedId;
                 },
@@ -156,7 +160,6 @@ function editCategory(editBtn) {
     });
 }
 
-
 function deleteCategory(dltBtn) {
     if (confirm("Are you sure you want to delete")) {
 
@@ -167,10 +170,11 @@ function deleteCategory(dltBtn) {
                 categoryId: dltBtn.value
             },
             success: function() {
-                console.log(dltBtn.value);
                 document.getElementById(dltBtn.value).remove();
             },
-            error: function() {}
+            error: function() {
+                console.error("Error deleting category");
+            }
         });
     }
 }
@@ -181,9 +185,7 @@ function createCategory() {
 }
 
 function editSubCategory(subCategory) {
-    console.log(subCategory)
     document.getElementById("subCategoryName").value = subCategory.subCategoryName;
-    document.getElementById("categoryNameSelect").value = subCategory.categoryId;
     document.getElementById("subCategoryModalLabel").innerHTML = "Edit SubCategory";
     document.getElementById('distinguishSubCreateEdit').value = subCategory.subCategoryId;
 }
@@ -191,7 +193,7 @@ function editSubCategory(subCategory) {
 $(".subcategoryAddbtn").click(function() {
     document.getElementById("subCategoryModalLabel").innerHTML = "Create SubCategory";
     document.getElementById("subCategoryName").value = "";
-    document.getElementById("categoryNameSelect").value = "";
+    /* document.getElementById("categoryNameSelect").value = ""; */
 });
 
 function deleteSubCategory(subCategoryId, categoryId) {
@@ -206,12 +208,18 @@ function deleteSubCategory(subCategoryId, categoryId) {
             success: function() {
                 document.getElementById(subCategoryId).remove();
             },
-            error: function() {}
+            error: function() {
+                console.error("Error deleting SubCategory");
+            }
         });
     }
 }
 
 $("#categoryNameSelectPr").change(function() {
+    getSubcategory();
+});
+
+function getSubcategory(urlSubCategoryId){
     let categorySelected = $('#categoryNameSelectPr').val();
     let subCategoryElement = document.getElementById("selectSubCategory");
     if (categorySelected === "--") {
@@ -226,20 +234,27 @@ $("#categoryNameSelectPr").change(function() {
             },
             success: function(result) {
                 let subcategories = JSON.parse(result).SUBCATEGORY;
-                console.log(subcategories)
                 subCategoryElement.innerHTML = "";
                 for (let i = 0; i < subcategories.length; i++) {
                     let opt = document.createElement('option');
                     opt.value = subcategories[i].subCategoryId;
+                    if(urlSubCategoryId != undefined)
+                    {
+                        if(urlSubCategoryId === opt.value)
+                        {
+                            opt.selected = true;
+                        }
+                    }
                     opt.innerHTML = subcategories[i].subCategoryName;
                     subCategoryElement.appendChild(opt);
                 }
             },
-            error: function() {}
+            error: function() {
+                console.error("Error fetching SubCategory");
+            }
         });
     }
-});
-
+}
 function validateProduct() {
     let validProduct = true;
     let categoryName = document.getElementById("categoryNameSelectPr").value;
@@ -307,7 +322,7 @@ function validateProduct() {
     return validProduct;
 }
 
-function createproduct() {
+function createproduct(subCategoryId) {
     let categorySelectError = document.getElementById("categorySelectError");
     let subCategorySelectError = document.getElementById("subCategorySelectError");
     let productNameError = document.getElementById("productNameError");
@@ -326,6 +341,7 @@ function createproduct() {
     unitTaxError.innerHTML = "";
     productImageError.innerHTML = "";
     document.getElementById('productForm').reset();
+    getSubcategory(subCategoryId);
 }
 
 function editProduct(editObj) {
@@ -338,7 +354,6 @@ function editProduct(editObj) {
         type: 'POST',
         success: function(result) {
             let product = JSON.parse(result);
-            console.log(product);
             document.getElementById("productName").value = product.DATA.productName;
             document.getElementById("brandName").value = product.DATA.brandId;
             document.getElementById("productDesc").value = product.DATA.description;
@@ -354,7 +369,6 @@ function editProduct(editObj) {
                 },
                 success: function(result) {
                     let subcategories = JSON.parse(result).SUBCATEGORY;
-                    console.log(subcategories)
                     subCategoryElement.innerHTML = "";
                     for (let i = 0; i < subcategories.length; i++) {
                         let opt = document.createElement('option');
@@ -363,11 +377,13 @@ function editProduct(editObj) {
                         subCategoryElement.appendChild(opt);
                     }
                 },
-                error: function() {}
+                error: function() {
+                    console.error("Error fetching SubCategory");
+                }
             });
         },
         error: function() {
-
+            alert("Failed to edit product");
         }
     });
 }
@@ -383,7 +399,9 @@ function deleteProduct(productId) {
             success: function() {
                 document.getElementById(productId).remove();
             },
-            error: function() {}
+            error: function() {
+                alert("Failed to delete product");
+            }
         });
     }
 }
@@ -397,7 +415,6 @@ function editImages(productId) {
         type: 'POST',
         success: function(result) {
             let productData = JSON.parse(result).DATA;
-            console.log(productData)
             let images = productData.images;
             let defaultImage = productData.defaultImagePath;
             $.ajax({
@@ -464,13 +481,13 @@ function setThumbnail(productImage, productId) {
         },
         success: function() {
             editImages(productId);
+            location.reload()
         },
         error: function() {
             alert("Error setting thumbnail.");
         }
     });
 }
-
 
 function deleteProductImage(productImage, productId) {
     $.ajax({
@@ -483,6 +500,8 @@ function deleteProductImage(productImage, productId) {
         success: function() {
             editImages(productId);
         },
-        error: function() {}
+        error: function() {
+            alert("Error deleting image.");
+        }
     });
 }

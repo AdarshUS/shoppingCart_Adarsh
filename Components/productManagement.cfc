@@ -139,7 +139,7 @@
                     fldUpdatedBy = <cfqueryparam value="#application.objUser.decryptId(session.loginAdminId)#" cfsqltype="integer">,
                     fldUpdatedDate = now()
                 WHERE
-                    fldCategory_Id = <cfqueryparam value="#local.decryptedCategoryId#" cfsqltype="integer">
+                    fldCategory_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="integer">
                     AND fldActive = 1
             </cfquery>
             <cfset local.result.success = true>
@@ -169,7 +169,7 @@
                     tblsubcategory
                 WHERE
                     fldSubCategoryName = <cfqueryparam value="#arguments.subcategoryName#" cfsqltype="varchar">
-                    AND fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="varchar">
+                    AND fldCategoryId = <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="integer">
                     AND fldActive = 1
             </cfquery>
             <cfif local.checkSubCategory.subcategoryCount>
@@ -182,7 +182,7 @@
                             ,fldCreatedBy
                         )
                     VALUES(
-                        <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
+                        <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="integer">
                         ,<cfqueryparam value="#arguments.subcategoryName#" cfsqltype="varchar">
                         ,<cfqueryparam value="#application.objUser.decryptId(session.loginAdminId)#" cfsqltype="integer">
                     )
@@ -203,7 +203,6 @@
 
     <cffunction name="fetchSubCategories" access="remote" returntype="struct" returnformat="JSON">
         <cfargument name="categoryId" type="string" required="false">
-        <cfset local.decryptedCategoryId = application.objUser.decryptId(arguments.categoryId)>
         <cfset  local.result =
         {
             success = false,
@@ -220,7 +219,7 @@
                     tblsubcategory
                WHERE
                     fldActive = 1
-                    AND fldCategoryId = <cfqueryparam value="#local.decryptedCategoryId#" cfsqltype="varchar">
+                    AND fldCategoryId = <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="varchar">
             </cfquery>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful operation">
@@ -243,21 +242,21 @@
 
     <cffunction name="updateSubCategory" access="public" returntype="struct">
         <cfargument name="subCategoryId" type="numeric" required="true">
-        <cfargument name="newCategoryName" type="string" required="true">
-        <cfargument name="categoryId" type="numeric" required="true">
+        <cfargument name="newSubCategoryName" type="string" required="true">
+        <cfargument name="categoryId" type="string" required="true">
         <cfset local.result = {success = false}>
         <cftry>
-            <cfquery name="checkExistingSubCategory" datasource="#application.datasource#">
+            <cfquery name="local.checkExistingSubCategory" datasource="#application.datasource#">
                 SELECT
-                    count(*) AS subCategoryCount
+                    1
                 FROM
                     tblsubcategory
                 WHERE
-                    fldSubCategoryName = <cfqueryparam value="#arguments.newCategoryName#" cfsqltype="varchar">
-                    AND fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">
+                    fldSubCategoryName = <cfqueryparam value="#arguments.newSubCategoryName#" cfsqltype="varchar">
+                    AND fldCategoryId = <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="integer">
                     AND fldSubcategory_Id != #arguments.subCategoryId#
             </cfquery>
-            <cfif checkExistingSubCategory.subCategoryCount>
+            <cfif local.checkExistingSubCategory.RecordCount>
                 <cfset local.result.success = false>
                 <cfset local.result.message = "this subcategory Already Exist">
             <cfelse>
@@ -265,8 +264,8 @@
                     UPDATE
                         tblsubcategory
                     SET
-                        fldSubCategoryName = <cfqueryparam value="#arguments.newCategoryName#" cfsqltype="varchar">,
-                        fldCategoryId = <cfqueryparam value="#arguments.categoryId#" cfsqltype="integer">,
+                        fldSubCategoryName = <cfqueryparam value="#arguments.newSubCategoryName#" cfsqltype="varchar">,
+                        fldCategoryId = <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="integer">,
                         fldUpdatedDate = now(),
                         fldUpdatedBy = <cfqueryparam value="#application.objUser.decryptId(session.loginAdminId)#" cfsqltype="integer">
                     WHERE
@@ -516,8 +515,7 @@
             data: {}
         }>
         <cfset local.images = []>
-        <cfset local.defaultImagePath = ""> 
-        
+        <cfset local.defaultImagePath = "">
         <cftry>
             <cfquery name="local.fetchProduct" datasource="#application.datasource#">
                 SELECT
@@ -583,7 +581,6 @@
             <cfelse>
                 <cfset local.result.message = "No product found">
             </cfif>
-            
         <cfcatch>
             <cfset local.result.message = "An error occurred">
             <cfset sendErrorEmail(
@@ -777,11 +774,11 @@
         <cfset local.sender = "adarshus1999@gmail.com">
         <cfset local.receiverAddress = "adarsh.us@techversantinfotech.com">
         <cfset local.errorMessage = "">
-            <cfset local.errorMessage = 
-                "Error Type: #arguments.body.type#<br>
-                Message: #arguments.body.message#<br>
-                Detail: #arguments.body.detail#<br>
-                StackTrace: #arguments.body.stackTrace#">
+        <cfset local.errorMessage = 
+            "Error Type: #arguments.body.type#<br>
+            Message: #arguments.body.message#<br>
+            Detail: #arguments.body.detail#<br>
+            StackTrace: #arguments.body.stackTrace#">
         <cfmail 
             from = "#local.sender#" 
             to = "#local.receiverAddress#" 

@@ -56,7 +56,7 @@ body {
     padding: 5px 10px;
     cursor: pointer;
 }
-.place-order {
+.place-order,.cancel-order {
     display: block;
     width: 100%;
     background: #0b0b0b;
@@ -68,6 +68,7 @@ body {
     border-radius: 5px;
     margin-top: 15px;
 }
+
 .place-order:hover {
    background-color: blue;
 }
@@ -116,5 +117,14 @@ body {
 .cvvText{
     font-size: 9px;
     font-weight: 700;
+}
+
+.totlPrice,.totlTax{
+    font-size: 14px;
+    color: green;
+}
+
+.totals{
+    padding: 30px;
 }
 
