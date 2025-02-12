@@ -24,7 +24,7 @@ BEGIN
     -- Calculate total price and tax
     SELECT 
         IFNULL(SUM(C.fldQuantity * P.fldunitPrice), 0),
-        IFNULL(SUM(C.fldQuantity * P.fldunitTax), 0)
+        IFNULL(SUM(C.fldQuantity * (P.fldunitPrice * P.fldunitTax)/100), 0)
     INTO 
         totalPrice, 
         totalTax

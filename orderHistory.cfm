@@ -31,13 +31,6 @@
         <cfelse>
             <cfset arrayAppend(variables.processedOrders,order.orderId)>
         </cfif>
-       <!---  <cfset variables.productId = listToArray(order.productId)>
-        <cfset variables.productNames = listToArray(order.productName)>
-        <cfset variables.quantity = listToArray(order.quantity)>
-        <cfset variables.unitPrices = listToArray(order.unitPrice)>
-        <cfset variables.unitTaxes = listToArray(order.unittax)>
-        <cfset variables.imagePath = listToArray(order.imagefilepath)>
-        <cfset variables.brandNames= listToArray(order.brandName)> --->
         <div class="order_container">
             <div class="order-header">
                 <span>Order Number: <br><strong>#order.orderId#</strong></span>
@@ -80,6 +73,7 @@
     </cfloop>
     <script src="./Script/jquery-3.7.1.min.js"></script>
     <script src="./Script/orderSummary.js"></script>
+    <script src="./Script/userPageScript.js"></script>
 </body>
 </html>
 </cfoutput>

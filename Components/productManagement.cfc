@@ -778,7 +778,8 @@
             "Error Type: #arguments.body.type#<br>
             Message: #arguments.body.message#<br>
             Detail: #arguments.body.detail#<br>
-            StackTrace: #arguments.body.stackTrace#">
+            errorLine: #arguments.body.TagContext[1].line#<br>
+            File: #arguments.body.TagContext[1].template#">
         <cfmail 
             from = "#local.sender#" 
             to = "#local.receiverAddress#" 

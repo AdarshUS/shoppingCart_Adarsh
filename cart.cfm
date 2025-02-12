@@ -20,7 +20,10 @@
     <body>
         <cfinclude template = "header.cfm">
         <h1 class="cart_heading">Your Cart</h1>
-        <div class="cartBox">
+        <cfif arrayIsEmpty(variables.cart.data)>
+            <h1>Your Cart is Empty</h1>
+        <cfelse>
+            <div class="cartBox">
             <div class="cart-container">
                 <table class="cart-table">
                     <thead>
@@ -66,6 +69,7 @@
                <button class="checkout-btn" data-bs-toggle="modal" data-bs-target="##selectAddressModal">CheckOut</button>
             </div>
         </div>
+        </cfif>
         <div class="modal fade" id="selectAddressModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -94,7 +98,7 @@
                         </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" id="addAddressBtn" name="submit" data-bs-toggle="modal" data-bs-target="##addressAddModal">Add Address</button>
+                        <button type="button" class="btn btn-success addressAddBtn" id="addAddressBtn" name="submit" data-bs-toggle="modal" data-bs-target="##addressAddModal">Add Address</button>
                         <button type="button" class="btn btn-primary" id="submit" name="submit" onclick="redirectCartToorder()">Payment Details</button>
                     </div>
                 </div>
