@@ -51,6 +51,7 @@
     <cfelse>
         <div>No order Found on this orderId</div>
     </cfif>
+    <script src="./Script/userPageScript.js"></script>
 </body>
 </html>
 </cfoutput>

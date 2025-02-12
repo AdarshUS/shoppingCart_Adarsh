@@ -46,7 +46,7 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset application.objProductManagement.sendErrorEmail(
-               subject = cfcatch.message, 
+               subject = "error in function: addTocart", 
                body = "#cfcatch#"
            )>
         </cfcatch>
@@ -95,7 +95,7 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = cfcatch.message, 
+                subject = "error in function: fetchCart", 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -121,7 +121,7 @@
             </cfquery>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = cfcatch.message, 
+                subject = "error in function: updateCart", 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -142,7 +142,7 @@
             </cfquery>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = "error in function: deleteCart", 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -163,7 +163,7 @@
             <cfset local.cartItemCount = local.getNumberOfCartItems.itemCount>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject=cfcatch.message,
+                subject = "error in function: getNumberOfCartItems",
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -183,7 +183,7 @@
         <cfset local.orderId = createUUID()>
         <cfset local.cardDigits = right(arguments.cardnumber,4)>
         <cfset local.totalTax = Round((arguments.unitTax/100)*arguments.unitPrice*arguments.quantity)>
-        <cfset local.totalPrice = round(arguments.unitPrice * arguments.quantity)>
+        <cfset local.totalPrice = Round(arguments.unitPrice * arguments.quantity)>
         <cftry>
             <cfquery datasource="#application.datasource#">
                 INSERT INTO  tblorder (
@@ -231,7 +231,7 @@
             <cfset sendOrderConfirmationMail(local.orderId)>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = "error in function: addOrder", 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -255,7 +255,7 @@
             <cfset sendOrderConfirmationMail(local.orderId)>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = "error in function: placeOrder", 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -344,7 +344,7 @@
             <cfset local.result.message = "successful Operation">
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject=cfcatch.message, 
+                subject = "error in function: getOrderedItems", 
                 body = "#cfcatch#"
             )>
         </cfcatch>

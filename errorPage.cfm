@@ -14,5 +14,6 @@
     <div class="errorText">
         No Items Found 
     </div>
+    <script src="./Script/userPageScript.js"></script>
 </body>
 </html>

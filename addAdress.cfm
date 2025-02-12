@@ -10,7 +10,7 @@
         "pincode" : form.pincode
     }>
     <cfset application.objUser.addAddress(argumentCollection={ "addressData" = addressData })>
-    <cflocation url="#cgi.script_name#" addtoken="false">
+    <cflocation url="#cgi.script_name#?#cgi.QUERY_STRING#" addtoken="false">
 </cfif>
 <!DOCTYPE html>
 <html lang="en">
