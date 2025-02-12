@@ -193,7 +193,6 @@ function editSubCategory(subCategory) {
 $(".subcategoryAddbtn").click(function() {
     document.getElementById("subCategoryModalLabel").innerHTML = "Create SubCategory";
     document.getElementById("subCategoryName").value = "";
-    /* document.getElementById("categoryNameSelect").value = ""; */
 });
 
 function deleteSubCategory(subCategoryId, categoryId) {

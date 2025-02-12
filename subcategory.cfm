@@ -1,4 +1,4 @@
-<cfset categoriesResult = application.objProductManagement.fetchAllCategories()>
+<cfset variables.categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfset variables.message = "">
 <cfif structKeyExists(form,"submit")>
     <cfif LEN(form.distinguishSubCreateEdit) GT 0>
@@ -9,7 +9,7 @@
         <cfset variables.message = "#variables.result.message#">
     </cfif>
 </cfif>
-<cfset subcategoriesResult = application.objProductManagement.fetchSubCategories(categoryId = url.categoryId)>
+<cfset variables.subcategoriesResult = application.objProductManagement.fetchSubCategories(categoryId = url.categoryId)>
 <cfoutput>
 <!DOCTYPE html>
 <html lang="en">
@@ -41,7 +41,7 @@
                 <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="subcategoryAddbtn"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>
             </div>
             <div class="categoryBody">
-            <cfloop array="#subcategoriesResult.subcategory#" item="subCategory">
+            <cfloop array="#variables.subcategoriesResult.subcategory#" item="subCategory">
                 <div class="categoryItem" id="#subCategory.subcategoryId#">
                     <div class="categoryItemText">#subCategory.subCategoryName#</div>
                     <div class="categoryItemRight">
@@ -81,7 +81,7 @@
                               <label for="categoryNameSelect" class="form-label">Select Category Name</label>
                               <select class="form-control" id="categoryNameSelect" name = "selectCategory">
                                  <option value="0">--</option>
-                                 <cfloop array ="#categoriesResult.categories#" item = category>
+                                 <cfloop array ="#variables.categoriesResult.categories#" item = category>
                                     <option value="#category.categoryId#"
                                         <cfif category.categoryId EQ url.categoryId>
                                             selected

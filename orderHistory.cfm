@@ -24,14 +24,13 @@
         </form>
     </div>
     <cfset variables.orderHistory = application.objCart.getOrderedItems()>
+    <cfset variables.processedOrders = []>
     <cfloop array = "#variables.orderHistory.orderDetails#" item = "order">
-        <cfset variables.productId = listToArray(order.productId)>
-        <cfset variables.productNames = listToArray(order.productName)>
-        <cfset variables.quantity = listToArray(order.quantity)>
-        <cfset variables.unitPrices = listToArray(order.unitPrice)>
-        <cfset variables.unitTaxes = listToArray(order.unittax)>
-        <cfset variables.imagePath = listToArray(order.imagefilepath)>
-        <cfset variables.brandNames= listToArray(order.brandName)>
+        <cfif ArrayContains(variables.processedOrders,order.orderId)>
+            <cfcontinue>
+        <cfelse>
+            <cfset arrayAppend(variables.processedOrders,order.orderId)>
+        </cfif>
         <div class="order_container">
             <div class="order-header">
                 <span>Order Number: <br><strong>#order.orderId#</strong></span>
@@ -39,21 +38,23 @@
                 <span>Total Amount: <br><strong>#order.totalPrice+order.totalTax#</strong></span>
                 <span class="order-status text-success">Paid</span>
             </div>
-            <cfloop array="#variables.productId#" item="product" index="i">
-                <cfset totalPrice = (variables.unitPrices[i] + (variables.unitTaxes[i] / 100) * variables.unitPrices[i]) * variables.quantity[i]>
-                <div class="order-item">
-                    <img src="./Assets/uploads/product#variables.productId[i]#/#variables.imagePath[i]#" alt="product">
-                    <div class="order-item-info">
-                        <h4>#variables.productNames[i]#</h4>
-                        <p>Brand: #variables.brandNames[i]#</p>
-                        <p>Quantity: #variables.quantity[i]#</p>
+            <cfloop array="#variables.orderHistory.orderDetails#" item="product">
+                <cfif order.orderId EQ product.orderId>
+                    <cfset totalPrice = (product.unitPrice + (product.unitTax / 100) * product.unitPrice) * product.quantity>
+                    <div class="order-item">
+                        <img src="./Assets/uploads/product#product.productId#/#product.imagefilepath#" alt="product">
+                        <div class="order-item-info">
+                            <h4>#product.productName#</h4>
+                            <p>Brand: #product.brandName#</p>
+                            <p>Quantity: #product.quantity#</p>
+                        </div>
+                        <div class="priceCntr">
+                            <span class="order-Actualprice"><span class="priceCntrText">Actual Price:</span>#product.unitPrice#</span>
+                            <span class="order-ActualTax"><span class="priceCntrText">Tax: </span>#product.unitTax#%</span>
+                            <span class="order-Total"><span class="priceCntrText">Total: </span>#totalPrice#</span>
+                        </div>
                     </div>
-                    <div class="priceCntr">
-                        <span class="order-Actualprice"><span class="priceCntrText">Actual Price:</span>#variables.unitPrices[i]#</span>
-                        <span class="order-ActualTax"><span class="priceCntrText">Tax: </span>#variables.unitTaxes[i]#%</span>
-                        <span class="order-Total"><span class="priceCntrText">Total: </span>#totalPrice#</span>
-                    </div>
-                </div>
+                </cfif>
             </cfloop>
             <div class="order-footer">
             <div>
@@ -72,6 +73,7 @@
     </cfloop>
     <script src="./Script/jquery-3.7.1.min.js"></script>
     <script src="./Script/orderSummary.js"></script>
+    <script src="./Script/userPageScript.js"></script>
 </body>
 </html>
 </cfoutput>

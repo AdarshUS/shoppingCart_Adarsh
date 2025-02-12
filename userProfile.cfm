@@ -1,8 +1,8 @@
 <cfif NOT structKeyExists(session,"loginuserId")>
     <cflocation url="userLogin.cfm" addtoken="no">
 </cfif>
-<cfset userdetailsResult = application.objUser.fetchUserDetails()>
-<cfset addressResult = application.objUser.fetchAddress()>
+<cfset variables.userdetailsResult = application.objUser.fetchUserDetails()>
+<cfset variables.addressResult = application.objUser.fetchAddress()>
 <cfif structKeyExists(form,"editSubmitBtn")>
     <cfset application.objUser.updateProfile(firstName = form.firstName,lastName = form.lastName,email = form.email,phone = form.phone)>
      <cflocation url="userProfile.cfm" addtoken="no">
@@ -28,15 +28,15 @@
             </div>
             <div class="profileDetails">
                 <div>hello,</div>
-                <div class="profileName">#userdetailsResult.userDetails[1].firstName# #userdetailsResult.userDetails[1].lastName#</div>
-                <div class="profileEmail">email: #userdetailsResult.userDetails[1].email#</div>
+                <div class="profileName">#variables.userdetailsResult.userDetails[1].firstName# #variables.userdetailsResult.userDetails[1].lastName#</div>
+                <div class="profileEmail">email: #variables.userdetailsResult.userDetails[1].email#</div>
             </div>
             <button class="editProfBtn" data-bs-toggle="modal" data-bs-target="##editProfileModal"><i class="fa-solid fa-pen"></i></button>
         </div>
         <div class="addressContainer">
             <div class="profile-info">profile Informations</div>
             <div class="addressBox">
-                <cfloop array="#addressResult.address#" item="address">
+                <cfloop array="#variables.addressResult.address#" item="address">
                     <div class="addressItem" id="#address.addressId#">
                         <div>
                             <span class="firstName">#address.firstName#</span>
@@ -55,7 +55,7 @@
                         </div>
                     </div>
                 </cfloop>
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="##addressAddModal">Add New Address</button>
+                <button class="btn btn-primary addressAddBtn" data-bs-toggle="modal" data-bs-target="##addressAddModal">Add New Address</button>
                 <a class="btn btn-info" href="./orderhistory.cfm">order Details</a>
             </div>
         </div>
@@ -71,22 +71,22 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="firstName" class="form-label">FirstName:</label>
-                            <input type="text" class="form-control" name="firstName" id="firstName" value="#userdetailsResult.userDetails[1].firstName#">
+                            <input type="text" class="form-control" name="firstName" id="firstName" value="#variables.userdetailsResult.userDetails[1].firstName#">
                             <div id ="firstNameError" class="error"></div>
                         </div>
                         <div class="mb-3">
                             <label for="lastName" class="form-label">LastName:</label>
-                            <input type="text" class="form-control" name="lastName" id="lastName" value="#userdetailsResult.userDetails[1].lastName#">
+                            <input type="text" class="form-control" name="lastName" id="lastName" value="#variables.userdetailsResult.userDetails[1].lastName#">
                             <div id ="lastNameError" class="error"></div>
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email:</label>
-                            <input type="text" class="form-control" name="email" id="email" value="#userdetailsResult.userDetails[1].email#">
+                            <input type="text" class="form-control" name="email" id="email" value="#variables.userdetailsResult.userDetails[1].email#">
                             <div id ="emailError" class="error"></div>
                         </div>
                         <div class="mb-3">
                             <label for="phone" class="form-label">phone:</label>
-                            <input type="text" class="form-control" name="phone" id="phone" value="#userdetailsResult.userDetails[1].phone#">
+                            <input type="text" class="form-control" name="phone" id="phone" value="#variables.userdetailsResult.userDetails[1].phone#">
                             <div id ="phoneError" class="error"></div>
                         </div>
                     </div>

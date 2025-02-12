@@ -81,7 +81,7 @@ function filterPrices(subcategoryId) {
     let priceRangeValue;
     document.getElementById("productContainer").innerHTML = "";
 
-    if (priceRange != null) {
+    if (priceRange.value != null & priceRange.value != 0) {
         priceRangeValue = priceRange.value;
     } else {
         let minvalue = document.getElementById("minimumPrice").value;
@@ -94,65 +94,60 @@ function filterPrices(subcategoryId) {
     });
 }
 
-function fetchProductsRemote(methodName, parameters) {
-    $.ajax({
-        url: `components/ProductManagement.cfc?method=${methodName}`,
-        type: 'POST',
-        data: parameters,
-        success: function(result) {
-            let parsedResult = JSON.parse(result);
-            let products = parsedResult.products;
-            let productContainer = document.getElementById("productContainer");
-            productContainer.innerHTML = "";
-
-            products.forEach((item) => {
-                let productBox = document.createElement("a");
-                productBox.className = "productBox";
-
-                $.ajax({
+async function fetchProductsRemote(methodName, parameters) {
+    try {
+        const result = await $.ajax({
+            url: `components/ProductManagement.cfc?method=${methodName}`,
+            type: 'POST',
+            data: parameters,
+        });
+        const parsedResult = JSON.parse(result);
+        const products = parsedResult.products;
+        const productContainer = document.getElementById("productContainer");
+        productContainer.innerHTML = "";
+        for (const item of products) {
+            try {
+                const decryptResult = await $.ajax({
                     url: 'components/User.cfc?method=decryptId',
                     type: 'POST',
                     data: {
-                        encryptedId: item.productId
+                        encryptedId: item.productId,
                     },
-                    success: function(decryptResult) {
-                        let decryptedId = decryptResult.trim();
-                        productBox.href = `./productDetails.cfm?productId=${item.productId}`;
-
-                        let productImage = document.createElement("div");
-                        productImage.className = "productImage";
-                        let img = document.createElement("img");
-                        img.src = `./Assets/uploads/product${decryptedId}/${item.imageFilePath}`;
-                        img.alt = "productImage";
-                        img.className = "prodimg";
-                        productImage.appendChild(img);
-
-                        let productName = document.createElement("div");
-                        productName.className = "productName";
-                        productName.textContent = item.productName;
-
-                        let productPrice = document.createElement("div");
-                        productPrice.className = "productPrice";
-                        productPrice.innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i> ${item.unitPrice}`;
-
-                        productBox.appendChild(productImage);
-                        productBox.appendChild(productName);
-                        productBox.appendChild(productPrice);
-
-                        productContainer.appendChild(productBox);
-                    },
-                    error: function() {
-                        console.error("Error decrypting product ID for:", item.productId);
-                    }
                 });
-            });
-        },
-        error: function() {
-            console.error("Error fetching products");
-        }
-    });
-}
+                const decryptedId = decryptResult.trim();
+                const productBox = document.createElement("a");
+                productBox.className = "productBox";
+                productBox.href = `./productDetails.cfm?productId=${item.productId}`;
 
+                const productImage = document.createElement("div");
+                productImage.className = "productImage";
+                const img = document.createElement("img");
+                img.src = `./Assets/uploads/product${decryptedId}/${item.imageFilePath}`;
+                img.alt = "productImage";
+                img.className = "prodimg";
+                productImage.appendChild(img);
+
+                const productName = document.createElement("div");
+                productName.className = "productName";
+                productName.textContent = item.productName;
+
+                const productPrice = document.createElement("div");
+                productPrice.className = "productPrice";
+                productPrice.innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i> ${item.unitPrice}`;
+
+                productBox.appendChild(productImage);
+                productBox.appendChild(productName);
+                productBox.appendChild(productPrice);
+
+                productContainer.appendChild(productBox);
+            } catch (decryptError) {
+                console.error("Error decrypting product ID for:", item.productId, decryptError);
+            }
+        }
+    } catch (fetchError) {
+        console.error("Error fetching products:", fetchError);
+    }
+}
 
 function logoutUser() {
     if (confirm("Are you sure you want to Logout")) {
@@ -195,10 +190,8 @@ function toggleLessProducts(subcategoryId) {
             data: {productId : productId,quantity:1},
             success: function(response) {
                 let result = JSON.parse(response);
-                console.log(result)
                 if(result.message === "quantity Added")
                 {
-                    console.log("inside");
                     if(document.getElementById("itemcount").innerHTML === "")
                     {
                         document.getElementById("itemcount").innerHTML = 1;
@@ -207,7 +200,6 @@ function toggleLessProducts(subcategoryId) {
                     {
                         document.getElementById("itemcount").innerHTML = parseInt( document.getElementById("itemcount").innerHTML) +1;
                     }
-                    
                 }
             },
             error: function() {
@@ -405,6 +397,16 @@ function validateAddress() {
     return validAddress;
 }
 
+function resetAddresseror()
+{
+    document.getElementById("firstNameError").innerHTML = "";
+    document.getElementById("phoneError").innerHTML = "";
+    document.getElementById("address1Error").innerHTML = "";
+    document.getElementById("cityError").innerHTML = "";
+    document.getElementById("stateError").innerHTML = "";
+    document.getElementById("pincodeError").innerHTML = "";
+}
+
 function deleteAddress(addressId) {
     if (confirm("Are you sure you want to delete")) {
         $.ajax({
@@ -447,3 +449,11 @@ function redirectCartToorder() {
     let addressId = selectedAddress.value;
     window.location.href = `orderSummary.cfm?addressId=${addressId}&type=cart`;
 }
+
+const input = document.getElementById('customFilterInput');
+input.addEventListener('input', () => {
+    if (input.checked) {
+        document.getElementById("minimumPrice").disabled = false;
+        document.getElementById("maxPrice").disabled = false;
+    }
+});
