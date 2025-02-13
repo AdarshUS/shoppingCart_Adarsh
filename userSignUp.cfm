@@ -54,11 +54,11 @@
                 </div>
             </form>
             <cfif structKeyExists(form,"submitBtn")>
-                <cfset result = application.objUser.registerUser(firstName = form.firstName,lastName = form.lastName,email = form.userEmail,phone = form.userPhone,password = form.userPassword)>            
-                <cfif result.success AND ArrayLen(result.errors) EQ 0>
-                    <p class="text-primary">#result.message#</p>
+                <cfset variables.result = application.objUser.registerUser(firstName = form.firstName,lastName = form.lastName,email = form.userEmail,phone = form.userPhone,password = form.userPassword)>
+                <cfif variables.result.success AND ArrayLen(variables.result.errors) EQ 0>
+                    <p class="text-primary">#variables.result.message#</p>
                 <cfelse>
-                    <p class="text-danger">#result.message#</p>
+                    <p class="text-danger">#variables.result.message#</p>
               </cfif>
             </cfif>
         </div>

@@ -27,7 +27,7 @@
         <div class="categoryContainer">
             <div class="categoryheader">
                 <h5>Categories</h5>
-                <button data-bs-toggle="modal" data-bs-target="##categoryModal" class="categoryAddbtn" onclick="createCategory()"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>         
+                <button data-bs-toggle="modal" data-bs-target="##categoryModal" class="categoryAddbtn" onclick="createCategory()"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>
             </div>
             <div class="categoryBody">
                 <cfloop array="#variables.result.categories#" item="category">
