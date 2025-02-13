@@ -123,13 +123,17 @@
 
     <cffunction name="deleteCart" access="remote" returntype="void">
         <cfargument name="cartId" required="false" type="string">
+        <cfargument name="productId" required="false" type="integer">
         <cftry>
             <cfquery datasource="#application.datasource#">
                 DELETE FROM tblcart
-            WHERE 
+            WHERE
+                fldUserId = <cfqueryparam value="#session.loginuserId#" cfsqltype="integer">
                 <cfif structKeyExists(arguments, "cartId") AND len(arguments.cartId)>
+                    AND
                     fldCart_Id = <cfqueryparam value = "#application.objUser.decryptId(arguments.cartId)#" cfsqltype="integer">
                 <cfelseif structKeyExists(arguments, "productId") AND len(arguments.productId)>
+                    AND
                     tblproductId = <cfqueryparam value = "#arguments.productId#" cfsqltype="integer">
                 </cfif>
             </cfquery>
