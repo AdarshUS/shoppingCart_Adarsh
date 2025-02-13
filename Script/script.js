@@ -57,7 +57,7 @@ $(".logout").click(function() {
                 location.reload();
             },
             error: function() {
-                console.error("Error in logout.");
+                alert("error occured in logout");
             }
         });
     }
@@ -150,12 +150,12 @@ function editCategory(editBtn) {
                     document.getElementById("distinguishCreateEdit").value = decryptedId;
                 },
                 error: function() {
-                    console.error("Error decrypting category ID.");
+                    alert("Error decrypting category ID.");
                 }
             });
         },
         error: function() {
-            console.error("Error fetching category data.");
+            alert("Error fetching category data.");
         }
     });
 }
@@ -173,7 +173,7 @@ function deleteCategory(dltBtn) {
                 document.getElementById(dltBtn.value).remove();
             },
             error: function() {
-                console.error("Error deleting category");
+                alert("Error deleting category");
             }
         });
     }
@@ -208,7 +208,7 @@ function deleteSubCategory(subCategoryId, categoryId) {
                 document.getElementById(subCategoryId).remove();
             },
             error: function() {
-                console.error("Error deleting SubCategory");
+                alert("Error deleting SubCategory");
             }
         });
     }
@@ -249,7 +249,7 @@ function getSubcategory(urlSubCategoryId){
                 }
             },
             error: function() {
-                console.error("Error fetching SubCategory");
+                alert("Error fetching SubCategory");
             }
         });
     }
@@ -377,7 +377,7 @@ function editProduct(editObj) {
                     }
                 },
                 error: function() {
-                    console.error("Error fetching SubCategory");
+                    alert("Error fetching SubCategory");
                 }
             });
         },

@@ -396,8 +396,7 @@
         
         <cfset local.result = {
             'success':'false',
-            'message':'',
-            'arguments':'#arguments#'
+            'message':''
         }>
         <cfset local.cardNumber = 9526001384666666>
         <cfset local.month = 12>

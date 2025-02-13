@@ -9,7 +9,7 @@
         <cftry>
             <cfquery name = "local.checkProductExist" datasource="#application.datasource#">
                 SELECT
-                    fldCart_Id
+                    fldCart_Id AS cartId
                 FROM
                     tblcart
                 WHERE
@@ -18,14 +18,7 @@
                     fldProductId = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">
             </cfquery>
             <cfif local.checkProductExist.RecordCount>
-                <cfquery datasource="#application.datasource#">
-                    UPDATE
-                        tblcart
-                    SET
-                        fldQuantity = fldQuantity + 1
-                    WHERE
-                        fldCart_Id = <cfqueryparam value="#local.checkProductExist.fldCart_Id#">
-                </cfquery>
+                <cfset updateCart(cartId = application.objUser.encryptId(checkProductExist.cartId), step="increment")>
                 <cfset local.result.message = "product updated">
             <cfelse>
                 <cfquery datasource="#application.datasource#">
@@ -113,11 +106,11 @@
                 SET 
                     fldQuantity = 
                 CASE 
-                    WHEN <cfqueryparam value="#arguments.step#" cfsqltype="cf_sql_varchar"> = 'increment' THEN fldQuantity + 1
+                    WHEN <cfqueryparam value="#arguments.step#" cfsqltype="varchar"> = 'increment' THEN fldQuantity + 1
                     WHEN fldQuantity > 1 THEN fldQuantity - 1
                     ELSE fldQuantity
                 END
-                WHERE fldCart_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.cartId)#" cfsqltype="cf_sql_integer">
+                WHERE fldCart_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.cartId)#" cfsqltype="integer">
             </cfquery>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(

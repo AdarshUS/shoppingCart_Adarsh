@@ -141,11 +141,11 @@ async function fetchProductsRemote(methodName, parameters) {
 
                 productContainer.appendChild(productBox);
             } catch (decryptError) {
-                console.error("Error decrypting product ID for:", item.productId, decryptError);
+                alert("Error decrypting product ID");
             }
         }
     } catch (fetchError) {
-        console.error("Error fetching products:", fetchError);
+        alert("Error fetching products:", fetchError);
     }
 }
 
@@ -158,7 +158,7 @@ function logoutUser() {
                 location.reload();
             },
             error: function() {
-                console.error("Error in LogOut");
+                alert("Error in LogOut");
             }
         });
     }
@@ -203,7 +203,7 @@ function toggleLessProducts(subcategoryId) {
                 }
             },
             error: function() {
-                console.error("Error in addTocart");
+                alert("Error in addTocart");
             }
         });
         let cartButton = document.getElementById("cartButton");
@@ -229,7 +229,7 @@ function toggleLessProducts(subcategoryId) {
             success: function(result) {
             },
             error: function() {
-                console.error("failed to Update")
+                alert("failed to Update")
             }
         });
         document.getElementById("totalPrice" + cartId).innerHTML =
@@ -253,7 +253,7 @@ function decreaseQuantity(cartId, step) {
         success: function(result) {
         },
         error: function() {
-            console.error("failed")
+            alert("failed")
         }
     });
     document.getElementById("totalPrice" + cartId).innerHTML =
@@ -293,7 +293,7 @@ function deleteCartItem(cartId) {
                 calculateTotalPrice();
             },
             error: function() {
-                console.error("failed")
+                alert("failed")
             }
         });
     }
@@ -419,7 +419,7 @@ function deleteAddress(addressId) {
                 document.getElementById(addressId).remove();
             },
             error: function() {
-                console.error("failed")
+                alert("failed")
             }
         });
     }
