@@ -61,37 +61,37 @@
         </div>
     </main>
     <cfinclude template="addAdress.cfm">
-    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form method="POST">
+                <form method="POST" onsubmit="return validateProfile()">
                     <div class="modal-header">
                         <div class="editProfileText">Edit Profile</div>
                     </div>
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="firstName" class="form-label">FirstName:</label>
-                            <input type="text" class="form-control" name="firstName" id="firstName" value="#variables.userdetailsResult.userDetails[1].firstName#">
-                            <div id ="firstNameError" class="error"></div>
+                            <input type="text" class="form-control" name="firstName" id="userFirstName" value="#variables.userdetailsResult.userDetails[1].firstName#">
+                            <div id ="userFirstNameError" class="error"></div>
                         </div>
                         <div class="mb-3">
                             <label for="lastName" class="form-label">LastName:</label>
-                            <input type="text" class="form-control" name="lastName" id="lastName" value="#variables.userdetailsResult.userDetails[1].lastName#">
-                            <div id ="lastNameError" class="error"></div>
+                            <input type="text" class="form-control" name="lastName" id="userLastName" value="#variables.userdetailsResult.userDetails[1].lastName#">
+                            <div id ="userLastNameError" class="error"></div>
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email:</label>
-                            <input type="text" class="form-control" name="email" id="email" value="#variables.userdetailsResult.userDetails[1].email#">
-                            <div id ="emailError" class="error"></div>
+                            <input type="text" class="form-control" name="email" id="userEmail" value="#variables.userdetailsResult.userDetails[1].email#">
+                            <div id ="userEmailError" class="error"></div>
                         </div>
                         <div class="mb-3">
                             <label for="phone" class="form-label">phone:</label>
-                            <input type="text" class="form-control" name="phone" id="phone" value="#variables.userdetailsResult.userDetails[1].phone#">
-                            <div id ="phoneError" class="error"></div>
+                            <input type="text" class="form-control" name="phone" id="userPhone" value="#variables.userdetailsResult.userDetails[1].phone#">
+                            <div id ="userPhoneError" class="error"></div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="clearProfilErrorMsg()">Close</button>
                         <button type="submit" class="btn btn-primary" id="editSubmitBtn" name="editSubmitBtn">Save</button>
                     </div>
                 </form>

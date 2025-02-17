@@ -347,29 +347,31 @@
                     ,<cfqueryparam value="#application.objUser.decryptId(session.loginAdminId)#" cfsqltype="integer">
                 )
             </cfquery>
-            <cfset productDirectory = expandPath('Assets/uploads/product'&product.GENERATEDKEY)>
-            <cfdirectory action="create" directory="#productDirectory#">
-            <cfset local.newPath = uploadFile(productImages = arguments.productImages,productDirectory = productDirectory)>
-            <cfloop array="#local.newPath#" index="i"  item="image">
-                <cfquery datasource="#application.datasource#">
-                    INSERT INTO tblproductimages (
-                        fldProductId
-                        ,fldImageFilePath
-                        ,fldCreatedBy
-                        ,fldDefaultImage
+            <cfif LEN(arguments.productImages)>
+                <cfset productDirectory = expandPath('Assets/uploads/product'&product.GENERATEDKEY)>
+                <cfdirectory action="create" directory="#productDirectory#">
+                <cfset local.newPath = uploadFile(productImages = arguments.productImages,productDirectory = productDirectory)>
+                <cfloop array="#local.newPath#" index="i"  item="image">
+                    <cfquery datasource="#application.datasource#">
+                        INSERT INTO tblproductimages (
+                            fldProductId
+                            ,fldImageFilePath
+                            ,fldCreatedBy
+                            ,fldDefaultImage
+                            )
+                        VALUES(
+                            <cfqueryparam value="#product.GENERATEDKEY#" cfsqltype="integer">,
+                            <cfqueryparam value="#image.serverFile#" cfsqltype="varchar">,
+                            <cfqueryparam value="#application.objUser.decryptId(session.loginAdminId)#" cfsqltype="varchar">,
+                            <cfif i EQ 1>
+                                <cfqueryparam value=1 cfsqltype="integer">
+                            <cfelse>
+                                <cfqueryparam value=0 cfsqltype="integer">
+                            </cfif>
                         )
-                    VALUES(
-                        <cfqueryparam value="#product.GENERATEDKEY#" cfsqltype="integer">,
-                        <cfqueryparam value="#image.serverFile#" cfsqltype="varchar">,
-                        <cfqueryparam value="#application.objUser.decryptId(session.loginAdminId)#" cfsqltype="varchar">,
-                        <cfif i EQ 1>
-                            <cfqueryparam value=1 cfsqltype="integer">
-                        <cfelse>
-                            <cfqueryparam value=0 cfsqltype="integer">
-                        </cfif>
-                    )
-                </cfquery>
-            </cfloop>
+                    </cfquery>
+                </cfloop>
+            </cfif>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
         <cfcatch>

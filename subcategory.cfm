@@ -23,15 +23,15 @@
 </head>
 <body>
     <header>
-        <div class="headerLeftItem">
-           <div class="headerLeftItem-1"> <img src="./Assets/Images/cart.png" alt="cartImage" width="40"></div>
-           <div class="headerLeftItem-2">Admin DashBoard</div>
-        </div>
+        <a class="headerLeftItem" href="admin.cfm">
+            <div class="headerLeftItem-1" href="admin.cfm"> <img src="./Assets/Images/cart.png" alt="cartImage" width="40"></div>
+            <div class="headerLeftItem-2">Admin DashBoard</div>
+        </a>
         <div class="headerRightItem">
-           <button class="logout">
-              <span class="headerRightItem-1">LogOut</span>
-              <i class="fa-solid fa-right-from-bracket"></i>
-           </button>
+            <button class="logout">
+                <span class="headerRightItem-1">LogOut</span>
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
         </div>
     </header>
    <main>
@@ -41,66 +41,66 @@
                 <button data-bs-toggle="modal" data-bs-target="##subCategoryModal" class="subcategoryAddbtn"><span>Add</span><i class="fa-solid fa-plus categoryPlus"></i></button>
             </div>
             <div class="categoryBody">
-            <cfloop array="#variables.subcategoriesResult.subcategory#" item="subCategory">
-                <div class="categoryItem" id="#subCategory.subcategoryId#">
-                    <div class="categoryItemText">#subCategory.subCategoryName#</div>
-                    <div class="categoryItemRight">
-                        <button data-bs-toggle="modal" data-bs-target="##subCategoryModal"
-                            class="categoryBtn"
-                            value="#subCategory.subcategoryId#"
-                            onclick="editSubCategory({
-                                categoryId: '#application.objUser.decryptId(url.categoryId)#',
-                                subCategoryName: '#JSStringFormat(subCategory.subCategoryName)#',
-                                subCategoryId: '#application.objUser.decryptId(subCategory.subcategoryId)#'
-                            })">
-                            <i class="fa-solid fa-pen-to-square categoryfns"></i>
-                        </button>
-                        <button class="categoryBtn" onclick="deleteSubCategory('#subCategory.subcategoryId#','#url.categoryId#')"><i class="fa-solid fa-trash categoryfns"></i></button>
-                        <a class="categoryBtn" href="./product.cfm?subCategoryId=#URLEncodedFormat(subcategory.subcategoryId)#&categoryId=#URLEncodedFormat(url.categoryId)#">
-                           <i class="fa-solid fa-circle-arrow-right categoryfns"></i>
-                        </a>
+                <cfloop array="#variables.subcategoriesResult.subcategory#" item="subCategory">
+                    <div class="categoryItem" id="#subCategory.subcategoryId#">
+                        <div class="categoryItemText">#subCategory.subCategoryName#</div>
+                        <div class="categoryItemRight">
+                            <button data-bs-toggle="modal" data-bs-target="##subCategoryModal"
+                                class="categoryBtn"
+                                value="#subCategory.subcategoryId#"
+                                onclick="editSubCategory({
+                                    categoryId: '#application.objUser.decryptId(url.categoryId)#',
+                                    subCategoryName: '#JSStringFormat(subCategory.subCategoryName)#',
+                                    subCategoryId: '#application.objUser.decryptId(subCategory.subcategoryId)#'
+                                })">
+                                <i class="fa-solid fa-pen-to-square categoryfns"></i>
+                            </button>
+                            <button class="categoryBtn" onclick="deleteSubCategory('#subCategory.subcategoryId#','#url.categoryId#')"><i class="fa-solid fa-trash categoryfns"></i></button>
+                            <a class="categoryBtn" href="./product.cfm?subCategoryId=#URLEncodedFormat(subcategory.subcategoryId)#&categoryId=#URLEncodedFormat(url.categoryId)#">
+                               <i class="fa-solid fa-circle-arrow-right categoryfns"></i>
+                            </a>
+                        </div>
                     </div>
-                </div>
-            </cfloop>
+                </cfloop>
+            </div>
         </div>
-      </div>
-    </main>
-    <cfif len(trim(variables.message)) GT 0>
-        <div class="alert alert-danger">#variables.message#</div>
+      <cfif len(trim(variables.message)) GT 0>
+        <div class="alert alert-danger m-3 subcategoryMsg">#variables.message#</div>
     </cfif>
+    </main>
     <div class="modal fade" id="subCategoryModal" tabindex="-1" aria-labelledby="subCategoryModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                   <h5 class="modal-title" id="subCategoryModalLabel">Add Subcategory</h5>
-                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5 class="modal-title" id="subCategoryModalLabel">Add Subcategory</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="POST" onsubmit="return validateSubCategory()">
                     <div class="modal-body">
                         <div class="mb-3">
-                              <label for="categoryNameSelect" class="form-label">Select Category Name</label>
-                              <select class="form-control" id="categoryNameSelect" name = "selectCategory">
-                                 <option value="0">--</option>
-                                 <cfloop array ="#variables.categoriesResult.categories#" item = category>
-                                    <option value="#category.categoryId#"
+                            <label for="categoryNameSelect" class="form-label">Select Category Name</label>
+                            <select class="form-control" id="categoryNameSelect" name = "selectCategory">
+                                <option value="0">--</option>
+                                <cfloop array ="#variables.categoriesResult.categories#" item = category>
+                                   <option value="#category.categoryId#"
                                         <cfif category.categoryId EQ url.categoryId>
                                             selected
                                         </cfif>
-                                    >#category.categoryName#</option>
-                                 </cfloop>
-                              </select>
-                              <div id = "categorySelectError" class = "error"></div>
+                                   >#category.categoryName#</option>
+                                </cfloop>
+                            </select>
+                            <div id = "categorySelectError" class = "error"></div>
                         </div>
                         <div class="mb-3">
-                           <label for="subCategoryName" class="form-label">Enter SubCategory Name</label>
-                           <input type="text" class="form-control" id="subCategoryName" name="subCategoryName">
-                           <input type="hidden" id="distinguishSubCreateEdit" name = "distinguishSubCreateEdit" >
+                            <label for="subCategoryName" class="form-label">Enter SubCategory Name</label>
+                            <input type="text" class="form-control" id="subCategoryName" name="subCategoryName">
+                            <input type="hidden" id="distinguishSubCreateEdit" name = "distinguishSubCreateEdit" >
                             <div id = "subCategoryNameError" class = "error"></div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                       <button type="submit" class="btn btn-primary insertSubCategoryBtn" name="submit">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary insertSubCategoryBtn" name="submit">Save changes</button>
                     </div>
                 </form>
             </div>

@@ -2,7 +2,7 @@
     <cfif structKeyExists(url,"redirect")>
         <cflocation url="userLogin.cfm?redirect=cartpage" addtoken="no">
     </cfif>
-   <cflocation url="userLogin.cfm" addtoken="no">
+    <cflocation url="userLogin.cfm" addtoken="no">
 </cfif>
 <cfset variables.addresses = application.objUser.fetchAddress()>
 <cfset variables.cart = application.objCart.fetchCart()>
@@ -40,7 +40,7 @@
                             <tr id="#product.cartId#">
                                 <td>
                                    <img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilepath#" alt="Analog Magazine Rack">
-                                   #product.productName#<br>
+                                   <a href="productDetails.cfm?productId=#product.productId#" class="productLink">#product.productName#</a><br>
                                    <small></small>
                                 </td>
                                 <td class="cartProductPrice"><div><i class="fa-solid fa-indian-rupee-sign"></i><span id="productPrice#product.cartId#">#(product.unitPrice + (product.unitPrice * (product.unittax / 100)))#

@@ -275,8 +275,11 @@ function checkQnty() {
 }
 
 $(document).ready(function() {
-    checkQnty();
-    calculateTotalPrice();
+    if( $(".qntyNo").length >0)
+    {
+        checkQnty();
+        calculateTotalPrice();
+    }
 });
 
 function deleteCartItem(cartId) {
@@ -450,10 +453,92 @@ function redirectCartToorder() {
     window.location.href = `orderSummary.cfm?addressId=${addressId}&type=cart`;
 }
 
-const input = document.getElementById('customFilterInput');
-input.addEventListener('input', () => {
+var input = document.getElementById('customFilterInput');
+if(input)
+{
+    input.addEventListener('input', () => {
     if (input.checked) {
         document.getElementById("minimumPrice").disabled = false;
         document.getElementById("maxPrice").disabled = false;
     }
 });
+}
+
+function validateProfile()
+{
+    let isValid = true;
+    const firstName = document.getElementById("userFirstName").value;
+    const lastName = document.getElementById("userLastName").value;
+    const email = document.getElementById("userEmail").value;
+    const phone = document.getElementById("userPhone").value;
+    let namePattern = /^[a-zA-Z\s-]+$/;
+    let emailPattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    let firstNameError = document.getElementById("userFirstNameError");
+    let lastNameError = document.getElementById("userLastNameError");
+    let emailError = document.getElementById("userEmailError");
+    let phoneError = document.getElementById("userPhoneError");
+
+    firstNameError.innerHTML = "";
+    lastNameError.innerHTML = "";
+    emailError.innerHTML = "";
+    phoneError.innerHTML = "";
+
+    if(firstName.trim() === "")
+    {
+        firstNameError.innerHTML = "firstName cannot be empty";
+        isValid = false;
+    }
+    else if(!namePattern.test(firstName))
+    {
+        firstNameError.innerHTML = "Invalid firstName";
+        isValid = false;
+    }
+
+    if(lastName.trim() === "")
+    {
+        lastNameError.innerHTML = "lastName cannot be empty";
+        isValid = false;
+    }
+    else if(!namePattern.test(lastName))
+    {
+        firstNameError.innerHTML = "Invalid lastName";
+        isValid = false;
+    }
+
+    if(email.trim() === "")
+    {
+        emailError.innerHTML = "email cannot be empty";
+        isValid = false;
+    }
+    else if(!emailPattern.test(email))
+    {
+        emailError.innerHTML = "Invalid Email";
+        isValid = false;
+    }
+
+    if(phone.trim() === "")
+    {
+        phoneError.innerHTML = "Phone cannot be empty";
+        isValid = false;
+    }
+    else if(!phone.length == 10)
+    {
+        phoneError.innerHTML = "Invalid Phone";
+        isValid = false;
+    }
+    return isValid;
+}
+
+function clearProfilErrorMsg()
+{
+    let firstNameError = document.getElementById("userFirstNameError");
+    let lastNameError = document.getElementById("userLastNameError");
+    let emailError = document.getElementById("userEmailError");
+    let phoneError = document.getElementById("userPhoneError");
+    
+    firstNameError.innerHTML = "";
+    lastNameError.innerHTML = "";
+    emailError.innerHTML = "";
+    phoneError.innerHTML = "";
+    location.reload();
+}

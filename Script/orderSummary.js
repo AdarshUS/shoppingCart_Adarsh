@@ -1,4 +1,4 @@
-function decreaseQuantity() {
+function decreaseQuantityOrder() {
     let qnty = document.getElementById("orderInput").value;
     if (qnty == 1) {
         document.getElementById("decreaseQntyBtnCart").disabled = true;
@@ -10,7 +10,7 @@ function decreaseQuantity() {
     document.getElementById("payableAmt").innerHTML = actualPrice * qnty;
 }
 
-function increaseQuantity() {
+function increaseQuantityOrder() {
     document.getElementById("decreaseQntyBtnCart").disabled = false;
     let qnty = document.getElementById("orderInput").value;
     let actualPrice = parseInt(document.getElementById("payableAmt").innerHTML) / qnty;
@@ -157,10 +157,6 @@ function getOrderInvoicePdf(orderId)
         },
         success: function(result) {
             let jsonObj = JSON.parse(result);
-		    let a = document.createElement("a");
-		    a.download = jsonObj.FILENAME;
-		    a.href = jsonObj.FILEPATH;
-		    a.click();
         },
         error: function()
         {

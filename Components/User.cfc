@@ -6,38 +6,42 @@
             success = false,
             message = ""
         }>
-        <cftry>
-            <cfquery name="local.getAdminDetails" datasource="#application.datasource#">
-                SELECT 
-                    U.fldUser_Id, 
-                    U.fldHashedPassword, 
-                    U.fldUserSaltString
-                FROM 
-                    tbluser U
-                WHERE 
-                    U.fldRoleId = 2
-                    AND (U.fldEmail = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">
-                    OR U.fldPhone = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">)
-            </cfquery>
-            <cfif local.getAdminDetails.RecordCount>
-                <cfset local.saltString = local.getAdminDetails.fldUserSaltString>
-                <cfset local.password = arguments.password>
-                <cfset local.hashedPassword = hmac(local.password,local.saltString,"hmacSHA256")>
-                <cfif local.hashedPassword EQ local.getAdminDetails.fldHashedPassword>
-                    <cfset local.result.success = true>
-                    <cfset session.loginAdminId = application.objUser.encryptId(local.getAdminDetails.fldUser_Id)>
-                    <cfset local.result.message = "Login successful.">
+        <cfif len(trim(arguments.userName)) AND len(trim(arguments.password))>
+            <cftry>
+                <cfquery name="local.getAdminDetails" datasource="#application.datasource#">
+                    SELECT 
+                        U.fldUser_Id, 
+                        U.fldHashedPassword, 
+                        U.fldUserSaltString
+                    FROM 
+                        tbluser U
+                    WHERE 
+                        U.fldRoleId = 2
+                        AND (U.fldEmail = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">
+                        OR U.fldPhone = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">)
+                </cfquery>
+                <cfif local.getAdminDetails.RecordCount>
+                    <cfset local.saltString = local.getAdminDetails.fldUserSaltString>
+                    <cfset local.password = arguments.password>
+                    <cfset local.hashedPassword = hmac(local.password,local.saltString,"hmacSHA256")>
+                    <cfif local.hashedPassword EQ local.getAdminDetails.fldHashedPassword>
+                        <cfset local.result.success = true>
+                        <cfset session.loginAdminId = application.objUser.encryptId(local.getAdminDetails.fldUser_Id)>
+                        <cfset local.result.message = "Login successful.">
+                    <cfelse>
+                        <cfset local.result.message = "Invalid password.">
+                    </cfif>
                 <cfelse>
-                    <cfset local.result.message = "Invalid password.">
+                    <cfset local.result.message = "User not Exist.">
                 </cfif>
-            <cfelse>
-                <cfset local.result.message = "User not Exist.">
-            </cfif>
-        <cfcatch>
-            <cfset local.result.message = "Database error: " & cfcatch.message>
-            <cfset application.objProductManagement.sendErrorEmail(subject = "Error in function: adminLogin",body = cfcatch)>
-        </cfcatch>
-        </cftry>
+            <cfcatch>
+                <cfset local.result.message = "Database error: " & cfcatch.message>
+                <cfset application.objProductManagement.sendErrorEmail(subject = "Error in function: adminLogin",body = cfcatch)>
+            </cfcatch>
+            </cftry>
+        <cfelse>
+            <cfset local.result.message = "empty UserName or Password">
+        </cfif>
         <cfreturn local.result>
     </cffunction>
     
@@ -73,72 +77,52 @@
             errors = []
         }>
         <cftry>
-            <cfif len(trim(arguments.firstName)) EQ 0>
-            <cfset arrayAppend(local.result.errors, "firstName is required")>
-            <cfelseif NOT reFindNoCase("^[A-Za-z]+(\s[A-Za-z]+)*$", arguments.firstName)>
-		    	<cfset arrayAppend(local.result.errors, "*Enter a valid firstname")>
-            </cfif>
-
-            <cfif len(trim(arguments.lastName)) EQ 0>
-                <cfset arrayAppend(local.result.errors, "*lastName is required")>
-            <cfelseif NOT reFindNoCase("^[A-Za-z]+(\s[A-Za-z]+)*$", arguments.lastName)>
-		    	<cfset arrayAppend(local.result.errors, "*Enter a valid lastname")>
-            </cfif>
-        
-            <cfif len(trim(arguments.email)) EQ 0>
-            	<cfset arrayAppend(local.result.errors, "*Email is required")>
-            <cfelseif NOT reFindNoCase("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", arguments.email)>
-            	<cfset arrayAppend(local.result.errors, "*Enter a valid email")>
-            </cfif>
-       
-            <cfif len(trim(arguments.phone)) EQ 0>
-            	<cfset arrayAppend(local.result.errors, "*Please enter the phoneNumber")>
-            <cfelseif NOT reFindNoCase("^\d{10}$", arguments.phone)>
-            	<cfset arrayAppend(local.result.errors, "*Please enter a valid username")>
-            </cfif>
-       
-            <cfif len(trim(arguments.password)) EQ 0>
-            	<cfset arrayAppend(local.result.errors, "*Please enter the password")>
-            <cfelseif NOT reFindNoCase("^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$", arguments.password)>
-            	<cfset arrayAppend(local.result.errors, "*Please enter a valid password (minimum 6 characters, 1 lowercase, 1 uppercase)")>
-            </cfif>
-            <cfset local.saltString = generateSecretKey("AES")>
-            <cfset local.hashedPassword =hmac(arguments.password,local.saltString,"hmacSHA256")>
-            <cfquery name="local.checkUniqueEmailPhone" datasource="#application.datasource#">
-                SELECT
-                    1
-                FROM
-                    tbluser
-                WHERE
-                    fldEmail = <cfqueryparam value="#arguments.email#" cfsqltype="varchar">
-                    OR fldPhone = <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">
-            </cfquery>
-            <cfif local.checkUniqueEmailPhone.recordCount>
-                <cfset local.result.success = false>
-                <cfset local.result.message = "Email or Phone Already Exist">
-            <cfelse>
-                <cfquery datasource="#application.datasource#">
-                    INSERT INTO tbluser(
-                        fldFirstName,
-                        fldLastName,
-                        fldRoleId,
-                        fldEmail,
-                        fldPhone,
-                        fldHashedPassword,
-                        fldUserSaltString
-                        )
-                    VALUES(
-                        <cfqueryparam value="#arguments.firstName#" cfsqltype="varchar">,
-                        <cfqueryparam value="#arguments.lastName#" cfsqltype="varchar">,
-                        1,
-                        <cfqueryparam value="#arguments.email#" cfsqltype="varchar">,
-                        <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">,
-                        <cfqueryparam value="#local.hashedPassword#" cfsqltype="varchar">,
-                        <cfqueryparam value="#local.saltString#" cfsqltype="varchar">
-                    )
+            <cfif len(trim(arguments.firstName))
+                AND len(trim(arguments.lastName))
+                AND len(trim(arguments.email))
+                AND len(trim(arguments.phone))
+                AND len(trim(arguments.password))
+            >
+                <cfset local.saltString = generateSecretKey("AES")>
+                <cfset local.hashedPassword =hmac(arguments.password,local.saltString,"hmacSHA256")>
+                <cfquery name="local.checkUniqueEmailPhone" datasource="#application.datasource#">
+                    SELECT
+                        1
+                    FROM
+                        tbluser
+                    WHERE
+                        fldEmail = <cfqueryparam value="#arguments.email#" cfsqltype="varchar">
+                        OR fldPhone = <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">
                 </cfquery>
-                <cfset local.result.success = true>
-                <cfset local.result.message = "Successfully Registered">
+                <cfif local.checkUniqueEmailPhone.recordCount>
+                    <cfset local.result.success = false>
+                    <cfset local.result.message = "Email or Phone Already Exist">
+                <cfelse>
+                    <cfquery datasource="#application.datasource#">
+                        INSERT INTO tbluser(
+                            fldFirstName,
+                            fldLastName,
+                            fldRoleId,
+                            fldEmail,
+                            fldPhone,
+                            fldHashedPassword,
+                            fldUserSaltString
+                            )
+                        VALUES(
+                            <cfqueryparam value="#arguments.firstName#" cfsqltype="varchar">,
+                            <cfqueryparam value="#arguments.lastName#" cfsqltype="varchar">,
+                            1,
+                            <cfqueryparam value="#arguments.email#" cfsqltype="varchar">,
+                            <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">,
+                            <cfqueryparam value="#local.hashedPassword#" cfsqltype="varchar">,
+                            <cfqueryparam value="#local.saltString#" cfsqltype="varchar">
+                        )
+                    </cfquery>
+                    <cfset local.result.success = true>
+                    <cfset local.result.message = "Successfully Registered">
+                </cfif>
+            <cfelse>
+                <cfset local.result.message = "empty User Input field">
             </cfif>
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
@@ -156,7 +140,7 @@
             message = ""
         }>
         <cftry>
-            <cfif len(trim(arguments.userName)) NEQ 0 AND len(trim(arguments.password)) NEQ 0>
+            <cfif len(trim(arguments.userName)) AND len(trim(arguments.password))>
                 <cfquery name="local.getUserDetails" datasource="#application.datasource#">
                     SELECT 
                         U.fldUser_Id, 
@@ -246,17 +230,22 @@
         <cfargument name="email"  type="string" required="true">
         <cfargument name="phone" type="string" required="true">
         <cftry>
-            <cfquery datasource="#application.datasource#">
-                UPDATE
-                    tbluser
-                SET
-                    fldFirstName = <cfqueryparam value="#arguments.firstName#" cfsqltype="varchar">,
-                    fldLastName = <cfqueryparam value="#arguments.lastName#" cfsqltype="varchar">,
-                    fldEmail = <cfqueryparam value="#arguments.email#" cfsqltype="varchar">,
-                    fldPhone = <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">
-                WHERE
-                    fldUser_Id = <cfqueryparam value="#decryptId(session.loginuserId)#" cfsqltype="integer">
-            </cfquery>
+            <cfif len(trim(arguments.firstName))
+                AND len(trim(arguments.lastName)) 
+                AND len(trim(arguments.email)) 
+                AND len(trim(arguments.phone))>
+                <cfquery datasource="#application.datasource#">
+                    UPDATE
+                        tbluser
+                    SET
+                        fldFirstName = <cfqueryparam value="#arguments.firstName#" cfsqltype="varchar">,
+                        fldLastName = <cfqueryparam value="#arguments.lastName#" cfsqltype="varchar">,
+                        fldEmail = <cfqueryparam value="#arguments.email#" cfsqltype="varchar">,
+                        fldPhone = <cfqueryparam value="#arguments.phone#" cfsqltype="varchar">
+                    WHERE
+                        fldUser_Id = <cfqueryparam value="#decryptId(session.loginuserId)#" cfsqltype="integer">
+                </cfquery>
+            </cfif>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
                 subject = "Error in function: updateProfile", 
@@ -273,34 +262,52 @@
             'message':''
         }>
         <cftry>
-            <cfquery datasource="#application.datasource#">
-                INSERT INTO tbladdress (
-                    fldUserId,
-                    fldFirstName,
-                    fldLastName,
-                    fldAddressLine1,
-                    fldAddressLine2,
-                    fldCity,
-                    fldPhone,
-                    fldState,
-                    fldPincode,
-                    fldCreatedDate
-                )
-                VALUES(
-                    <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">,
-                    <cfqueryparam value="#addressData.firstName#" cfsqltype="varchar">,
-                    <cfqueryparam value="#addressData.lastName#" cfsqltype="varchar">,
-                    <cfqueryparam value="#addressData.address1#" cfsqltype="varchar">,
-                    <cfqueryparam value="#addressData.address2#" cfsqltype="varchar">,
-                    <cfqueryparam value="#addressData.city#" cfsqltype="varchar">,
-                    <cfqueryparam value="#addressData.phone#" cfsqltype="varchar">,
-                    <cfqueryparam value="#addressData.state#" cfsqltype="varchar">,
-                    <cfqueryparam value="#addressData.pincode#" cfsqltype="varchar">,
-                    now()
-                )
-            </cfquery>
-            <cfset local.result.success = true>
-            <cfset local.result.message = "successfully Added">
+            <cfif 
+                len(trim(arguments.addressData.firstName))
+                AND 
+                len(trim(arguments.addressData.lastName))
+                AND 
+                len(trim(arguments.addressData.address1))
+                AND 
+                len(trim(arguments.addressData.city))
+                AND 
+                len(trim(arguments.addressData.state))
+                AND 
+                len(trim(arguments.addressData.phone))
+                AND 
+                len(trim(arguments.addressData.pincode))
+            >
+                <cfquery datasource="#application.datasource#">
+                    INSERT INTO tbladdress (
+                        fldUserId,
+                        fldFirstName,
+                        fldLastName,
+                        fldAddressLine1,
+                        fldAddressLine2,
+                        fldCity,
+                        fldPhone,
+                        fldState,
+                        fldPincode,
+                        fldCreatedDate
+                    )
+                    VALUES(
+                        <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">,
+                        <cfqueryparam value="#addressData.firstName#" cfsqltype="varchar">,
+                        <cfqueryparam value="#addressData.lastName#" cfsqltype="varchar">,
+                        <cfqueryparam value="#addressData.address1#" cfsqltype="varchar">,
+                        <cfqueryparam value="#addressData.address2#" cfsqltype="varchar">,
+                        <cfqueryparam value="#addressData.city#" cfsqltype="varchar">,
+                        <cfqueryparam value="#addressData.phone#" cfsqltype="varchar">,
+                        <cfqueryparam value="#addressData.state#" cfsqltype="varchar">,
+                        <cfqueryparam value="#addressData.pincode#" cfsqltype="varchar">,
+                        now()
+                    )
+                </cfquery>
+                <cfset local.result.success = true>
+                <cfset local.result.message = "successfully Added">
+            <cfelse>
+                <cfset local.result.message = "empty User Input">
+            </cfif>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
                 subject = "Error in function: addAddress", 
@@ -398,12 +405,17 @@
             'success':'false',
             'message':''
         }>
-        <cfset local.cardNumber = 9526001384666666>
+        <cfset local.cardNumber = 1111111111111111>
         <cfset local.month = 12>
         <cfset local.year = 2027>
         <cfset local.cvv = 123>
 
-        <cfif len(trim(arguments.number)) NEQ 0 AND len(trim(arguments.month)) NEQ 0 AND len(trim(arguments.year)) NEQ 0 AND len(trim(arguments.cvv))>
+        <cfif 
+            len(trim(arguments.number))
+            AND len(trim(arguments.month))
+            AND len(trim(arguments.year))
+            AND len(trim(arguments.cvv))
+        >
             <cfif arguments.number NEQ local.cardNumber>
                 <cfset local.result.message = "Invalid Card Number">
             <cfelseif arguments.month NEQ local.month>
@@ -416,6 +428,8 @@
                 <cfset local.result.success = true>
                 <cfset local.result.message = "successfully verified">
             </cfif>
+        <cfelse>
+            <cfset local.result.message = "Enter all Fields">
         </cfif>
             <cfreturn local.result>
     </cffunction>

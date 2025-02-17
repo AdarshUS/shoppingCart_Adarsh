@@ -14,15 +14,15 @@
     <cfinclude template = "header.cfm">
     <cfinclude template = "navbar.cfm">
     <cfset variables.orderHistory = application.objCart.getOrderedItems( orderId = url.orderId)>
-    <cfif ArrayLen(variables.orderHistory.orderDetails)>
+    <cfif ArrayLen(variables.orderHistory.orders)>
         <div class="order_container">
             <div class="order-header">
-                <span>Order Number: <strong>#variables.orderHistory.orderDetails[1].orderId#</strong></span>
-                <span>Order Date: <strong>#variables.orderHistory.orderDetails[1].orderDate#</strong></span>
-                <span>Total Amount: <strong> #variables.orderHistory.orderDetails[1].totalPrice+variables.orderHistory.orderDetails[1].totalTax#</strong></span>
+                <span>Order Number: <strong>#variables.orderHistory.orders[1].orderId#</strong></span>
+                <span>Order Date: <strong>#variables.orderHistory.orders[1].orderDate#</strong></span>
+                <span>Total Amount: <strong> #variables.orderHistory.orders[1].totalPrice+variables.orderHistory.orders[1].totalTax#</strong></span>
                 <span class="order-status text-success">Processed</span>
             </div>
-            <cfloop array="#variables.orderHistory.orderDetails#" item="product" index="i">
+            <cfloop array="#variables.orderHistory.orders[1].products#" item="product" index="i">
                 <cfset totalPrice = product.unitPrice + (product.unitTax / 100) * product.unitPrice>
                 <div class="order-item">
                     <img src="./Assets/uploads/product#product.productId#/#product.imagefilepath#" alt="product">
@@ -41,11 +41,11 @@
             <div class="order-footer">
             <div>
                 <div>Shipping Address :</div>
-                <span><strong>#variables.orderHistory.orderDetails[1].address1#</strong></span>
-                <span><strong>#variables.orderHistory.orderDetails[1].address2#</strong></span>
-                <span><strong>#variables.orderHistory.orderDetails[1].city#</strong></span>
-                <span><strong>#variables.orderHistory.orderDetails[1].state#</strong></span>
-                <span><strong>#variables.orderHistory.orderDetails[1].pincode#</strong></span>
+                <span><strong>#variables.orderHistory.orders[1].address1#</strong></span>
+                <span><strong>#variables.orderHistory.orders[1].address2#</strong></span>
+                <span><strong>#variables.orderHistory.orders[1].city#</strong></span>
+                <span><strong>#variables.orderHistory.orders[1].state#</strong></span>
+                <span><strong>#variables.orderHistory.orders[1].pincode#</strong></span>
             </div>
         </div>
     <cfelse>

@@ -72,9 +72,9 @@
                     <p>Tax: #variables.product.data.unitTax#%</p>
                     <p class="payable">Payable amount: <i class="fa-solid fa-indian-rupee-sign"></i><span id="payableAmt">#variables.payableAmount#</span></p>
                     <div class="quantity">
-                        <button onclick="decreaseQuantity()" id="decreaseQntyBtnCart">-</button>
+                        <button onclick="decreaseQuantityOrder()" id="decreaseQntyBtnCart">-</button>
                         <input type="text" name="" id="orderInput" class="orderInput" value="1">
-                        <button onclick="increaseQuantity()">+</button>
+                        <button onclick="increaseQuantityOrder()">+</button>
                     </div>
                 </div>
             </div>

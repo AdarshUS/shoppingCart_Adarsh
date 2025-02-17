@@ -16,6 +16,7 @@ header{
    display: flex;
    align-items: center;
    gap: 10px;
+   text-decoration: none;
 }
 
 .headerRightItem{
@@ -43,7 +44,8 @@ header{
 main{
    height: 60vw;
     display: flex;
-    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 .categoryContainer{

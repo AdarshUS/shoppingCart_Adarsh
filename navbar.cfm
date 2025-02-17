@@ -9,7 +9,7 @@
             <cfset variables.subcategoriesResult = application.objProductManagement.fetchSubCategories(category.categoryId)>
             <ul class="dropdown-menu">
                 <cfloop array = #subcategoriesResult.subcategory# item = subcategory>
-                   <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(subcategory.subCategoryId)#">#subCategory.subCategoryname#</a></li>
+                    <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(subcategory.subCategoryId)#">#subCategory.subCategoryname#</a></li>
                 </cfloop>
             </ul>
         </div>

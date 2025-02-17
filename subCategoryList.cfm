@@ -5,10 +5,10 @@
 <!Doctype html>
 <html>
     <head>
-       <title>MyCart</title>
-       <link rel="stylesheet" href="./Style/bootstrap.css">
-       <link rel="stylesheet" href="./Style/fontawesome.css">
-       <link rel="stylesheet" href="Style/homestyle.css">
+        <title>MyCart</title>
+        <link rel="stylesheet" href="./Style/bootstrap.css">
+        <link rel="stylesheet" href="./Style/fontawesome.css">
+        <link rel="stylesheet" href="Style/homestyle.css">
     </head>
     <body>
         <cfinclude template = "header.cfm">
@@ -72,7 +72,7 @@
                     </div>
                 </div>
             </div>
-            <div class="viewMoreBtn" id="viewMoreBtn"><span onclick="toggleProducts('#url.subcategoryId#','#url.sort#')">view All<i class="fa-solid fa-caret-down"></i></span></div>
+            <div class="viewMoreBtn" id="viewMoreBtn"><button onclick="toggleProducts('#url.subcategoryId#','#url.sort#')" class="btn btn-success">view All</button></div>
                 <div class="productContainer" id="productContainer">
                     <cfloop array = "#variables.productDetails.products#" item = product>
                         <a class="productBox" id="productBox" href="productDetails.cfm?productId=#URLEncodedFormat(product.productId)#">
@@ -82,7 +82,7 @@
                         </a>
                     </cfloop>
                 </div>
-            <div class="viewMoreBtn" id="viewLessBtn"><span onclick="toggleLessProducts('#url.subcategoryId#','#url.sort#')">see Less<i class="fa-solid fa-caret-down"></i></span></div>
+            <div class="viewMoreBtn" id="viewLessBtn"><button onclick="toggleLessProducts('#url.subcategoryId#','#url.sort#')" class="btn btn-primary">see Less</button></div>
             </cfif>
         </main>
         <script src="./Script/jquery-3.7.1.min.js"></script>

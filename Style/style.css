@@ -17,6 +17,8 @@ header{
    display: flex;
    align-items: center;
    gap: 10px;
+   text-decoration: none;
+   color: #000000;
 }
 
 .headerRightItem{

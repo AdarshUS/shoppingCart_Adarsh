@@ -39,8 +39,8 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset application.objProductManagement.sendErrorEmail(
-               subject = "error in function: addTocart", 
-               body = "#cfcatch#"
+                subject = "error in function: addTocart", 
+                body = "#cfcatch#"
            )>
         </cfcatch>
         </cftry>
@@ -122,20 +122,14 @@
     </cffunction>
 
     <cffunction name="deleteCart" access="remote" returntype="void">
-        <cfargument name="cartId" required="false" type="string">
-        <cfargument name="productId" required="false" type="integer">
+        <cfargument name="cartId" required="false" type="string"> 
         <cftry>
             <cfquery datasource="#application.datasource#">
                 DELETE FROM tblcart
-            WHERE
-                fldUserId = <cfqueryparam value="#session.loginuserId#" cfsqltype="integer">
-                <cfif structKeyExists(arguments, "cartId") AND len(arguments.cartId)>
-                    AND
-                    fldCart_Id = <cfqueryparam value = "#application.objUser.decryptId(arguments.cartId)#" cfsqltype="integer">
-                <cfelseif structKeyExists(arguments, "productId") AND len(arguments.productId)>
-                    AND
-                    tblproductId = <cfqueryparam value = "#arguments.productId#" cfsqltype="integer">
-                </cfif>
+                WHERE
+                fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
+                AND
+                fldCart_Id = <cfqueryparam value = "#application.objUser.decryptId(arguments.cartId)#" cfsqltype="integer">
             </cfquery>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
@@ -228,7 +222,7 @@
             <cfset sendOrderConfirmationMail(local.orderId)>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = "error in function: addOrder", 
+                subject = "error in function: addOrder",
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -261,12 +255,30 @@
 
     <cffunction name="sendOrderConfirmationMail" access="public" returntype="void">
         <cfargument name="orderId" type="string" required="true">
+        
+        <cfset local.orderDetails = getOrderedItems(arguments.orderId)>
         <cfset local.sender = "adarshus1999@gmail.com">
         <cfset local.receiver = "#session.loginuserMail#">
         <cfset local.subject = "order confirmation mail">
 
-        <cfmail from="#local.sender#" subject="#local.subject#" to="#local.receiver#">
-            Your order with orderId : #arguments.orderId# is confirmed.
+        <cfmail from="#local.sender#" subject="#local.subject#" to="#local.receiver#" type="html">
+            <html>
+                <body>
+                    <p><strong>Your Order Confirmation</strong></p>
+                    <p>Order ID: <strong>#arguments.orderId#</strong></p>
+                    <p><strong>Order Details:</strong></p>
+                    <ul>
+                        <cfloop array="#local.orderDetails.orders[1].products#" item="product">
+                            <li>
+                                <p>Product: <strong>#product.productName#</strong></p>
+                                <p>Quantity: <strong>#product.quantity#</strong></p>
+                            </li>
+                        </cfloop>
+                    </ul>
+                    <p><strong>Total Price:</strong> Rs. #local.orderDetails.orders[1].totalPrice + local.orderDetails.orders[1].totalTax#</p>
+                    <p>Thank you for shopping with us!</p>
+                </body>
+            </html>
         </cfmail>
     </cffunction>
 
@@ -274,7 +286,7 @@
         <cfargument name="orderId" type="string" required="false">
         <cfset local.result = {
             "success": false,
-            "orderDetails": [],
+            "orders": [],
             "message":""
          }>
         <cftry>
@@ -313,28 +325,38 @@
                 </cfif>
                 ORDER BY O.fldOrderDate DESC
             </cfquery>
+            <cfset local.orderItem = {}>
             <cfif local.fetchOrderItems.recordCount>
                 <cfloop query="local.fetchOrderItems">
-                    <cfset arrayAppend(local.result.orderDetails, {
-                        "orderId": local.fetchOrderItems.fldOrder_Id,
-                        "orderDate": dateTimeFormat(local.fetchOrderItems.fldOrderDate.toString()),
+                    <cfset local.currentOrderId = local.fetchOrderItems.fldOrder_Id>
+                    <cfif NOT structKeyExists(local.orderItem,local.currentOrderId)>
+                        <cfset local.orderItem[local.currentOrderId] = {
+                            "orderId": local.fetchOrderItems.fldOrder_Id,
+                            "orderDate": dateTimeFormat(local.fetchOrderItems.fldOrderDate.toString()),
+                            "totalPrice": local.fetchOrderItems.fldTotalPrice,
+                            "totalTax": local.fetchOrderItems.fldTotalTax,
+                            "firstName": local.fetchOrderItems.fldFirstName,
+                            "lastName": local.fetchOrderItems.fldLastName,
+                            "address1": local.fetchOrderItems.fldAddressLine1,
+                            "address2": local.fetchOrderItems.fldAddressLine2,
+                            "city": local.fetchOrderItems.fldCity,
+                            "state": local.fetchOrderItems.fldState,
+                            "pincode": local.fetchOrderItems.fldPincode,
+                            "products":[]
+                        }>
+                    </cfif>
+                    <cfset arrayAppend(local.orderItem[local.currentOrderId].products, {
                         "imagefilepath": local.fetchOrderItems.fldImageFilePath,
                         "productName": local.fetchOrderItems.fldProductName,
                         "productId": local.fetchOrderItems.fldProduct_Id,
                         "brandName": local.fetchOrderItems.fldBrandName,
                         "quantity": local.fetchOrderItems.fldQuantity,
                         "unitPrice": local.fetchOrderItems.fldunitPrice,
-                        "unittax": local.fetchOrderItems.fldunitTax,
-                        "totalPrice": local.fetchOrderItems.fldTotalPrice,
-                        "totalTax": local.fetchOrderItems.fldTotalTax,
-                        "firstName": local.fetchOrderItems.fldFirstName,
-                        "lastName": local.fetchOrderItems.fldLastName,
-                        "address1": local.fetchOrderItems.fldAddressLine1,
-                        "address2": local.fetchOrderItems.fldAddressLine2,
-                        "city": local.fetchOrderItems.fldCity,
-                        "state": local.fetchOrderItems.fldState,
-                        "pincode": local.fetchOrderItems.fldPincode
+                        "unittax": local.fetchOrderItems.fldunitTax
                     })>
+                </cfloop>
+                <cfloop collection="#local.orderItem#" item="key">
+                    <cfset arrayAppend(local.result.orders, local.orderItem[key])>
                 </cfloop>
             </cfif>
             <cfset local.result.success = true>
@@ -348,66 +370,5 @@
         </cftry>
         <cfreturn local.result>
     </cffunction>
-
-    <cffunction name="getOrderHistoryPdf" access="remote" returntype="struct" returnformat="JSON">
-        <cfargument name="orderId" required="true" type="string">
-        <cfset local.orderHistory = getOrderedItems( orderId = arguments.orderId)>
-        <cfset local.fileName = "orderSummary.pdf">
-        <cfset local.pdfFilePath = "../Assets/Files/" & local.fileName>
-        <cfset local.pdfdownloadStruct = {}>
-        <cfoutput>
-            <cfdocument 
-                format="PDF" 
-                filename="#local.pdfFilePath#" 
-                overwrite="yes">
-                <h1 style="text-align: center;">Order Invoice</h1>
-                <div class="order_container">
-                    <div class="order-header">
-                        <p><strong>Name:</strong>#local.orderHistory.orderDetails[1].firstName# #local.orderHistory.orderDetails[1].lastName#</p>
-                        <p><strong>Order Number:</strong> #local.orderHistory.orderDetails[1].orderId#</p>
-                        <p><strong>Order Date:</strong> #local.orderHistory.orderDetails[1].orderDate#</p>
-                        <p><strong>Total Amount:</strong> #local.orderHistory.orderDetails[1].totalPrice+local.orderHistory.orderDetails[1].totalTax#</p>
-                        <p class="order-status text-success"><strong>Status:</strong> Paid</p>
-                    </div>
-                    <table border="1" cellspacing="0" cellpadding="5" width="100%">
-                        <thead>
-                            <tr>
-                                <th>Product Name</th>
-                                <th>Brand</th>
-                                <th>Quantity</th>
-                                <th>Unit Price</th>
-                                <th>Tax (%)</th>
-                                <th>Total Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <cfloop array="#local.orderHistory.orderDetails#" item="product" index="i">
-                                <cfset totalPrice = (product.unitPrice + (product.unitTax / 100) * product.unitPrice) * product.quantity>
-                                <tr>
-                                    <td>#product.productName#</td>
-                                    <td>#product.brandName#</td>
-                                    <td>#product.quantity#</td>
-                                    <td>#product.unitPrice#</td>
-                                    <td>#product.unitTax#%</td>
-                                    <td>#totalPrice#</td>
-                                </tr>
-                            </cfloop>
-                        </tbody>
-                    </table>
-                    <div class="order-footer">
-                        <h3>Shipping Address:</h3>
-                        <p>#local.orderHistory.orderDetails[1].address1#</p>
-                        <p>#local.orderHistory.orderDetails[1].address2#</p>
-                        <p>#local.orderHistory.orderDetails[1].city#, #local.orderHistory.orderDetails[1].state# - #local.orderHistory.orderDetails[1].pincode#</p>
-                    </div>
-                </div>
-            </cfdocument>
-        </cfoutput>
-      <cfset local.currentTime= dateTimeFormat(now(),"dd-mm-yyyy-HH-nn-ss")>
-      <cfset local.pdfFileName = "#session.loginuserfirstName# #session.loginuserlastName# #local.currentTime#">
-      <cfset local.pdfdownloadStruct.fileName = local.pdfFileName>
-      <cfset local.pdfdownloadStruct.filepath = "./Assets/Files/" & local.fileName>
-      <cfreturn local.pdfdownloadStruct>
-   </cffunction>
-
+    
 </cfcomponent>

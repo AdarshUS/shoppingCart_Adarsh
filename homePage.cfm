@@ -11,8 +11,23 @@
     <body>
         <cfinclude template="header.cfm">
         <cfinclude template="navbar.cfm">
-        <div class="bannerContainer">
-           <img src="./Assets/Images/9167.jpg" alt="cartbanner" class="bannerImage">
+        <div class="SliderContainer">
+        <div id="carouselExampleControlsNoTouching" class="carousel slide" data-bs-touch="false">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="./Assets/Images/sliderimage4.png" class="d-block w-100" alt="...">
+                </div>
+                <div class="carousel-item">
+                    <img src="./Assets/Images/sliderimage1.png" class="d-block w-100" alt="...">
+                </div>
+                <div class="carousel-item">
+                    <img src="./Assets/Images/sliderimage2.png" class="d-block w-100" alt="...">
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="##carouselExampleControlsNoTouching" data-bs-slide="prev">
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="##carouselExampleControlsNoTouching" data-bs-slide="next">
+            </button>
         </div>
         <h5 class="productText">Products</h5>
         <div class="randomProducts d-flex flex-wrap">
@@ -26,6 +41,7 @@
                 </a>
             </cfloop>
         </div>
+        <cfinclude template="footer.cfm">
     </body>
     <script src="./Script/jquery-3.7.1.min.js"></script>
     <script src="./Script/bootstrapScript.js"></script>

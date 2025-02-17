@@ -4,28 +4,28 @@
 <cfset variables.productDetails = application.objProductManagement.fetchProducts(subCategoryId =url.subCategoryId)>
 <cfif structKeyExists(form,"submit")>
     <cfif LEN(form.hiddenValue) GT 0>
-        <cfset application.objProductManagement.updateProduct(productId = form.hiddenValue,subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,productDescription = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>       
+        <cfset application.objProductManagement.updateProduct(productId = form.hiddenValue,subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,productDescription = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>               
     <cfelse>
         <cfset application.objProductManagement.addProduct(subCategoryId = form.selectSubCategory,productName = form.productName,brandId = form.brandName,description = form.productDesc,unitPrice = form.unitPrice,unitTax = form.unitTax,productImages = form.productImages)>
-   </cfif>
-   <cflocation url="#cgi.script_name#?subCategoryId=#URLEncodedFormat(url.subCategoryId)#&categoryId=#URLEncodedFormat(url.categoryId)#" addtoken="false">
+    </cfif>
+    <cflocation url="#cgi.script_name#?subCategoryId=#URLEncodedFormat(url.subCategoryId)#&categoryId=#URLEncodedFormat(url.categoryId)#" addtoken="false">
 </cfif>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <title>product page</title>
-   <link rel="stylesheet" href="./Style/bootstrap.css">
-   <link rel="stylesheet" href="./Style/fontawesome.css">
-   <link rel="stylesheet" href="./Style/productStyle.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>product page</title>
+    <link rel="stylesheet" href="./Style/bootstrap.css">
+    <link rel="stylesheet" href="./Style/fontawesome.css">
+    <link rel="stylesheet" href="./Style/productStyle.css">
 </head>
 <body>
     <header>
-        <div class="headerLeftItem">
+        <a class="headerLeftItem" href="admin.cfm">
            <div class="headerLeftItem-1"> <img src="./Assets/Images/cart.png" alt="cartImage" width="40"></div>
            <div class="headerLeftItem-2">Admin</div>
-        </div>
+        </a>
     <div class="headerRightItem">
         <button class="logout">
             <span class="headerRightItem-1">LogOut</span>

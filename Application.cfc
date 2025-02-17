@@ -2,7 +2,7 @@
     <cfset this.name = "shoppingCart">
     <cfset this.applicationTimeout = createTimeSpan(1, 0, 0, 0)>
     <cfset this.sessionManagement = true>
-    <cfset this.sessionTimeout = createTimeSpan(0, 0, 30, 0)>
+    <cfset this.sessionTimeout = createTimeSpan(0, 0, 30, 0)> 
 
     <cffunction name="onApplicationStart" returnType="boolean">
         <cfset application.objProductManagement = createObject("component","Components.ProductManagement")>
@@ -19,12 +19,12 @@
             <cfset onApplicationStart()>
         </cfif>
         <cfset local.Adminpages = ["category.cfm","subcategory.cfm","product.cfm"]>
-        <cfif NOT structKeyExists(session,"loginadminid") AND  arrayFindNoCase(local.Adminpages, ListLast(CGI.SCRIPT_NAME,'/'))>
+        <cfif NOT structKeyExists(session,"loginadminid") AND arrayFindNoCase(local.Adminpages, ListLast(CGI.SCRIPT_NAME,'/'))>
 	    	<cflocation url="admin.cfm" addToken="no">
-	    </cfif>
+	    </cfif> 
         <cfset local.Userpages = ["orderSummary.cfm","orderSearchResult.cfm","orderhistory.cfm","orderConfirmation.cfm"]>
         <cfif NOT structKeyExists(session,"loginuserid") AND arrayFindNoCase(local.Userpages, ListLast(CGI.SCRIPT_NAME,'/'))>
 	    	<cflocation url="homePage.cfm" addToken="no">
 	    </cfif>
     </cffunction>
-</cfcomponent> 
+</cfcomponent>

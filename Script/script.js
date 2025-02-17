@@ -65,6 +65,7 @@ $(".logout").click(function() {
 
 $(document).on("click", function() {
     $("#user_error").hide();
+    $(".subcategoryMsg").hide();
 });
 
 $(".subcategoryAddbtn").click(function() {
