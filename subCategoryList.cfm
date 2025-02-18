@@ -13,21 +13,7 @@
     </head>
     <body>
         <cfinclude template = "header.cfm">
-        <div class="categoriesContainer">
-            <cfloop array="#variables.categoriesResult.categories#" item="category">
-                <div class="dropdown">
-                    <a class="category"  aria-expanded="false" href="categoryList.cfm?categoryId=#URLEncodedFormat(category.categoryId)#">
-                        #category.categoryName#
-                    </a>
-                    <cfset variables.subCategoriesResult = application.objProductManagement.fetchSubCategories(category.categoryId)>
-                    <ul class="dropdown-menu">
-                        <cfloop array = #variables.subCategoriesResult.subcategory# item = subcategory>
-                            <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(subcategory.subCategoryId)#">#subcategory.subCategoryName#</a></li>
-                        </cfloop>
-                    </ul>
-                </div>
-            </cfloop>
-        </div>
+        <cfinclude template="navbar.cfm">
         <main>
             <cfif arrayIsEmpty(variables.productDetails.products)>
                 <h4 class="subcategoryname">No Items Found</h4>
@@ -73,7 +59,6 @@
                     </div>
                 </div>
             </div>
-            <!--- <div class="viewMoreBtn" id="viewMoreBtn"><button onclick="toggleProducts('#url.subcategoryId#','#url.sort#')" class="btn btn-success">view All</button></div> --->
                 <div class="productContainer" id="productContainer">
                     <cfloop array = "#variables.productDetails.products#" item = product>
                         <a class="productBox" id="productBox" href="productDetails.cfm?productId=#URLEncodedFormat(product.productId)#">

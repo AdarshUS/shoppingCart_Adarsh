@@ -18,21 +18,7 @@
         </head>
         <body>
             <cfinclude template = "header.cfm">
-            <div class="categoriesContainer">
-                <cfloop array="#variables.categoriesResult.categories#" item="category">
-                    <div class="dropdown">
-                        <a class="category"  aria-expanded="false" href="categoryList.cfm?categoryId=#URLEncodedFormat(category.categoryId)#">
-                            #category.categoryName#
-                        </a>
-                        <cfset variables.subCategoriesResult = application.objProductManagement.fetchSubCategories(category.categoryId)>
-                        <ul class="dropdown-menu">
-                            <cfloop array = #variables.subCategoriesResult.subCategory# item = subcategory>
-                               <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(subcategory.subCategoryId)#">#subcategory.subCategoryName#</a></li>
-                            </cfloop>
-                        </ul>
-                    </div>
-                </cfloop>
-            </div>
+            <cfinclude template="navbar.cfm">
             <div class="productContainer">
                <div class="productImageBox">
                   <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel"> 

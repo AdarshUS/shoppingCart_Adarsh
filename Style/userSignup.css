@@ -37,10 +37,10 @@ main{
 }
 
 .signupContainer{
-   width: 31%;    
+   width: 31%;
     background-color: #79d1d2;
-    padding: 10px;
-    border-radius: 30px;
+    padding: 20px;
+    border-radius: 10px;
 }
 
 .signupContainer form label{

@@ -226,10 +226,11 @@
                 SELECT 
                     fldSubCategory_Id
                     ,fldSubCategoryName
+                    ,fldCategoryId
                     ,fldCreatedBy
-               FROM
+                FROM
                     tblsubcategory
-               WHERE
+                WHERE
                     fldActive = 1
                 <cfif structKeyExists(arguments,"categoryId")>
                     AND fldCategoryId = <cfqueryparam value="#application.objUser.decryptId(arguments.categoryId)#" cfsqltype="integer">
@@ -240,7 +241,8 @@
             <cfloop query="local.fetchSubCategories">
                 <cfset arrayAppend(local.result.subcategory, {
                     "subCategoryId": application.objUser.encryptId(local.fetchSubCategories.fldSubCategory_Id),
-                    "subCategoryName": local.fetchSubCategories.fldSubCategoryName
+                    "subCategoryName": local.fetchSubCategories.fldSubCategoryName,
+                    "categoryId": application.objUser.encryptId(local.fetchSubCategories.fldCategoryId)
                 })>
             </cfloop>
         <cfcatch>

@@ -18,7 +18,7 @@
             <div class="headerRightItem-1">LogIn</div>
             <div class="headerRightItem-2">
                 <i class="fa-solid fa-arrow-right-to-bracket"></i>
-            </div>  
+            </div>
         </a>
     </header>
     <main>

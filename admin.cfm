@@ -41,7 +41,7 @@
             <cfif structKeyExists(form,"submit")>
                 <cfset variables.result = application.objUser.adminLogin(userName = form.userName,password = form.password)>
                 <cfif variables.result.success>
-                    <cflocation url="./category.cfm"  addtoken="no">
+                    <cflocation url="./category.cfm" addtoken="no">
                 <cfelse>
                     <p class="error" id="user_error">#variables.result.message#</p>
                </cfif>

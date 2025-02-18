@@ -11,21 +11,7 @@
     </head>
     <body>
         <cfinclude template="header.cfm">
-        <div class="categoriesContainer">
-            <cfloop array="#variables.categoriesResult.categories#" item="category">
-                <div class="dropdown">
-                    <a class="category"  aria-expanded="false" href="categoryList.cfm?categoryId=#URLEncodedFormat(category.categoryId)#">
-                        #category.categoryName#
-                    </a>
-                    <cfset variables.subCategories = application.objProductManagement.fetchSubCategories(category.categoryId)>
-                    <ul class="dropdown-menu">
-                        <cfloop array = #variables.subCategories.subcategory# item = subcategory>
-                            <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(subcategory.subCategoryId)#">#subcategory.subCategoryName#</a></li>
-                        </cfloop>
-                    </ul>
-                </div>
-            </cfloop>
-        </div>
+        <cfinclude template="navbar.cfm" >
         <main>
             <cfloop array = "#variables.subCategoriesResult.subcategory#" item="subCategory">
                 <a class="subcategoryName p-3" href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(subCategory.subcategoryId)#">#subCategory.subcategoryName#</a>
