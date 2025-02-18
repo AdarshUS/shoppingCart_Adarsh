@@ -1,5 +1,6 @@
 <cfoutput>
-<cfparam name="url.sort" default="ASC">
+<cfparam name="url.sort" default="">
+<cfparam name="startIndex" default="0">
 <cfset variables.categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfset variables.productDetails = application.objProductManagement.fetchProducts(subCategoryId = url.subCategoryId,limit = 4,sort = url.sort)>
 <!Doctype html>
@@ -33,7 +34,7 @@
             <cfelse>
                 <h4 class="subcategoryname">#variables.productDetails.products[1].subcategoryName#</h4>
                 <div class="priceFilterContainer">
-                <div class="priceSort">
+                <div class="priceSort" id="priceSort">
                    <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(url.subcategoryId)#&sort=ASC">price: Low to High</a>
                    <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(url.subcategoryId)#&sort=DESC">price :High to Low</a>
                 </div>
@@ -72,7 +73,7 @@
                     </div>
                 </div>
             </div>
-            <div class="viewMoreBtn" id="viewMoreBtn"><button onclick="toggleProducts('#url.subcategoryId#','#url.sort#')" class="btn btn-success">view All</button></div>
+            <!--- <div class="viewMoreBtn" id="viewMoreBtn"><button onclick="toggleProducts('#url.subcategoryId#','#url.sort#')" class="btn btn-success">view All</button></div> --->
                 <div class="productContainer" id="productContainer">
                     <cfloop array = "#variables.productDetails.products#" item = product>
                         <a class="productBox" id="productBox" href="productDetails.cfm?productId=#URLEncodedFormat(product.productId)#">
@@ -82,7 +83,7 @@
                         </a>
                     </cfloop>
                 </div>
-            <div class="viewMoreBtn" id="viewLessBtn"><button onclick="toggleLessProducts('#url.subcategoryId#','#url.sort#')" class="btn btn-primary">see Less</button></div>
+            <div class="viewMoreBtn" id="viewMoreBtn"><button onclick="loadMoreProducts('#url.subcategoryId#','#url.sort#')" class="btn btn-primary">view More</button></div>
             </cfif>
         </main>
         <script src="./Script/jquery-3.7.1.min.js"></script>

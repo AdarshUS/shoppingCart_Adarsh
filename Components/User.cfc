@@ -74,7 +74,7 @@
         <cfargument name="password" required="true" type="string">
         <cfset local.result = {
             success = false,
-            errors = []
+            message = ""
         }>
         <cftry>
             <cfif len(trim(arguments.firstName))
@@ -144,7 +144,7 @@
                 <cfquery name="local.getUserDetails" datasource="#application.datasource#">
                     SELECT 
                         U.fldUser_Id, 
-                        U.fldHashedPassword, 
+                        U.fldHashedPassword,
                         U.fldUserSaltString,
                         U.fldFirstName,
                         U.fldLastName,
@@ -349,15 +349,15 @@
             </cfquery>
             <cfloop query="local.fetchAllAddress">
                 <cfset arrayAppend(local.result.address, {
-                        "firstName": local.fetchAllAddress.fldFirstName,
-                        "lastName": local.fetchAllAddress.fldLastName,
-                        "addressline1": local.fetchAllAddress.fldAddressLine1,
-                        "addressline2": local.fetchAllAddress.fldAddressLine2,
-                        "city": local.fetchAllAddress.fldCity,
-                        "state": local.fetchAllAddress.fldState,
-                        "pincode": local.fetchAllAddress.fldPincode,
-                        "phone": local.fetchAllAddress.fldPhone,
-                        "addressId": application.objUser.encryptId(local.fetchAllAddress.fldAddress_Id)
+                    "firstName": local.fetchAllAddress.fldFirstName,
+                    "lastName": local.fetchAllAddress.fldLastName,
+                    "addressline1": local.fetchAllAddress.fldAddressLine1,
+                    "addressline2": local.fetchAllAddress.fldAddressLine2,
+                    "city": local.fetchAllAddress.fldCity,
+                    "state": local.fetchAllAddress.fldState,
+                    "pincode": local.fetchAllAddress.fldPincode,
+                    "phone": local.fetchAllAddress.fldPhone,
+                    "addressId": application.objUser.encryptId(local.fetchAllAddress.fldAddress_Id)
                 })>
             </cfloop>
             <cfset local.result.success = true>

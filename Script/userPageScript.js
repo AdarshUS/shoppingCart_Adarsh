@@ -1,3 +1,4 @@
+let startindex = 0;
 function validateUserDetails() {
     let validDetails = true;
     const firstName = document.getElementById("firstName").value;
@@ -80,7 +81,8 @@ function filterPrices(subcategoryId) {
     let priceRange = document.querySelector('input[name="filterPrice"]:checked');
     let priceRangeValue;
     document.getElementById("productContainer").innerHTML = "";
-
+    document.getElementById("viewMoreBtn").style.display = "none";
+    document.getElementById("priceSort").innerHTML = "";
     if (priceRange.value != null & priceRange.value != 0) {
         priceRangeValue = priceRange.value;
     } else {
@@ -149,6 +151,66 @@ async function fetchProductsRemote(methodName, parameters) {
     }
 }
 
+async function loadMoreProducts(subcategoryId,sort)
+{
+    startindex+=4;
+   try {
+        const result = await $.ajax({
+            url: `components/ProductManagement.cfc?method=fetchProducts`,
+            type: 'POST',
+            data: {subcategoryId:subcategoryId,sort:sort,limit:4,startindex:startindex},
+        });
+        const parsedResult = JSON.parse(result);
+        const products = parsedResult.products;
+        if(products.length === 0)
+        {
+            document.getElementById("viewMoreBtn").style.display = "none";
+        }
+        const productContainer = document.getElementById("productContainer");
+        for (const item of products) {
+            try {
+                const decryptResult = await $.ajax({
+                    url: 'components/User.cfc?method=decryptId',
+                    type: 'POST',
+                    data: {
+                        encryptedId: item.productId,
+                    },
+                });
+                const decryptedId = decryptResult.trim();
+                const productBox = document.createElement("a");
+                productBox.className = "productBox";
+                productBox.href = `./productDetails.cfm?productId=${item.productId}`;
+
+                const productImage = document.createElement("div");
+                productImage.className = "productImage";
+                const img = document.createElement("img");
+                img.src = `./Assets/uploads/product${decryptedId}/${item.imageFilePath}`;
+                img.alt = "productImage";
+                img.className = "prodimg";
+                productImage.appendChild(img);
+
+                const productName = document.createElement("div");
+                productName.className = "productName";
+                productName.textContent = item.productName;
+
+                const productPrice = document.createElement("div");
+                productPrice.className = "productPrice";
+                productPrice.innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i> ${item.unitPrice}`;
+
+                productBox.appendChild(productImage);
+                productBox.appendChild(productName);
+                productBox.appendChild(productPrice);
+
+                productContainer.appendChild(productBox);
+            } catch (decryptError) {
+                alert("Error decrypting product ID");
+            }
+        }
+    } catch (fetchError) {
+        alert("Error fetching products:", fetchError);
+    }
+}
+
 function logoutUser() {
     if (confirm("Are you sure you want to Logout")) {
         $.ajax({
@@ -162,25 +224,6 @@ function logoutUser() {
             }
         });
     }
-}
-
-function toggleProducts(subcategoryId, sort) {
-    fetchProductsRemote("fetchProducts", {
-        subcategoryId: subcategoryId,
-        sort: sort
-    });
-    document.getElementById("viewMoreBtn").style.display = "none";
-    document.getElementById("viewLessBtn").style.display = "flex";
-}
-
-function toggleLessProducts(subcategoryId) {
-    fetchProductsRemote("fetchProducts", {
-        subcategoryId: subcategoryId,
-        limit: 4,
-        sort: 'ASC'
-    });
-    document.getElementById("viewLessBtn").style.display = "none";
-    document.getElementById("viewMoreBtn").style.display = "flex";
 }
 
  function handleCartAction(productId) {
@@ -218,7 +261,7 @@ function toggleLessProducts(subcategoryId) {
         let qnty = document.getElementById("qntyNo" + cartId).value;
         qnty++;
         document.getElementById("qntyNo" + cartId).value = qnty;
-    
+
         $.ajax({
             url: 'components/cart.cfc?method=updateCart',
             type: 'POST',
@@ -275,6 +318,7 @@ function checkQnty() {
 }
 
 $(document).ready(function() {
+
     if( $(".qntyNo").length >0)
     {
         checkQnty();
@@ -330,7 +374,7 @@ function calculateTotalPrice() {
         let actualPrice = parseFloat(actualPrices[index].innerHTML);
         let quantity = parseInt(quantities[index].value);
         let taxPercentage = parseFloat(taxes[index].innerHTML);
-        
+
         let actualTotal = actualPrice * quantity;
         let taxAmount = (taxPercentage / 100) * actualTotal;
         let totalItemPrice = actualTotal + taxAmount;
@@ -535,7 +579,7 @@ function clearProfilErrorMsg()
     let lastNameError = document.getElementById("userLastNameError");
     let emailError = document.getElementById("userEmailError");
     let phoneError = document.getElementById("userPhoneError");
-    
+
     firstNameError.innerHTML = "";
     lastNameError.innerHTML = "";
     emailError.innerHTML = "";

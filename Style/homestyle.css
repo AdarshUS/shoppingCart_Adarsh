@@ -274,8 +274,9 @@ header {
 .viewMoreBtn {
 	display: flex;
 	justify-content: flex-end;
-	width: 80%;
+	width: 95%;
 	cursor: pointer;
+    margin: 20px;
 }
 
 .cartContainer {

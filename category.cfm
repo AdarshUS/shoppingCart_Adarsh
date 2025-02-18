@@ -13,14 +13,14 @@
 <body>
     <header>
         <a class="headerLeftItem" href="admin.cfm">
-           <div class="headerLeftItem-1"> <img src="./Assets/Images/cart.png" alt="cartImage" width="40"></div>
-           <div class="headerLeftItem-2">Admin DashBoard</div>
+            <div class="headerLeftItem-1"> <img src="./Assets/Images/cart.png" alt="cartImage" width="40"></div>
+            <div class="headerLeftItem-2">Admin DashBoard</div>
         </a>
         <div class="headerRightItem">
-           <button class="logout">
-              <span class="headerRightItem-1">LogOut</span>
-              <i class="fa-solid fa-right-from-bracket"></i>
-           </button>
+            <button class="logout">
+                <span class="headerRightItem-1">LogOut</span>
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
         </div>
     </header>
     <main>
@@ -34,9 +34,9 @@
                     <div class="categoryItem" id="#category.categoryId#">
                         <div class="categoryItemText">#category.categoryName#</div>
                         <div class="categoryItemRight">
-                           <button data-bs-toggle="modal" data-bs-target="##categoryModal" onclick="editCategory(this)" value = #application.objUser.decryptId(category.categoryId)# class="categoryBtn"><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
-                           <button class="categoryBtn" onclick="deleteCategory(this)" value = #category.categoryId#><i class="fa-solid fa-trash categoryfns"></i></button>
-                           <a class="categoryBtn" href="./subcategory.cfm?categoryId=#URLEncodedFormat(category.categoryId)#"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></a>
+                            <button data-bs-toggle="modal" data-bs-target="##categoryModal" onclick="editCategory(this)" value = #application.objUser.decryptId(category.categoryId)# class="categoryBtn"><i class="fa-solid fa-pen-to-square categoryfns" ></i></button>
+                            <button class="categoryBtn" onclick="deleteCategory(this)" value = #category.categoryId#><i class="fa-solid fa-trash categoryfns"></i></button>
+                            <a class="categoryBtn" href="./subcategory.cfm?categoryId=#URLEncodedFormat(category.categoryId)#"><i class="fa-solid fa-circle-arrow-right categoryfns"></i></a>
                         </div>
                     </div>
                 </cfloop>
@@ -52,10 +52,10 @@
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                   <label for="exampleInputText" class="form-label">Enter Category Name</label>
-                   <input type="text" class="form-control" id="categoryInput">
-                   <div class="error" id="categoryError"></div>
-                   <input type="hidden" id="distinguishCreateEdit">
+                    <label for="exampleInputText" class="form-label">Enter Category Name</label>
+                    <input type="text" class="form-control" id="categoryInput">
+                    <div class="error" id="categoryError"></div>
+                    <input type="hidden" id="distinguishCreateEdit">
                 </div>
             </div>
             <div class="modal-footer">

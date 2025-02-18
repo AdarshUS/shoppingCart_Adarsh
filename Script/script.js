@@ -264,7 +264,6 @@ function validateProduct() {
     let productDesc = document.getElementById("productDesc").value;
     let unitPrice = document.getElementById("unitPrice").value;
     let unitTax = document.getElementById("unitTax").value;
-    let productImage = document.getElementById("productImages");
 
     let categorySelectError = document.getElementById("categorySelectError");
     let subCategorySelectError = document.getElementById("subCategorySelectError");
@@ -316,6 +315,11 @@ function validateProduct() {
 
     if (unitTax.trim() === "") {
         unitTaxError.innerHTML = "Enter the unit Tax";
+        validProduct = false;
+    }
+    else if(isNaN(unitTax) || unitTax < 0 || unitTax > 100)
+    {
+        unitTaxError.innerHTML = "Enter valid unit Tax in percent";
         validProduct = false;
     }
 
