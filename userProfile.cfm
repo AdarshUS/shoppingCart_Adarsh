@@ -4,8 +4,13 @@
 <cfset variables.userdetailsResult = application.objUser.fetchUserDetails()>
 <cfset variables.addressResult = application.objUser.fetchAddress()>
 <cfif structKeyExists(form,"editSubmitBtn")>
-    <cfset application.objUser.updateProfile(firstName = form.firstName,lastName = form.lastName,email = form.email,phone = form.phone)>
-     <cflocation url="userProfile.cfm" addtoken="no">
+    <cfset application.objUser.updateProfile(
+        firstName = form.firstName,
+        lastName = form.lastName,
+        email = form.email,
+        phone = form.phone
+    )>
+    <cflocation url="userProfile.cfm" addtoken="no">
 </cfif>
 <!DOCTYPE html>
 <cfoutput>

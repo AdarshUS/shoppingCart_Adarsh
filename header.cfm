@@ -1,5 +1,5 @@
 <header>
-    <cfoutput >
+    <cfoutput>
         <a class="header_logo" href="homePage.cfm">
             <img src="./Assets/Images/cart1.jpeg" alt="logo" width="60">
             <span class="header_logoText">My Cart</span>

@@ -114,7 +114,7 @@
             </cfquery>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = "error in function: updateCart", 
+                subject = "error in function: updateCart",
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -133,7 +133,7 @@
             </cfquery>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = "error in function: deleteCart", 
+                subject = "error in function: deleteCart",
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -246,7 +246,7 @@
             <cfset sendOrderConfirmationMail(local.orderId)>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = "error in function: placeOrder", 
+                subject = "error in function: placeOrder",
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -363,7 +363,7 @@
             <cfset local.result.message = "successful Operation">
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = "error in function: getOrderedItems", 
+                subject = "error in function: getOrderedItems",
                 body = "#cfcatch#"
             )>
         </cfcatch>

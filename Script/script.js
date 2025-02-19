@@ -380,6 +380,8 @@ function editProduct(editObj) {
                         opt.innerHTML = subcategories[i].subCategoryName;
                         subCategoryElement.appendChild(opt);
                     }
+                    subCategoryElement.value = editObj.subCategoryId;
+
                 },
                 error: function() {
                     alert("Error fetching SubCategory");

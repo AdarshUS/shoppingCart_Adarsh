@@ -2,10 +2,17 @@
 <cfset variables.message = "">
 <cfif structKeyExists(form,"submit")>
     <cfif LEN(form.distinguishSubCreateEdit) GT 0>
-        <cfset variables.result =  application.objProductManagement.updateSubCategory(subCategoryId = form.distinguishSubCreateEdit,newSubCategoryName = form.subCategoryName,categoryId = form.selectCategory)>
+        <cfset variables.result =  application.objProductManagement.updateSubCategory(
+            subCategoryId = form.distinguishSubCreateEdit,
+            newSubCategoryName = form.subCategoryName,
+            categoryId = form.selectCategory
+        )>
         <cfset variables.message = "#variables.result.message#">
     <cfelse>
-        <cfset  variables.result = application.objProductManagement.addSubCategory(categoryId = form.selectCategory,subcategoryName = form.subCategoryName)>
+        <cfset  variables.result = application.objProductManagement.addSubCategory(
+            categoryId = form.selectCategory,
+            subcategoryName = form.subCategoryName
+        )>
         <cfset variables.message = "#variables.result.message#">
     </cfif>
 </cfif>
@@ -23,7 +30,7 @@
 </head>
 <body>
     <header>
-        <a class="headerLeftItem" href="admin.cfm">
+        <a class="headerLeftItem" href="category.cfm">
             <div class="headerLeftItem-1" href="admin.cfm"> <img src="./Assets/Images/cart.png" alt="cartImage" width="40"></div>
             <div class="headerLeftItem-2">Admin DashBoard</div>
         </a>

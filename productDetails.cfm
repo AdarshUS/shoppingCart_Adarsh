@@ -47,8 +47,8 @@
                </div>
                <div class="productDetail">
                     <div class="pathtext">
-                        <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(variables.productDetails.data.subcategoryId)#">#variables.productDetails.data.subcategoryName#</a><i class="fa-solid fa-angle-right"></i>
                         <a href="./categoryList.cfm?categoryId=#URLEncodedFormat(variables.productDetails.data.categoryId)#">#variables.productDetails.data.categoryName#</a><i class="fa-solid fa-angle-right"></i>
+                        <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(variables.productDetails.data.subcategoryId)#">#variables.productDetails.data.subcategoryName#</a><i class="fa-solid fa-angle-right"></i>
                         <a href="">#variables.productDetails.data.productName#</a>
                     </div>
                     <h4 class="productName">#variables.productDetails.data.productName#</h4>

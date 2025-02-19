@@ -147,7 +147,7 @@ $('.place-order').click(function() {
     document.getElementById("cardYearError").innerHTML = "";
 })
 
-function getOrderInvoicePdf(orderId)
+/* function getOrderInvoicePdf(orderId)
 {
      $.ajax({
         url: 'components/cart.cfc?method=getOrderHistoryPdf',
@@ -164,4 +164,4 @@ function getOrderInvoicePdf(orderId)
         }
         })
     
-}
+} */

@@ -2,7 +2,11 @@
 <cfparam name="url.sort" default="">
 <cfparam name="startIndex" default="0">
 <cfset variables.categoriesResult = application.objProductManagement.fetchAllCategories()>
-<cfset variables.productDetails = application.objProductManagement.fetchProducts(subCategoryId = url.subCategoryId,limit = 4,sort = url.sort)>
+<cfset variables.productDetails = application.objProductManagement.fetchProducts(
+    subCategoryId = url.subCategoryId,
+    limit = 4,
+    sort = url.sort
+)>
 <!Doctype html>
 <html>
     <head>

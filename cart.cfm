@@ -2,7 +2,6 @@
     <cfif structKeyExists(url,"redirect")>
         <cflocation url="userLogin.cfm?redirect=cartpage" addtoken="no">
     </cfif>
-    <cflocation url="userLogin.cfm" addtoken="no">
 </cfif>
 <cfset variables.addresses = application.objUser.fetchAddress()>
 <cfset variables.cart = application.objCart.fetchCart()>

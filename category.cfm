@@ -12,7 +12,7 @@
 </head>
 <body>
     <header>
-        <a class="headerLeftItem" href="admin.cfm">
+        <a class="headerLeftItem" href="category.cfm">
             <div class="headerLeftItem-1"> <img src="./Assets/Images/cart.png" alt="cartImage" width="40"></div>
             <div class="headerLeftItem-2">Admin DashBoard</div>
         </a>

@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="./Style/orderSummary.css">
 </head>
 <body>
-    <cfinclude  template="header.cfm">
+    <cfinclude template="header.cfm">
     <div class="order-summary">
         <h2>ORDER SUMMARY</h2>
         <div class="address">
@@ -48,7 +48,7 @@
                         <p class="payable">Payable amount: <i class="fa-solid fa-indian-rupee-sign"></i><span id="payableAmt">#variables.payableAmount#</span></p>
                         <div class="quantity">
                             <button>-</button>
-                            <input type="text" name="" id="orderInput" class="orderInput" value="#product.quantity#">
+                            <input type="text" name="orderInput" id="orderInput" class="orderInput" value="#product.quantity#">
                             <button>+</button>
                         </div>
                     </div>
@@ -108,11 +108,20 @@
                     </div>
                         <div id ="cardCvvError"  class="error"></div>
                     <cfif structKeyExists(url,"type") AND url.type EQ "single">
-                        <button class="cardButton cardproceedBtn" onclick="checkout('#url.addressId#','#url.productId#',#variables.payableAmount#,#product.data.unitPrice#,#product.data.unitTax#)">
+                        <button class="cardButton cardproceedBtn" onclick="checkout('#url.addressId#',
+                            '#url.productId#',
+                            #variables.payableAmount#,
+                            #product.data.unitPrice#,
+                            #product.data.unitTax#)"
+                        >
                             Proceed
                         </button>
                     <cfelse>
-                        <button class="cardButton cardproceedBtn" onclick="checkout('#url.addressId#','#url.productId#',#variables.payableAmount#)">
+                        <button class="cardButton cardproceedBtn" onclick="checkout(
+                            '#url.addressId#',
+                            '#url.productId#',
+                            #variables.payableAmount#)"
+                        >
                             Proceed
                         </button>
                     </cfif>
