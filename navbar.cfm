@@ -10,7 +10,12 @@
             <ul class="dropdown-menu">
                 <cfloop array = #subcategoriesResultNav.subcategory# item = "subcategory">
                     <cfif category.categoryId EQ subcategory.categoryId>
-                        <li><a class="dropdown-item" href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(subcategory.subCategoryId)#">#subCategory.subCategoryname#</a></li>
+                        <li>
+                            <a 
+                                class="dropdown-item" 
+                                href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(subcategory.subCategoryId)#">#subCategory.subCategoryname#
+                            </a>
+                        </li>
                     </cfif>
                 </cfloop>
             </ul>

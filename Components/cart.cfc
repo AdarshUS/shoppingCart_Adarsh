@@ -255,7 +255,6 @@
 
     <cffunction name="sendOrderConfirmationMail" access="public" returntype="void">
         <cfargument name="orderId" type="string" required="true">
-        
         <cfset local.orderDetails = getOrderedItems(arguments.orderId)>
         <cfset local.sender = "adarshus1999@gmail.com">
         <cfset local.receiver = "#session.loginuserMail#">

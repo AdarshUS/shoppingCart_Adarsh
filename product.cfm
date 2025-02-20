@@ -40,26 +40,21 @@
     <link rel="stylesheet" href="./Style/productStyle.css">
 </head>
 <body>
-    <header>
-        <a class="headerLeftItem" href="category.cfm">
-           <div class="headerLeftItem-1"> <img src="./Assets/Images/cart.png" alt="cartImage" width="40"></div>
-           <div class="headerLeftItem-2">Admin</div>
-        </a>
-    <div class="headerRightItem">
-        <button class="logout">
-            <span class="headerRightItem-1">LogOut</span>
-            <i class="fa-solid fa-right-from-bracket"></i>
-        </button>
-    </div>
-    </header>
+    <cfinclude template="adminHeader.cfm">
     <main>
-        <cfif len(trim(variables.message))>
+        <cfif LEN(trim(variables.message))>
             <div class="alert alert-danger m-3 subcategoryMsg">#variables.message#</div>
         </cfif>
         <div class="productContainer">
             <div class="productheader">
                 <h5>products</h5>
-                <button data-bs-toggle="modal" data-bs-target="##productModal" class="productAddbtn" onclick="createproduct('#url.subCategoryId#')"><span>Add</span><i class="fa-solid fa-plus productPlus"></i></button>
+                <button 
+                    data-bs-toggle="modal" 
+                    data-bs-target="##productModal"
+                    class="productAddbtn" 
+                    onclick="createproduct('#url.subCategoryId#')"
+                >
+                <span>Add</span><i class="fa-solid fa-plus productPlus"></i></button>
             </div>
             <cfloop array = "#variables.productDetails.products#"  index="product">
                 <div class="productBody" id="#product.productId#">
@@ -70,7 +65,10 @@
                             <div class="productprice"><i class="fa-solid fa-indian-rupee-sign">#product.unitPrice#</i></div>
                         </div>
                         <div class="productItemImage" data-bs-toggle="modal" data-bs-target="##imageModal" onclick="editImages('#product.productId#')">
-                            <img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" alt="productImage">
+                            <img 
+                                src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" 
+                                alt="productImage"
+                            >
                         </div>
                         <div class="productItemRight">
                             <button class="productfnBtn" 
@@ -85,7 +83,12 @@
                                 })">
                                 <i class="fa-solid fa-pen-to-square productfns"></i>
                             </button>
-                            <button class="productfnBtn" onclick="deleteProduct('#product.productId#')"><i class="fa-solid fa-trash productfns"></i></button>
+                            <button 
+                                class="productfnBtn" 
+                                onclick="deleteProduct('#product.productId#')"
+                            >
+                                <i class="fa-solid fa-trash productfns"></i>
+                            </button>
                         </div>
                     </div>
                 </div>

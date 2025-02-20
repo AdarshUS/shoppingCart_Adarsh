@@ -147,21 +147,3 @@ $('.place-order').click(function() {
     document.getElementById("cardYearError").innerHTML = "";
 })
 
-/* function getOrderInvoicePdf(orderId)
-{
-     $.ajax({
-        url: 'components/cart.cfc?method=getOrderHistoryPdf',
-        type: 'POST',
-        data: {
-            orderId : orderId
-        },
-        success: function(result) {
-            let jsonObj = JSON.parse(result);
-        },
-        error: function()
-        {
-
-        }
-        })
-    
-} */

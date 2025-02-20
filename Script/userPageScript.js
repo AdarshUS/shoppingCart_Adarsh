@@ -79,20 +79,35 @@ function isValidPhone(phone) {
 
 function filterPrices(subcategoryId) {
     let priceRange = document.querySelector('input[name="filterPrice"]:checked');
-    let priceRangeValue;
+    let minPrice;
+    let maxPrice;
     document.getElementById("productContainer").innerHTML = "";
     document.getElementById("viewMoreBtn").style.display = "none";
     document.getElementById("priceSort").innerHTML = "";
-    if (priceRange.value != null & priceRange.value != 0) {
-        priceRangeValue = priceRange.value;
-    } else {
-        let minvalue = document.getElementById("minimumPrice").value;
-        let maxvalue = document.getElementById("maxPrice").value;
-        priceRangeValue = minvalue + " AND " + maxvalue;
+    if(priceRange.value === "custom")
+    {
+        minPrice = document.getElementById("minimumPrice").value;
+        maxPrice = document.getElementById("maxPrice").value;
+        if(minPrice.trim() === "" || maxPrice.trim() === "")
+        {
+            alert("Please enter the price range");
+            return;
+        }
+        if(parseInt(minPrice) > parseInt(maxPrice))
+        {
+            alert("Minimum price should be less than Maximum price");
+            return;
+        }
+    }
+    else
+    {
+        minPrice = priceRange.dataset.start;
+        maxPrice = priceRange.dataset.end;
     }
     fetchProductsRemote("fetchProducts", {
         subcategoryId: subcategoryId,
-        priceRange: priceRangeValue
+        startPrice: minPrice,
+        endPrice: maxPrice
     });
 }
 
@@ -106,7 +121,15 @@ async function fetchProductsRemote(methodName, parameters) {
         const parsedResult = JSON.parse(result);
         const products = parsedResult.products;
         const productContainer = document.getElementById("productContainer");
-        productContainer.innerHTML = "";
+        if(products.length === 0)
+        {
+            document.getElementById("viewMoreBtn").style.display = "none";
+        }
+        if(!parameters.startindex)
+        {
+            productContainer.innerHTML = "";
+        }
+        
         for (const item of products) {
             try {
                 const decryptResult = await $.ajax({
@@ -154,61 +177,12 @@ async function fetchProductsRemote(methodName, parameters) {
 async function loadMoreProducts(subcategoryId,sort)
 {
     startindex+=4;
-   try {
-        const result = await $.ajax({
-            url: `components/ProductManagement.cfc?method=fetchProducts`,
-            type: 'POST',
-            data: {subcategoryId:subcategoryId,sort:sort,limit:4,startindex:startindex},
-        });
-        const parsedResult = JSON.parse(result);
-        const products = parsedResult.products;
-        if(products.length === 0)
-        {
-            document.getElementById("viewMoreBtn").style.display = "none";
-        }
-        const productContainer = document.getElementById("productContainer");
-        for (const item of products) {
-            try {
-                const decryptResult = await $.ajax({
-                    url: 'components/User.cfc?method=decryptId',
-                    type: 'POST',
-                    data: {
-                        encryptedId: item.productId,
-                    },
-                });
-                const decryptedId = decryptResult.trim();
-                const productBox = document.createElement("a");
-                productBox.className = "productBox";
-                productBox.href = `./productDetails.cfm?productId=${item.productId}`;
-
-                const productImage = document.createElement("div");
-                productImage.className = "productImage";
-                const img = document.createElement("img");
-                img.src = `./Assets/uploads/product${decryptedId}/${item.imageFilePath}`;
-                img.alt = "productImage";
-                img.className = "prodimg";
-                productImage.appendChild(img);
-
-                const productName = document.createElement("div");
-                productName.className = "productName";
-                productName.textContent = item.productName;
-
-                const productPrice = document.createElement("div");
-                productPrice.className = "productPrice";
-                productPrice.innerHTML = `<i class="fa-solid fa-indian-rupee-sign"></i> ${item.unitPrice}`;
-
-                productBox.appendChild(productImage);
-                productBox.appendChild(productName);
-                productBox.appendChild(productPrice);
-
-                productContainer.appendChild(productBox);
-            } catch (decryptError) {
-                alert("Error decrypting product ID");
-            }
-        }
-    } catch (fetchError) {
-        alert("Error fetching products:", fetchError);
-    }
+    fetchProductsRemote("fetchProducts", {
+        subcategoryId: subcategoryId,
+        sort: sort,
+        limit: 4,
+        startindex: startindex
+    });
 }
 
 function logoutUser() {
@@ -244,6 +218,14 @@ function logoutUser() {
                         document.getElementById("itemcount").innerHTML = parseInt( document.getElementById("itemcount").innerHTML) +1;
                     }
                 }
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Added to cart",
+                    showConfirmButton: false,
+                    timer: 1500,
+                    toast: true
+                });
             },
             error: function() {
                 alert("Error in addTocart");
@@ -455,7 +437,36 @@ function resetAddresseror()
 }
 
 function deleteAddress(addressId) {
-    if (confirm("Are you sure you want to delete")) {
+    Swal.fire({
+  title: "Are you sure you want to delete?",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "delete"
+}).then((result) => {
+  if (result.isConfirmed) {
+    $.ajax({
+            url: 'components/User.cfc?method=deleteAddress',
+            type: 'POST',
+            data: {
+                addessId: addressId
+            },
+            success: function(result) {
+                document.getElementById(addressId).remove();
+            },
+            error: function() {
+                alert("failed")
+            }
+        });
+    Swal.fire({
+      title: "Deleted!",
+      text: "Your file has been deleted.",
+      icon: "success"
+    });
+  }
+});
+    /* if (confirm("Are you sure you want to delete")) {
         $.ajax({
             url: 'components/User.cfc?method=deleteAddress',
             type: 'POST',
@@ -469,7 +480,7 @@ function deleteAddress(addressId) {
                 alert("failed")
             }
         });
-    }
+    } */
 }
 
 $(document).ready(function() {

@@ -1,6 +1,7 @@
 <cfif NOT structKeyExists(session,"loginuserId")>
     <cflocation url="userLogin.cfm" addtoken="no">
 </cfif>
+<cfinclude template="addAdress.cfm">
 <cfset variables.userdetailsResult = application.objUser.fetchUserDetails()>
 <cfset variables.addressResult = application.objUser.fetchAddress()>
 <cfif structKeyExists(form,"editSubmitBtn")>
@@ -33,10 +34,20 @@
             </div>
             <div class="profileDetails">
                 <div>hello,</div>
-                <div class="profileName">#variables.userdetailsResult.userDetails[1].firstName# #variables.userdetailsResult.userDetails[1].lastName#</div>
-                <div class="profileEmail">email: #variables.userdetailsResult.userDetails[1].email#</div>
+                <div class="profileName">
+                    #variables.userdetailsResult.userDetails[1].firstName# #variables.userdetailsResult.userDetails[1].lastName#
+                </div>
+                <div class="profileEmail">
+                    email: #variables.userdetailsResult.userDetails[1].email#
+                </div>
             </div>
-            <button class="editProfBtn" data-bs-toggle="modal" data-bs-target="##editProfileModal"><i class="fa-solid fa-pen"></i></button>
+            <button 
+                class="editProfBtn" 
+                data-bs-toggle="modal"
+                data-bs-target="##editProfileModal"
+            >
+                <i class="fa-solid fa-pen"></i>
+            </button>
         </div>
         <div class="addressContainer">
             <div class="profile-info">profile Informations</div>
@@ -60,13 +71,25 @@
                         </div>
                     </div>
                 </cfloop>
-                <button class="btn btn-primary addressAddBtn" data-bs-toggle="modal" data-bs-target="##addressAddModal">Add New Address</button>
+                <button 
+                class="btn btn-primary addressAddBtn" 
+                data-bs-toggle="modal" 
+                data-bs-target="##addressAddModal"
+                >
+                    Add New Address
+                </button>
                 <a class="btn btn-info" href="./orderhistory.cfm">order Details</a>
             </div>
         </div>
     </main>
-    <cfinclude template="addAdress.cfm">
-    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div 
+        class="modal fade" 
+        id="editProfileModal" 
+        tabindex="-1" 
+        aria-labelledby="exampleModalLabel" 
+        aria-hidden="true" 
+        data-bs-backdrop="static"
+    >
         <div class="modal-dialog">
             <div class="modal-content">
                 <form method="POST" onsubmit="return validateProfile()">
@@ -76,22 +99,46 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="firstName" class="form-label">FirstName:</label>
-                            <input type="text" class="form-control" name="firstName" id="userFirstName" value="#variables.userdetailsResult.userDetails[1].firstName#">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                name="firstName" 
+                                id="userFirstName" 
+                                value="#variables.userdetailsResult.userDetails[1].firstName#"
+                            >
                             <div id ="userFirstNameError" class="error"></div>
                         </div>
                         <div class="mb-3">
                             <label for="lastName" class="form-label">LastName:</label>
-                            <input type="text" class="form-control" name="lastName" id="userLastName" value="#variables.userdetailsResult.userDetails[1].lastName#">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                name="lastName" 
+                                id="userLastName" 
+                                value="#variables.userdetailsResult.userDetails[1].lastName#"
+                            >
                             <div id ="userLastNameError" class="error"></div>
                         </div>
                         <div class="mb-3">
                             <label for="email" class="form-label">Email:</label>
-                            <input type="text" class="form-control" name="email" id="userEmail" value="#variables.userdetailsResult.userDetails[1].email#">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                name="email" 
+                                id="userEmail" 
+                                value="#variables.userdetailsResult.userDetails[1].email#"
+                            >
                             <div id ="userEmailError" class="error"></div>
                         </div>
                         <div class="mb-3">
                             <label for="phone" class="form-label">phone:</label>
-                            <input type="text" class="form-control" name="phone" id="userPhone" value="#variables.userdetailsResult.userDetails[1].phone#">
+                            <input 
+                                type="text" 
+                                class="form-control" 
+                                name="phone" 
+                                id="userPhone" 
+                                value="#variables.userdetailsResult.userDetails[1].phone#"
+                            >
                             <div id ="userPhoneError" class="error"></div>
                         </div>
                     </div>
@@ -104,6 +151,7 @@
         </div>
     </div>
     <script src="./Script/bootstrapScript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="./Script/jquery-3.7.1.min.js"></script>
     <script src="./Script/userPageScript.js"></script>
 </body>

@@ -35,23 +35,23 @@
                     <div class="dropdown-menu" aria-labelledby="filterDropdown">
                         <h6 class="dropdown-header">Select Price Range</h6>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="filterPrice" id="price1" value="0 AND 1000">
+                            <input class="form-check-input" type="radio" name="filterPrice" id="price1" data-start="0" data-end="1000">
                             <label class="form-check-label" for="price1">0 to 1,000</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="filterPrice" id="price2" value="1000 AND 10000">
+                            <input class="form-check-input" type="radio" name="filterPrice" id="price2" data-start="1000" data-end="10000">
                             <label class="form-check-label" for="price2">1,000 to 10,000</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="filterPrice" id="price3" value="10000 AND 15000">
+                            <input class="form-check-input" type="radio" name="filterPrice" id="price3" data-start="10000" data-end="15000">
                             <label class="form-check-label" for="price3">10,000 to 15,000</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="filterPrice" id="price4" value="15000 AND 25000">
+                            <input class="form-check-input" type="radio" name="filterPrice" id="price4" data-start="15000" data-end="25000">
                             <label class="form-check-label" for="price4">15,000 to 25,000</label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="filterPrice" id="customFilterInput" value = 0>
+                            <input class="form-check-input" type="radio" name="filterPrice" id="customFilterInput" value="custom">
                             <label class="form-check-label" for="custom">Custom</label>
                         </div>
                         <div class="d-flex gap-2">
@@ -65,14 +65,33 @@
             </div>
                 <div class="productContainer" id="productContainer">
                     <cfloop array = "#variables.productDetails.products#" item = product>
-                        <a class="productBox" id="productBox" href="productDetails.cfm?productId=#URLEncodedFormat(product.productId)#">
-                            <div class="productImage"><img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" alt="productImage" class="prodimg" id="prodimg"></div>
+                        <a 
+                            class="productBox" 
+                            id="productBox" 
+                            href="productDetails.cfm?productId=#URLEncodedFormat(product.productId)#"
+                        >
+                            <div class="productImage">
+                                <img 
+                                    src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" 
+                                    alt="productImage" 
+                                    class="prodimg" 
+                                    id="prodimg"
+                                >
+                            </div>
                             <div class="productName" id="productName">#product.productName#</div>
                             <div class="productPrice" id="productPrice"><i class="fa-solid fa-indian-rupee-sign"></i>#product.unitPrice#</div>
                         </a>
                     </cfloop>
                 </div>
-            <div class="viewMoreBtn" id="viewMoreBtn"><button onclick="loadMoreProducts('#url.subcategoryId#','#url.sort#')" class="btn btn-primary">view More</button></div>
+            <div 
+                class="viewMoreBtn" 
+                id="viewMoreBtn"
+            >
+                <button 
+                    onclick="loadMoreProducts('#url.subcategoryId#','#url.sort#')" 
+                    class="btn btn-primary">view More
+                </button>
+            </div>
             </cfif>
         </main>
         <script src="./Script/jquery-3.7.1.min.js"></script>

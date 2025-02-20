@@ -1,4 +1,4 @@
-<cfset variables.randomProducts = application.objProductManagement.fetchProducts(random = true)>
+<cfset variables.randomProducts = application.objProductManagement.fetchProducts(random = true,limit = 4)>
 <!Doctype html>
 <cfoutput>
 <html>
@@ -34,7 +34,11 @@
             <cfloop array = "#variables.randomProducts.products#" item = product>
                 <a class="productBox" href="productDetails.cfm?productId=#URLEncodedFormat(product.productId)#">
                     <div class="productImage">
-                        <img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" alt="productImage"  class="prodimg">
+                        <img 
+                            src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" 
+                            alt="productImage" 
+                            class="prodimg"
+                        >
                     </div>
                     <div class="productName">#product.productName#</div>
                     <div class="productPrice"><i class="fa-solid fa-indian-rupee-sign"></i>#product.unitPrice#</div>

@@ -38,12 +38,27 @@
                         <cfloop array = #variables.cart.data# item = product>
                             <tr id="#product.cartId#">
                                 <td>
-                                   <img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilepath#" alt="Analog Magazine Rack">
+                                   <img 
+                                        src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilepath#" 
+                                        alt="Analog Magazine Rack"
+                                    >
                                    <a href="productDetails.cfm?productId=#product.productId#" class="productLink">#product.productName#</a><br>
                                    <small></small>
                                 </td>
-                                <td class="cartProductPrice"><div><i class="fa-solid fa-indian-rupee-sign"></i><span id="productPrice#product.cartId#">#(product.unitPrice + (product.unitPrice * (product.unittax / 100)))#
-                                    </span></div><span id="actualprice#product.cartId#" class="actualPric">actualprice:<span class="actualPriceCart">#product.unitPrice#</span></span><span id="productTax#product.cartId#" class="productTaxes">Tax:<span class="productTax">#product.unittax#</span>%</span>
+                                <td class="cartProductPrice">
+                                    <div>
+                                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                                        <span id="productPrice#product.cartId#">
+                                            #(product.unitPrice + (product.unitPrice * (product.unittax / 100)))#
+                                        </span>
+                                    </div>
+                                    <span id="actualprice#product.cartId#" class="actualPric">
+                                        actualprice:
+                                        <span class="actualPriceCart">#product.unitPrice#</span>
+                                    </span>
+                                    <span id="productTax#product.cartId#" class="productTaxes">
+                                        Tax:<span class="productTax">#product.unittax#</span>%
+                                    </span>
                                 </td>
                                 <td>
                                     <div class="quantity-controls">
@@ -52,8 +67,15 @@
                                        <button onclick="increaseQuantity('#product.cartId#','increment')">+</button>
                                     </div>
                                 </td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i><span id="totalPrice#product.cartId#" class="totalPrice">#(product.unitPrice + (product.unitPrice * (product.unittax / 100))) * product.quantity#</span></td>
-                                <td><button class="remove-item" onclick = "deleteCartItem('#product.cartId#')"><i class="fa-solid fa-xmark"></i></button></td>
+                                <td>
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                                    <span id="totalPrice#product.cartId#" class="totalPrice">
+                                        #(product.unitPrice + (product.unitPrice * (product.unittax / 100))) * product.quantity#
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="remove-item" onclick = "deleteCartItem('#product.cartId#')"><i class="fa-solid fa-xmark"></i></button>
+                                </td>
                             </tr>
                         </cfloop>
                     </tbody>
@@ -97,8 +119,25 @@
                         </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success addressAddBtn" id="addAddressBtn" name="submit" data-bs-toggle="modal" data-bs-target="##addressAddModal">Add Address</button>
-                        <button type="button" class="btn btn-primary" id="submit" name="submit" onclick="redirectCartToorder()">Payment Details</button>
+                        <button 
+                            type="button" 
+                            class="btn btn-success addressAddBtn" 
+                            id="addAddressBtn" 
+                            name="submit" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="##addressAddModal"
+                        >
+                        Add Address
+                        </button>
+                        <button 
+                            type="button" 
+                            class="btn btn-primary" 
+                            id="submit" 
+                            name="submit" 
+                            onclick="redirectCartToorder()"
+                        >
+                        Payment Details
+                        </button>
                     </div>
                 </div>
             </div>

@@ -6,7 +6,7 @@
             message = ""
         }>
         <cftry>
-            <cfif len(trim(arguments.categoryName))>
+            <cfif LEN(trim(arguments.categoryName))>
                 <cfquery name="local.checkCategory" datasource="#application.datasource#">
                     SELECT
                         count(*) AS categoryCount
@@ -94,7 +94,7 @@
             message = ""
         }>
         <cftry>
-            <cfif len(trim(arguments.newCategory))>
+            <cfif LEN(trim(arguments.newCategory))>
                 <cfquery name="checkExistingCategory" datasource="#application.datasource#">
                     SELECT
                         count(*) AS categoryCount
@@ -142,8 +142,8 @@
             <cfquery datasource="#application.datasource#">
                 UPDATE 
                     tblcategory C
-                    INNER JOIN tblsubcategory SC ON SC.fldCategoryId = C.fldCategory_Id
-                    INNER JOIN tblproduct P ON P.fldSubcategoryId = SC.fldSubcategory_Id
+                    LEFT JOIN tblsubcategory SC ON SC.fldCategoryId = C.fldCategory_Id
+                    LEFT JOIN tblproduct P ON P.fldSubcategoryId = SC.fldSubcategory_Id
                     LEFT JOIN tblproductimages PI ON PI.fldProductId = P.fldProduct_Id
                 SET 
                     C.fldActive = 0,
@@ -182,7 +182,7 @@
             message = ""
         }>
         <cftry>
-            <cfif len(trim(arguments.subcategoryName))>
+            <cfif LEN(trim(arguments.subcategoryName))>
                 <cfquery name="local.checkSubCategory" datasource="#application.datasource#">
                     SELECT
                         count(*) AS subcategoryCount
@@ -325,17 +325,17 @@
             <cfquery datasource="#application.datasource#">
                 UPDATE 
                     tblsubcategory SC
-                    INNER JOIN tblproduct P ON P.fldSubcategoryId = SC.fldSubcategory_Id
+                    LEFT JOIN tblproduct P ON P.fldSubcategoryId = SC.fldSubcategory_Id
                     LEFT JOIN tblproductimages PI ON PI.fldProductId = P.fldProduct_Id
                 SET 
                     SC.fldActive = 0,
-                    SC.fldUpdatedBy = <cfqueryparam value = "#session.loginUserId#" cfsqltype = "integer">,
+                    SC.fldUpdatedBy = <cfqueryparam value = "#application.objUser.decryptId(session.loginAdminId)#" cfsqltype = "integer">,
                     SC.fldUpdatedDate = #now()#,
                     P.fldActive = 0,
-                    P.fldUpdatedBy = <cfqueryparam value = "#session.loginUserId#" cfsqltype = "integer">,
+                    P.fldUpdatedBy = <cfqueryparam value = "#application.objUser.decryptId(session.loginAdminId)#" cfsqltype = "integer">,
                     P.fldUpdatedDate = #now()#,
                     PI.fldActive = 0,
-                    PI.fldDeactivatedBy = <cfqueryparam value = "#session.loginUserId#" cfsqltype = "integer">,
+                    PI.fldDeactivatedBy = <cfqueryparam value = "#application.objUser.decryptId(session.loginAdminId)#" cfsqltype = "integer">,
                     PI.fldDeactivatedDate = #now()#
                 WHERE
                     SC.fldSubCategory_Id = <cfqueryparam value = "#application.objUser.decryptId(arguments.subCategoryId)#" cfsqltype = "integer">
@@ -483,7 +483,8 @@
 
     <cffunction name="fetchProducts" access="remote" returntype="struct" returnformat="JSON">
         <cfargument name="subCategoryId" type="string" required="false">
-        <cfargument name="priceRange" type="string" required="false">
+        <cfargument name="startPrice" type="integer" required="false">
+        <cfargument name="endPrice" type="integer" required="false">
         <cfargument name="limit" type="integer" required="false">
         <cfargument name="searchText" type="string" required="false" >
         <cfargument name="sort" type="string" required="false">
@@ -520,8 +521,9 @@
                     <cfif structKeyExists(arguments, "subCategoryId") AND arguments.subCategoryId NEQ 0>
                         AND P.fldSubCategoryId = <cfqueryparam value="#local.decryptedSubCategoryId#" cfsqltype="integer">
                     </cfif>
-                    <cfif structKeyExists(arguments, "priceRange") AND arguments.priceRange NEQ 0>
-                        AND P.fldUnitPrice BETWEEN <cfqueryparam value="#arguments.priceRange#" cfsqltype="integer">
+                    <cfif structKeyExists(arguments, "startPrice") AND structKeyExists(arguments, "endPrice")>
+                        AND P.fldUnitPrice BETWEEN <cfqueryparam value='#arguments.startPrice#' cfsqltype="integer"> 
+                        AND <cfqueryparam value='#arguments.endPrice#' cfsqltype="integer">
                     </cfif>
                     <cfif structKeyExists(arguments, "searchText") AND len(arguments.searchText)>
                         AND (P.fldDescription LIKE <cfqueryparam value="%#arguments.searchText#%" cfsqltype="varchar">
@@ -534,12 +536,14 @@
                     <cfelseif structKeyExists(arguments,"sort") AND arguments.sort EQ "DESC">
                         ORDER BY fldUnitPrice DESC
                     </cfif>
-                    <cfif structKeyExists(arguments,"limit") AND len(arguments.limit)>
-                        LIMIT <cfqueryparam value="#arguments.limit#" cfsqltype="integer"> OFFSET <cfqueryparam value="#arguments.startIndex#" cfsqltype="integer">
-                    </cfif>
                     <cfif structKeyExists(arguments,"random")>
                         ORDER BY RAND()
-                        LIMIT 4;
+                    </cfif>
+                    <cfif structKeyExists(arguments,"limit") AND len(arguments.limit)>
+                        LIMIT <cfqueryparam value="#arguments.limit#" cfsqltype="integer">
+                        <cfif structKeyExists(arguments,"startIndex") AND len(arguments.startIndex)>
+                            OFFSET <cfqueryparam value="#arguments.startIndex#" cfsqltype="integer">
+                        </cfif>
                     </cfif>
             </cfquery>
             <cfif local.fetchProducts.recordCount gt 0>
