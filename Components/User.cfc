@@ -1,33 +1,44 @@
 <cfcomponent>
-    <cffunction name="adminLogin" access="public" returntype="struct">
+    <cffunction name="userLogin" access="public" returntype="struct">
         <cfargument name="userName" required="true" type="string">
         <cfargument name="password" required="true" type="string">
+        <cfargument name="role" required="true" type="integer">
         <cfset local.result = {
             success = false,
             message = ""
         }>
         <cfif len(trim(arguments.userName)) AND len(trim(arguments.password))>
             <cftry>
-                <cfquery name="local.getAdminDetails" datasource="#application.datasource#">
+                <cfquery name="local.getUserDetails" datasource="#application.datasource#">
                     SELECT 
                         U.fldUser_Id, 
                         U.fldHashedPassword, 
-                        U.fldUserSaltString
+                        U.fldUserSaltString,
+                        U.fldFirstName,
+                        U.fldLastName,
+                        U.fldEmail
                     FROM 
                         tbluser U
                     WHERE 
-                        U.fldRoleId = 2
+                        U.fldRoleId = <cfqueryparam value="#arguments.role#" cfsqltype="integer">
                         AND (U.fldEmail = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">
                         OR U.fldPhone = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">)
                 </cfquery>
-                <cfif local.getAdminDetails.RecordCount>
-                    <cfset local.saltString = local.getAdminDetails.fldUserSaltString>
+                <cfif local.getUserDetails.RecordCount>
+                    <cfset local.saltString = local.getUserDetails.fldUserSaltString>
                     <cfset local.password = arguments.password>
                     <cfset local.hashedPassword = hmac(local.password,local.saltString,"hmacSHA256")>
-                    <cfif local.hashedPassword EQ local.getAdminDetails.fldHashedPassword>
+                    <cfif local.hashedPassword EQ local.getUserDetails.fldHashedPassword>
                         <cfset local.result.success = true>
-                        <cfset session.loginAdminId = application.objUser.encryptId(local.getAdminDetails.fldUser_Id)>
                         <cfset local.result.message = "Login successful.">
+                        <cfif arguments.role EQ 2>
+                            <cfset session.loginAdminId = application.objUser.encryptId(local.getUserDetails.fldUser_Id)>
+                        <cfelse>
+                            <cfset session.loginuserId = application.objUser.encryptId(local.getUserDetails.fldUser_Id)>
+                            <cfset session.loginuserfirstName = local.getUserDetails.fldFirstName>
+                            <cfset session.loginuserlastName = local.getUserDetails.fldLastName>
+                            <cfset session.loginuserMail = local.getUserDetails.fldEmail>
+                        </cfif>
                     <cfelse>
                         <cfset local.result.message = "Invalid password.">
                     </cfif>
@@ -35,7 +46,7 @@
                     <cfset local.result.message = "User not Exist.">
                 </cfif>
             <cfcatch>
-                <cfset local.result.message = "Database error: " & cfcatch.message>
+                <cfset local.result.message = "error occured">
                 <cfset application.objProductManagement.sendErrorEmail(subject = "Error in function: adminLogin",body = cfcatch)>
             </cfcatch>
             </cftry>
@@ -127,56 +138,6 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset application.objProductManagement.sendErrorEmail(subject = "Error in function: registerUser",body = cfcatch)>
-        </cfcatch>
-        </cftry>
-        <cfreturn local.result>
-    </cffunction>
-
-    <cffunction name="userLogin" access="public" returntype="struct" >
-		<cfargument name="userName" required="true" type="string">
-        <cfargument name="password" required="true" type="string">
-        <cfset local.result = {
-            success = false,
-            message = ""
-        }>
-        <cftry>
-            <cfif len(trim(arguments.userName)) AND len(trim(arguments.password))>
-                <cfquery name="local.getUserDetails" datasource="#application.datasource#">
-                    SELECT 
-                        U.fldUser_Id, 
-                        U.fldHashedPassword,
-                        U.fldUserSaltString,
-                        U.fldFirstName,
-                        U.fldLastName,
-                        U.fldEmail
-                    FROM 
-                        tbluser U
-                    WHERE 
-                        U.fldRoleId = 1
-                        AND (U.fldEmail = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">
-                        OR U.fldPhone = <cfqueryparam value="#arguments.userName#" cfsqltype="varchar">)
-                </cfquery>
-                <cfif local.getUserDetails.RecordCount>
-                    <cfset local.saltString = local.getUserDetails.fldUserSaltString>
-                    <cfset local.password = arguments.password>
-                    <cfset local.hashedPassword = hmac(local.password,local.saltString,"hmacSHA256")>
-                    <cfif local.hashedPassword EQ local.getUserDetails.fldHashedPassword>
-                        <cfset local.result.success = true>
-                        <cfset session.loginuserId = application.objUser.encryptId(local.getUserDetails.fldUser_Id)>
-                        <cfset session.loginuserfirstName = local.getUserDetails.fldFirstName>
-                        <cfset session.loginuserlastName = local.getUserDetails.fldLastName>
-                        <cfset session.loginuserMail = local.getUserDetails.fldEmail>
-                        <cfset local.result.message = "Login successful.">
-                    <cfelse>
-                        <cfset local.result.message = "Invalid password.">
-                    </cfif>
-                <cfelse>
-                <cfset local.result.message = "User not Exist.">
-            </cfif>
-            </cfif>
-        <cfcatch>
-            <cfset local.result.message = "Database error: " & cfcatch.message>
-            <cfset application.objProductManagement.sendErrorEmail(subject = "Error in function: userLogin",body = cfcatch)>
         </cfcatch>
         </cftry>
         <cfreturn local.result>

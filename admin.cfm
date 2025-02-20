@@ -39,7 +39,7 @@
                 </div>
             </form>
             <cfif structKeyExists(form,"submit")>
-                <cfset variables.result = application.objUser.adminLogin(userName = form.userName,password = form.password)>
+                <cfset variables.result = application.objUser.userLogin(userName = form.userName,password = form.password,role = 2)>
                 <cfif variables.result.success>
                     <cflocation url="./category.cfm" addtoken="no">
                 <cfelse>

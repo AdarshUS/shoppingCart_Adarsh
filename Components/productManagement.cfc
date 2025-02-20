@@ -756,7 +756,7 @@
             <cfquery datasource = "#application.datasource#">
                 UPDATE
                     tblproduct P
-                    INNER JOIN tblproductimages PI ON P.fldProduct_Id = tblproduct.fldProductId
+                    LEFT JOIN tblproductimages PI ON P.fldProduct_Id = PI.fldProductId
                 SET
                     P.fldActive = 0,
                     P.fldUpdatedBy = <cfqueryparam value = #application.objUser.decryptId(session.loginAdminId)# cfsqltype="integer">,
@@ -767,8 +767,7 @@
                 WHERE
                     P.fldProduct_Id  = <cfqueryparam value="#local.decryptedProductId#" cfsqltype="integer">
                     AND P.fldActive = 1
-                    AND PI.fldActive = 1
-                    AND PI.fldDefaultImage != 1
+                    AND (PI.fldActive = 1 OR PI.fldActive IS NULL)
             </cfquery>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">

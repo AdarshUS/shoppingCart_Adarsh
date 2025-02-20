@@ -45,7 +45,7 @@
                 </div>
             </form>
             <cfif structKeyExists(form, "submitBtn")>
-                <cfset variables.result = application.objUser.userLogin(userName = form.userName, password = form.userPassword)>
+                <cfset variables.result = application.objUser.userLogin(userName = form.userName, password = form.userPassword,role = 1)>
                 <cfif NOT variables.result.success>
                    <div class="alert alert-danger">#variables.result.message#</div>
                 <cfelse>
