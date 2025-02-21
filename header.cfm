@@ -1,13 +1,21 @@
-<header>
-    <cfoutput>
+<!DOCTYPE html>
+<cfoutput>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <header>
         <a class="header_logo" href="homePage.cfm">
             <img src="./Assets/Images/cart1.jpeg" alt="logo" width="60">
             <span class="header_logoText">My Cart</span>
         </a>
         <div class="header_searchBar">
-            <i class="fa-solid fa-magnifying-glass"></i>  
-            <form method="post" action="searchResult.cfm">
-                <input type="text" name = "searchInput" placeholder="Search for Products, Brands and More">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <form method="post" id="searchForm" action="subCategoryList.cfm?">
+                <input type="text" name = "searchInput" placeholder="Search for Products, Brands and More" id="searchInput">
                 <button class="searchBtn" name="searchBtn" type="submit">Search</button>
             </form>
         </div>
@@ -40,5 +48,7 @@
                 </cfif>
             </div>
         </div>
-    </cfoutput>
-</header>
+    </header>
+</body>
+</cfoutput>
+</html>

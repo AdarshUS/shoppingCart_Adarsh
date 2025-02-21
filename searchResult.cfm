@@ -1,16 +1,5 @@
 <cfoutput>
     <cfset variables.categories = application.objProductManagement.fetchAllCategories()>
-    <cfif structKeyExists(form,"searchInput")>
-        <cfif LEN(trim(form.searchInput)) EQ 0>
-           <cflocation url="homePage.cfm" addtoken="no">
-        </cfif>
-        <cfset variables.productDetails =  application.objProductManagement.fetchProducts(searchText = form.searchInput)>
-        <cfif ArrayIsEmpty(variables.productDetails.products)>
-           <cfset variables.message = "No Results Found for ""<span class=""searchText"">#form.searchInput#</span>""">
-        <cfelse>
-           <cfset variables.message = "Search Result for ""<span class=""searchText"">#form.searchInput#</span>""">
-        </cfif>
-    </cfif>
     <!DOCTYPE html>
     <html lang="en">
         <head>
@@ -40,6 +29,16 @@
                     </a>
                 </cfloop>
             </div>
+            <div 
+                class="viewMoreBtn" 
+                id="viewMoreBtn"
+            >
+                <button 
+                    onclick="loadMoreProducts('#url.subcategoryId#','#url.sort#')"
+                    class="btn btn-primary">view More
+                </button>
+            </div>
+            <script src="userPageScript.js"></script>
         </body>
     </html>
 </cfoutput>

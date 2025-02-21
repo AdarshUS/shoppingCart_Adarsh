@@ -19,7 +19,7 @@ function increaseQuantityOrder() {
     document.getElementById("payableAmt").innerHTML = actualPrice * qnty;
 }
 
-function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
+function checkout(addressId, productId) {
     let isValidData = true;
     let cardNumber = document.getElementById("cardNumber").value.trim();
     let cardYear = parseInt(document.getElementById("cardYear").value.trim(), 10);
@@ -94,7 +94,7 @@ function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
                                 });
                             setTimeout(() => {
                                 location.href = "homePage.cfm";
-                            }, 1700); 
+                            }, 1700);
                             },
                             error: function() {
 
@@ -107,12 +107,8 @@ function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
                             data: {
                                 addressId: addressId,
                                 cardnumber: cardNumber,
-                                totalPrice: totalAmnt,
-                                totalTax: totalTax,
                                 productId: productId,
-                                quantity: qnty,
-                                unitPrice: unitPrice,
-                                unitTax: totalTax
+                                quantity: qnty
                             },
                             success: function(result) {
                                 Swal.fire({

@@ -63,7 +63,7 @@
                             #variables.productDetails.data.subcategoryName#
                         </a>
                         <i class="fa-solid fa-angle-right"></i>
-                        <div href="">#variables.productDetails.data.productName#</div>
+                        <span>#variables.productDetails.data.productName#</span>
                     </div>
                     <h4 class="productName">#variables.productDetails.data.productName#</h4>
                     <div class="brandName">#variables.productDetails.data.brandName#</div>

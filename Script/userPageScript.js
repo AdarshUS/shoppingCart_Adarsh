@@ -77,7 +77,7 @@ function isValidPhone(phone) {
 }
 
 
-function filterPrices(subcategoryId) {
+function filterPrices(subcategoryId,searchText) {
     let priceRange = document.querySelector('input[name="filterPrice"]:checked');
     let minPrice;
     let maxPrice;
@@ -104,12 +104,29 @@ function filterPrices(subcategoryId) {
         minPrice = priceRange.dataset.start;
         maxPrice = priceRange.dataset.end;
     }
+    if(searchText)
+    {
+        fetchProductsRemote("fetchProducts", {
+            searchText: searchText,
+            startPrice: minPrice,
+            endPrice: maxPrice
+        });
+    }
+    else
+    {
     fetchProductsRemote("fetchProducts", {
         subcategoryId: subcategoryId,
         startPrice: minPrice,
         endPrice: maxPrice
     });
+    }
 }
+
+document.getElementById("searchForm").addEventListener("submit", function(event) {
+    window.location.href = "subCategorylist.cfm?searchText=" + document.getElementById("searchInput").value;
+    event.preventDefault();
+    });
+
 
 async function fetchProductsRemote(methodName, parameters) {
     try {
@@ -170,19 +187,30 @@ async function fetchProductsRemote(methodName, parameters) {
             }
         }
     } catch (fetchError) {
-        alert("Error fetching products:", fetchError);
+        console.error(fetchError);
     }
 }
 
-async function loadMoreProducts(subcategoryId,sort)
+async function loadMoreProducts(subcategoryId,sort,searchText) 
 {
     startindex+=4;
-    fetchProductsRemote("fetchProducts", {
+    if(searchText)
+    {
+        fetchProductsRemote("fetchProducts", {
+            startindex: startindex,
+            searchText: searchText,
+            limit: 4
+        });
+    }
+    else
+    {
+        fetchProductsRemote("fetchProducts", {
         subcategoryId: subcategoryId,
         sort: sort,
         limit: 4,
         startindex: startindex
-    });
+        });
+    }
 }
 
 function logoutUser() {
@@ -466,21 +494,6 @@ function deleteAddress(addressId) {
     });
   }
 });
-    /* if (confirm("Are you sure you want to delete")) {
-        $.ajax({
-            url: 'components/User.cfc?method=deleteAddress',
-            type: 'POST',
-            data: {
-                addessId: addressId
-            },
-            success: function(result) {
-                document.getElementById(addressId).remove();
-            },
-            error: function() {
-                alert("failed")
-            }
-        });
-    } */
 }
 
 $(document).ready(function() {

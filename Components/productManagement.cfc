@@ -498,7 +498,7 @@
             "products": [],
             "message":""
          }>
-        <cftry>
+        <!--- <cftry> --->
             <cfquery name="local.fetchProducts" datasource="#application.datasource#">
                 SELECT
                     P.fldProduct_Id,
@@ -563,14 +563,14 @@
             </cfif>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
-        <cfcatch>
+       <!---  <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset sendErrorEmail(
             subject = "Error in function: fetchProducts "&cfcatch.message, 
             body = "#cfcatch#"
         )>
         </cfcatch>
-        </cftry>
+        </cftry> --->
         <cfreturn local.result>
     </cffunction>
 

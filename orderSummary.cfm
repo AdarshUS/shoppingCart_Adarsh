@@ -54,7 +54,7 @@
                         </p>
                         <div class="quantity">
                             <button>-</button>
-                            <input type="text" name="orderInput" id="orderInput" class="orderInput" value="#product.quantity#">
+                            <input type="text" name="orderInput" id="orderInput" class="orderInput" value="#product.quantity#" readonly>
                             <button>+</button>
                         </div>
                     </div>
@@ -87,7 +87,7 @@
                     <p class="payable">Payable amount: <i class="fa-solid fa-indian-rupee-sign"></i><span id="payableAmt">#variables.payableAmount#</span></p>
                     <div class="quantity">
                         <button onclick="decreaseQuantityOrder()" id="decreaseQntyBtnCart">-</button>
-                        <input type="text" name="" id="orderInput" class="orderInput" value="1">
+                        <input type="text" name="" id="orderInput" class="orderInput" value="1" readonly>
                         <button onclick="increaseQuantityOrder()">+</button>
                     </div>
                 </div>
@@ -124,7 +124,6 @@
                     <cfif structKeyExists(url,"type") AND url.type EQ "single">
                         <button class="cardButton cardproceedBtn" onclick="checkout('#url.addressId#',
                             '#url.productId#',
-                            #variables.payableAmount#,
                             #product.data.unitPrice#,
                             #product.data.unitTax#)"
                         >

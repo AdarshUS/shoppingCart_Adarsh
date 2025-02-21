@@ -165,17 +165,24 @@
     <cffunction name="addOrder" access="remote" returntype="void">
         <cfargument name="addressId" type="string" required="true">
         <cfargument name="cardnumber" type="string" required="true">
-        <cfargument name="totalPrice" type="integer" required="true">
-        <cfargument name="totalTax" type="integer" required="true">
         <cfargument name="productId" type="string" required="true">
-        <cfargument name="quantity" type="integer" required="true" >
-        <cfargument name="unitPrice" type="integer" required="true">
-        <cfargument name="unitTax" type="integer" required="true">
+        <cfargument name="quantity" type="integer" required="true">
         <cfset local.orderId = createUUID()>
         <cfset local.cardDigits = right(arguments.cardnumber,4)>
-        <cfset local.totalTax = Round((arguments.unitTax/100)*arguments.unitPrice*arguments.quantity)>
-        <cfset local.totalPrice = Round(arguments.unitPrice * arguments.quantity)>
         <cftry>
+            <cfquery name="getPriceDetails" datasource="#application.datasource#">
+                SELECT
+                    fldunitPrice,
+                    fldunitTax
+                FROM
+                    tblproduct
+                WHERE
+                    fldProduct_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#">
+            </cfquery>
+            <cfset local.unitPrice = getPriceDetails.fldunitPrice>
+            <cfset local.unitTax = getPriceDetails.fldunitTax>
+            <cfset local.totalPrice = getPriceDetails.fldunitPrice * arguments.quantity>
+            <cfset local.totalTax = arguments.quantity * (getPriceDetails.fldunitPrice * getPriceDetails.fldunitTax)/100>
             <cfquery datasource="#application.datasource#">
                 INSERT INTO  tblorder (
                     fldOrder_Id,
@@ -208,8 +215,8 @@
                     <cfqueryparam value="#local.orderId#" cfsqltype="varchar">,
                     <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">,
                     <cfqueryparam value="#arguments.quantity#" cfsqltype="integer">,
-                    <cfqueryparam value="#arguments.unitPrice#" cfsqltype="integer">,
-                    <cfqueryparam value="#arguments.unitTax#" cfsqltype="integer">
+                    <cfqueryparam value="#local.unitPrice#" cfsqltype="integer">,
+                    <cfqueryparam value="#local.unitTax#" cfsqltype="integer">
                 )
             </cfquery>
             <cfquery datasource="#application.datasource#">
