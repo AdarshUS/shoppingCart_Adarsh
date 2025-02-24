@@ -498,7 +498,7 @@
             "products": [],
             "message":""
          }>
-        <!--- <cftry> --->
+        <cftry>
             <cfquery name="local.fetchProducts" datasource="#application.datasource#">
                 SELECT
                     P.fldProduct_Id,
@@ -512,9 +512,9 @@
                     SC.fldSubCategoryName
                 FROM
                     tblproduct P
-                INNER JOIN tblbrand B ON P.fldBrandId = B.fldBrand_Id
-                INNER JOIN  tblsubcategory SC ON P.fldSubCategoryId = SC.fldSubCategory_Id
-                LEFT JOIN  tblproductimages PI ON PI.fldProductId = P.fldProduct_Id
+                    INNER JOIN tblbrand B ON P.fldBrandId = B.fldBrand_Id
+                    INNER JOIN  tblsubcategory SC ON P.fldSubCategoryId = SC.fldSubCategory_Id
+                    LEFT JOIN  tblproductimages PI ON PI.fldProductId = P.fldProduct_Id
                     AND PI.fldDefaultImage = 1
                 WHERE
                     P.fldActive = 1
@@ -563,14 +563,14 @@
             </cfif>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
-       <!---  <cfcatch>
+        <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset sendErrorEmail(
             subject = "Error in function: fetchProducts "&cfcatch.message, 
             body = "#cfcatch#"
         )>
         </cfcatch>
-        </cftry> --->
+        </cftry>
         <cfreturn local.result>
     </cffunction>
 
@@ -602,16 +602,16 @@
                     TP.fldSubCategoryId
                 FROM
                     tblproduct AS TP
-                INNER JOIN tblbrand AS TB ON TB.fldBrand_Id = TP.fldBrandId
-                INNER JOIN tblsubcategory AS SC ON SC.fldSubCategory_Id = TP.fldSubCategoryId
-                INNER JOIN tblcategory AS TC ON TC.fldCategory_Id = SC.fldCategoryId
-                LEFT JOIN tblProductImages AS TPI ON TP.fldProduct_Id = TPI.fldProductId
+                    INNER JOIN tblbrand AS TB ON TB.fldBrand_Id = TP.fldBrandId
+                    INNER JOIN tblsubcategory AS SC ON SC.fldSubCategory_Id = TP.fldSubCategoryId
+                    INNER JOIN tblcategory AS TC ON TC.fldCategory_Id = SC.fldCategoryId
+                    LEFT JOIN tblProductImages AS TPI ON TP.fldProduct_Id = TPI.fldProductId
                 WHERE
                     TP.fldProduct_Id = <cfqueryparam value="#local.decryptedProductId#" cfsqltype="integer">
                     AND TP.fldActive = 1
                     AND TPI.fldActive = 1
             </cfquery>
-    
+            
             <cfif local.fetchProduct.recordCount>
                 <cfloop query="local.fetchProduct">
                     <cfif local.fetchProduct.fldImageFilePath NEQ "">

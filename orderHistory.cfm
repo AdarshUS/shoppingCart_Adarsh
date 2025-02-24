@@ -1,3 +1,4 @@
+<cfparam name="url.page" default="1">
 <cfif structKeyExists(form,"submit")>
     <cflocation url="orderSearchResult.cfm?orderId=#form.orderId#" addtoken="no">
 </cfif>
@@ -23,7 +24,7 @@
             <button class="btn btn-outline-success" type="submit" name="submit">Search</button>
         </form>
     </div>
-    <cfset variables.orderHistory = application.objCart.getOrderedItems()>
+    <cfset variables.orderHistory = application.objCart.getOrderedItems(page = url.page)>
         <cfloop array = "#variables.orderHistory.orders#" item="order">
             <div class="order_container">
                 <div class="order-header">
@@ -64,24 +65,37 @@
             </div>
         </cfloop>
         <div class="d-flex justify-content-end p-3">
-            <nav>
-                <ul class="pagination">
+            <ul class="pagination">
+                <cfif url.page GT 1>
+                    <li class="page-item">
+                        <a class="page-link" href="orderHistory.cfm?page=#url.page-1#">Previous</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="orderHistory.cfm?page=#url.page-1#">#url.page-1#</a>
+                    </li>
+                <cfelse>
                     <li class="page-item disabled">
                         <span class="page-link">Previous</span>
                     </li>
-                    <li class="page-item"><a class="page-link" href="">1</a></li>
-                    <li class="page-item active">
-                        <span class="page-link">
-                            2
-                            <span class="sr-only">(current)</span>
-                        </span>
-                    </li>
-                    <li class="page-item"><a class="page-link" href="">3</a></li>
+                </cfif>
+                <li class="page-item active">
+                    <span class="page-link">
+                        <span class="">#url.page#</span>
+                    </span>
+                </li>
+                <cfif url.page LT 5>
                     <li class="page-item">
+                        <a class="page-link" href="orderHistory.cfm?page=#url.page+1#">#url.page+1#</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="orderHistory.cfm?page=#url.page+1#">Next</a>
+                    </li>
+                <cfelse>
+                     <li class="page-item disabled">
                         <a class="page-link" href="">Next</a>
                     </li>
-                </ul>
-            </nav>
+                </cfif>
+            </ul>
         </div>
     <script src="./Script/jquery-3.7.1.min.js"></script>
     <script src="./Script/orderSummary.js"></script>

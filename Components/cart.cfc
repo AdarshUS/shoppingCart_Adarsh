@@ -65,8 +65,8 @@
                     C.fldCart_Id
                 FROM
                     tblcart C 
-                INNER JOIN tblproduct P ON C.fldProductId = P.fldProduct_Id
-                LEFT JOIN tblproductimages PI ON P.fldProduct_Id = PI.fldProductId AND fldDefaultImage = 1
+                    INNER JOIN tblproduct P ON C.fldProductId = P.fldProduct_Id
+                    LEFT JOIN tblproductimages PI ON P.fldProduct_Id = PI.fldProductId AND fldDefaultImage = 1
                 WHERE 
                     fldUserId = <cfqueryparam value = #application.objUser.decryptId(session.loginuserId)# cfsqltype="integer">
             </cfquery>
@@ -121,23 +121,36 @@
         </cftry>
     </cffunction>
 
-    <cffunction name="deleteCart" access="remote" returntype="void">
+    <cffunction name="deleteCart" access="remote" returntype="numeric" returnformat="JSON">
         <cfargument name="cartId" required="false" type="string"> 
-        <cftry>
-            <cfquery datasource="#application.datasource#">
-                DELETE FROM tblcart
-                WHERE
-                fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
-                AND
-                fldCart_Id = <cfqueryparam value = "#application.objUser.decryptId(arguments.cartId)#" cfsqltype="integer">
-            </cfquery>
-        <cfcatch>
+        <!--- <cftry> --->
+            <cftransaction>
+                <cfquery datasource="#application.datasource#">
+                    DELETE FROM 
+                        tblcart
+                    WHERE
+                        fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
+                        AND fldCart_Id = <cfqueryparam value = "#application.objUser.decryptId(arguments.cartId)#" cfsqltype="integer">
+                </cfquery>
+
+                <cfquery name="local.remainingCartCount" datasource="#application.datasource#">
+                    SELECT 
+                        count(*) AS remainingcount
+                    FROM
+                        tblcart
+                    WHERE
+                        fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
+                        AND fldCart_Id = <cfqueryparam value = "#application.objUser.decryptId(arguments.cartId)#" cfsqltype="integer">
+                </cfquery>
+            </cftransaction>
+        <!--- <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
                 subject = "error in function: deleteCart",
                 body = "#cfcatch#"
             )>
         </cfcatch>
-        </cftry>
+        </cftry> --->
+        <cfreturn local.remainingCartCount.remainingcount>
     </cffunction>
 
     <cffunction name="getNumberOfCartItems" access="public" returntype="numeric">
@@ -292,12 +305,31 @@
 
     <cffunction name="getOrderedItems" access="public" returntype="struct">
         <cfargument name="orderId" type="string" required="false">
+        <cfargument name="page" type="integer" required="false">
+        <cfset local.startIndex = (arguments.page - 1) * 5>
         <cfset local.result = {
             "success": false,
             "orders": [],
             "message":""
          }>
+         <cfset local.orderSet = []>
         <cftry>
+            <cfquery name="local.getDistinctOrders" datasource="#application.datasource#">
+                SELECT
+                    fldOrder_Id
+                FROM
+                    tblorder
+                WHERE
+                    fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="varchar">
+                ORDER BY fldOrderDate DESC
+                Limit 5
+                <cfif structKeyExists(arguments,"page") AND arguments.page NEQ 0>
+                    OFFSET <cfqueryparam value="#local.startIndex#" cfsqltype="integer">;
+                </cfif>
+            </cfquery>
+            <cfloop query="local.getDistinctOrders">
+                <cfset arrayAppend(local.orderSet,local.getDistinctOrders.fldOrder_Id)>
+            </cfloop>
             <cfquery name="local.fetchOrderItems" datasource="#application.datasource#">
                 SELECT
 	                O.fldOrder_Id,
@@ -321,17 +353,20 @@
                     B.fldBrandName
                 FROM
                 	tblorder O
-                INNER JOIN tblorderitems OI ON OI.fldOrderId = O.fldOrder_Id
-                INNER JOIN tbladdress A ON A.fldAddress_Id = O.fldAddressId
-                INNER JOIN tblproduct P ON P.fldProduct_Id = OI.fldProductId
-                INNER JOIN tblbrand B ON B.fldBrand_Id = P.fldBrandId
-                LEFT JOIN tblproductimages PI ON PI.fldProductId = P.fldProduct_Id AND fldDefaultImage = 1
+                    INNER JOIN tblorderitems OI ON OI.fldOrderId = O.fldOrder_Id
+                    INNER JOIN tbladdress A ON A.fldAddress_Id = O.fldAddressId
+                    INNER JOIN tblproduct P ON P.fldProduct_Id = OI.fldProductId
+                    INNER JOIN tblbrand B ON B.fldBrand_Id = P.fldBrandId
+                    LEFT JOIN tblproductimages PI ON PI.fldProductId = P.fldProduct_Id AND fldDefaultImage = 1
                 WHERE
                     O.fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="varchar">
                 <cfif structKeyExists(arguments,"orderId") AND arguments.orderId NEQ 0>
-                    AND  O.fldOrder_Id LIKE <cfqueryparam value="%#arguments.orderId#%" cfsqltype="varchar">
+                    AND O.fldOrder_Id = <cfqueryparam value="#arguments.orderId#" cfsqltype="varchar">
                 </cfif>
-                ORDER BY O.fldOrderDate DESC
+                <cfif structKeyExists(arguments,"page")>
+                    AND O.fldOrder_Id IN (<cfqueryparam value='#arrayToList(local.orderSet)#' list="true">)
+                </cfif>
+                    ORDER BY O.fldOrderDate DESC
             </cfquery>
             <cfset local.orderItem = {}>
             <cfset local.orderIds = []>

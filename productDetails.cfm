@@ -1,4 +1,3 @@
-<cfset variables.categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfset variables.productDetails = application.objProductManagement.getProductDetails(productId = url.productId)>
 <cfset addresses = {}>
 <cfif structKeyExists(session, "loginuserId")>

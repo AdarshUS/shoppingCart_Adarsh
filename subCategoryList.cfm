@@ -7,6 +7,9 @@
 <cfif structKeyExists(url,"searchText")>
     <cfset variables.message = "Search Results for ""#url.searchText#""">
     <cfset searchText = url.searchText>
+    <cfif searchText EQ "">
+        <cflocation url="homePage.cfm" addtoken="no">
+    </cfif>
     <cfset variables.productDetails = application.objProductManagement.fetchProducts(
         searchText = url.searchText,
         startIndex = startIndex,

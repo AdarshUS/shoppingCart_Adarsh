@@ -63,7 +63,7 @@
                                 <td>
                                     <div class="quantity-controls">
                                        <button onclick="decreaseQuantity('#product.cartId#','decrement')" id="decreaseQntyBtn">-</button>
-                                       <input type="text" value="#product.quantity#" id="qntyNo#product.cartId#" class="qntyNo">
+                                       <input type="text" value="#product.quantity#" id="qntyNo#product.cartId#" class="qntyNo" readonly>
                                        <button onclick="increaseQuantity('#product.cartId#','increment')">+</button>
                                     </div>
                                 </td>

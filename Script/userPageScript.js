@@ -344,9 +344,14 @@ function deleteCartItem(cartId) {
             data: {
                 cartId: cartId
             },
-            success: function(result) {
+            success: function(response) {
                 document.getElementById(cartId).remove();
                 document.getElementById("itemcount").innerHTML = parseInt( document.getElementById("itemcount").innerHTML) - 1;
+                let remainingCount = JSON.parse(response);
+                if(remainingCount === 0)
+                {
+                    location.reload();
+                }
                 calculateTotalPrice();
             },
             error: function() {
