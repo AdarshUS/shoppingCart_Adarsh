@@ -170,62 +170,64 @@
         <cfset local.orderId = createUUID()>
         <cfset local.cardDigits = right(arguments.cardnumber,4)>
         <cftry>
-            <cfquery name="getPriceDetails" datasource="#application.datasource#">
-                SELECT
-                    fldunitPrice,
-                    fldunitTax
-                FROM
-                    tblproduct
-                WHERE
-                    fldProduct_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#">
-            </cfquery>
-            <cfset local.unitPrice = getPriceDetails.fldunitPrice>
-            <cfset local.unitTax = getPriceDetails.fldunitTax>
-            <cfset local.totalPrice = getPriceDetails.fldunitPrice * arguments.quantity>
-            <cfset local.totalTax = arguments.quantity * (getPriceDetails.fldunitPrice * getPriceDetails.fldunitTax)/100>
-            <cfquery datasource="#application.datasource#">
-                INSERT INTO  tblorder (
-                    fldOrder_Id,
-                    fldUserId,
-                    fldAddressId,
-                    fldCardNumber,
-                    fldTotalPrice,
-                    fldTotalTax,
-                    fldOrderDate
-                )
-                VALUES(
-                    <cfqueryparam value="#local.orderId#" cfsqltype="varchar">,
-                    <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">,
-                    <cfqueryparam value="#application.objUser.decryptId(arguments.addressId)#" cfsqltype="integer">,
-                    <cfqueryparam value="#local.cardDigits#" cfsqltype="varchar">,
-                    <cfqueryparam value="#local.totalPrice#" cfsqltype="integer">,
-                    <cfqueryparam value="#local.totalTax#" cfsqltype="integer">,
-                    now()
-                )
-            </cfquery>
-            <cfquery datasource="#application.datasource#">
-                INSERT INTO tblorderitems (
-                    fldOrderId,
-                    fldProductId,
-                    fldQuantity,
-                    fldUnitPrice,
-                    fldUnitTax
-                )
-                VALUES (
-                    <cfqueryparam value="#local.orderId#" cfsqltype="varchar">,
-                    <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">,
-                    <cfqueryparam value="#arguments.quantity#" cfsqltype="integer">,
-                    <cfqueryparam value="#local.unitPrice#" cfsqltype="integer">,
-                    <cfqueryparam value="#local.unitTax#" cfsqltype="integer">
-                )
-            </cfquery>
-            <cfquery datasource="#application.datasource#">
-                DELETE 
-                FROM
-                    tblcart
-                WHERE
-                    fldProductId = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#">
-            </cfquery>
+            <cftransaction>
+                <cfquery name="getPriceDetails" datasource="#application.datasource#">
+                    SELECT
+                        fldunitPrice,
+                        fldunitTax
+                    FROM
+                        tblproduct
+                    WHERE
+                        fldProduct_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#">
+                </cfquery>
+                <cfset local.unitPrice = getPriceDetails.fldunitPrice>
+                <cfset local.unitTax = getPriceDetails.fldunitTax>
+                <cfset local.totalPrice = getPriceDetails.fldunitPrice * arguments.quantity>
+                <cfset local.totalTax = arguments.quantity * (getPriceDetails.fldunitPrice * getPriceDetails.fldunitTax)/100>
+                <cfquery datasource="#application.datasource#">
+                    INSERT INTO  tblorder (
+                        fldOrder_Id,
+                        fldUserId,
+                        fldAddressId,
+                        fldCardNumber,
+                        fldTotalPrice,
+                        fldTotalTax,
+                        fldOrderDate
+                    )
+                    VALUES(
+                        <cfqueryparam value="#local.orderId#" cfsqltype="varchar">,
+                        <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">,
+                        <cfqueryparam value="#application.objUser.decryptId(arguments.addressId)#" cfsqltype="integer">,
+                        <cfqueryparam value="#local.cardDigits#" cfsqltype="varchar">,
+                        <cfqueryparam value="#local.totalPrice#" cfsqltype="integer">,
+                        <cfqueryparam value="#local.totalTax#" cfsqltype="integer">,
+                        now()
+                    )
+                </cfquery>
+                <cfquery datasource="#application.datasource#">
+                    INSERT INTO tblorderitems (
+                        fldOrderId,
+                        fldProductId,
+                        fldQuantity,
+                        fldUnitPrice,
+                        fldUnitTax
+                    )
+                    VALUES (
+                        <cfqueryparam value="#local.orderId#" cfsqltype="varchar">,
+                        <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">,
+                        <cfqueryparam value="#arguments.quantity#" cfsqltype="integer">,
+                        <cfqueryparam value="#local.unitPrice#" cfsqltype="integer">,
+                        <cfqueryparam value="#local.unitTax#" cfsqltype="integer">
+                    )
+                </cfquery>
+                <cfquery datasource="#application.datasource#">
+                    DELETE 
+                    FROM
+                        tblcart
+                    WHERE
+                        fldProductId = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#">
+                </cfquery>
+            </cftransaction>
             <cfset sendOrderConfirmationMail(local.orderId)>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
@@ -332,10 +334,12 @@
                 ORDER BY O.fldOrderDate DESC
             </cfquery>
             <cfset local.orderItem = {}>
+            <cfset local.orderIds = []>
             <cfif local.fetchOrderItems.recordCount>
                 <cfloop query="local.fetchOrderItems">
                     <cfset local.currentOrderId = local.fetchOrderItems.fldOrder_Id>
                     <cfif NOT structKeyExists(local.orderItem,local.currentOrderId)>
+                        <cfset arrayAppend(local.orderIds,local.currentOrderId)>
                         <cfset local.orderItem[local.currentOrderId] = {
                             "orderId": local.fetchOrderItems.fldOrder_Id,
                             "orderDate": dateTimeFormat(local.fetchOrderItems.fldOrderDate.toString()),
@@ -361,7 +365,7 @@
                         "unittax": local.fetchOrderItems.fldunitTax
                     })>
                 </cfloop>
-                <cfloop collection="#local.orderItem#" item="key">
+                <cfloop  array="#local.orderIds#" item="key">
                     <cfset arrayAppend(local.result.orders, local.orderItem[key])>
                 </cfloop>
             </cfif>

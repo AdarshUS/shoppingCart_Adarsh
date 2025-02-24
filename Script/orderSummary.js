@@ -101,6 +101,10 @@ function checkout(addressId, productId) {
                             }
                         });
                     } else {
+                        if (isNaN(qnty) || qnty <= 0)
+                        {
+                            alert("invalid qnty");
+                        }
                         $.ajax({
                             url: 'components/cart.cfc?method=addOrder',
                             type: 'POST',
