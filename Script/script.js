@@ -1,4 +1,4 @@
-function validate() {
+function validateAdminLogin() {
     let validInput = true;
     let username = document.getElementById("userName").value;
     let passsword = document.getElementById("password").value;

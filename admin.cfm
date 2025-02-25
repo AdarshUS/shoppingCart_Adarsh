@@ -24,7 +24,7 @@
     </header>
     <main>
         <div class="loginContainer">
-            <form method="POST" onsubmit="return validate()">
+            <form method="POST" onsubmit="return validateAdminLogin()">
                 <div class="loginContainer-heading">LOGIN</div>
                 <div class="userName inputArea">
                     <input type="text" id="userName" name="userName" placeholder="Username">
