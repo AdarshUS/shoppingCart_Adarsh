@@ -440,7 +440,7 @@
         <cfcatch>
             <cfset local.result.message = "some error occured">
             <cfset sendErrorEmail(
-                subject = "Error in function: addProduct "&cfcatch.message, 
+                subject = "Error in function: addProduct "&cfcatch.message,
                 body = "#cfcatch#"
             )>
         </cfcatch>

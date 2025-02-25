@@ -38,6 +38,7 @@
                             <cfset session.loginuserfirstName = local.getUserDetails.fldFirstName>
                             <cfset session.loginuserlastName = local.getUserDetails.fldLastName>
                             <cfset session.loginuserMail = local.getUserDetails.fldEmail>
+                            <cfset session.cartItemCount = application.objCart.getNumberOfCartItems()>
                         </cfif>
                     <cfelse>
                         <cfset local.result.message = "Invalid password.">

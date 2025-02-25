@@ -27,7 +27,7 @@
             <a class="cartContainer" href="cart.cfm?redirect=cartpage">
                 <i class="fa-solid fa-cart-shopping">
                     <cfif structKeyExists(session,"loginuserId")>
-                        <cfset numberOfCartItems = application.objCart.getNumberOfCartItems()>
+                        <cfset numberOfCartItems = session.cartItemCount>
                         <div class="itemcount" id="itemcount">
                             #numberOfCartItems#
                         </div>

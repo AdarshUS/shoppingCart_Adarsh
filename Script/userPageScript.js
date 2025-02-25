@@ -248,8 +248,9 @@ function logoutUser() {
                 let result = JSON.parse(response);
                 if(result.message === "quantity Added")
                 {
-                    if(document.getElementById("itemcount").innerHTML === "")
+                    if(document.getElementById("itemcount").innerHTML == 0)
                     {
+                        document.getElementById("itemcount").style.display="flex";
                         document.getElementById("itemcount").innerHTML = 1;
                     }
                     else
@@ -344,6 +345,11 @@ $(document).ready(function() {
     {
         checkQnty();
         calculateTotalPrice();
+    }
+    let cartItemCount = Number(document.getElementById("itemcount").innerHTML);
+    if(cartItemCount<=0)
+    {
+        document.getElementById("itemcount").style.display="none";
     }
 });
 
@@ -614,7 +620,7 @@ function validateProfile()
         phoneError.innerHTML = "Phone cannot be empty";
         isValid = false;
     }
-    else if(!phone.length == 10)
+    else if(phone.length != 10)
     {
         phoneError.innerHTML = "Invalid Phone";
         isValid = false;

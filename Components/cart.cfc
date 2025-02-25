@@ -34,6 +34,7 @@
                     )
                 </cfquery>
                 <cfset local.result.message = "quantity Added">
+                <cfset session.cartItemCount+=1>
             </cfif>
             <cfset local.result.success = true>
         <cfcatch>
@@ -141,6 +142,7 @@
                     WHERE
                         fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
                 </cfquery>
+                <cfset session.cartItemCount-=1>
             </cftransaction>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
