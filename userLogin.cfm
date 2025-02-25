@@ -56,9 +56,7 @@
                     <cfelseif url.redirect EQ "cartpage">
                         <cflocation url="cart.cfm" addToken="no">
                     <cfelseif url.redirect EQ "product" AND structKeyExists(url, "productId")>
-                        <cflocation url="productDetails.cfm?productId=#url.productId#" addtoken="no">
-                    <cfelse>
-                        <cflocation url="homePage.cfm" addtoken="no">
+                        <cflocation url="productDetails.cfm?productId=#urlEncodedFormat(url.productId)#" addtoken="no">
                     </cfif>
                 <cfelse>
                     <cflocation url="homePage.cfm" addtoken="no">

@@ -214,7 +214,17 @@ async function loadMoreProducts(subcategoryId,sort,searchText)
 }
 
 function logoutUser() {
-    if (confirm("Are you sure you want to Logout")) {
+
+    Swal.fire({
+        title: "Are you sure you want to logout?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "logout"
+    }).then((result) => {
+  if (result.isConfirmed) {
+    
         $.ajax({
             url: 'components/User.cfc?method=logoutUser',
             type: 'POST',
@@ -225,7 +235,8 @@ function logoutUser() {
                 alert("Error in LogOut");
             }
         });
-    }
+  }
+})
 }
 
  function handleCartAction(productId) {
@@ -337,7 +348,15 @@ $(document).ready(function() {
 });
 
 function deleteCartItem(cartId) {
-    if (confirm("Are you sure you want to delete")) {
+    Swal.fire({
+        title: "Are you sure you want to remove from cart?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "remove"
+    }).then((result) => {
+  if (result.isConfirmed) {
         $.ajax({
             url: 'components/cart.cfc?method=deleteCart',
             type: 'POST',
@@ -359,6 +378,7 @@ function deleteCartItem(cartId) {
             }
         });
     }
+    });
 }
 
 function togglePassword() {

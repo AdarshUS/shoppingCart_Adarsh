@@ -2,9 +2,10 @@
     <cfif structKeyExists(url,"redirect")>
         <cflocation url="userLogin.cfm?redirect=cartpage" addtoken="no">
     </cfif>
+<cfelse>
+    <cfset variables.addresses = application.objUser.fetchAddress()>
+    <cfset variables.cart = application.objCart.fetchCart()>
 </cfif>
-<cfset variables.addresses = application.objUser.fetchAddress()>
-<cfset variables.cart = application.objCart.fetchCart()>
 <!DOCTYPE html>
 <cfoutput>
 <html lang="en">
@@ -20,7 +21,9 @@
         <cfinclude template = "header.cfm">
         <h1 class="cart_heading">Your Cart</h1>
         <cfif arrayIsEmpty(variables.cart.data)>
-            <h1>Your Cart is Empty</h1>
+            <div class="d-flex justify-content-center">
+                <img src="./Assets/Images/emptyCart.png" alt="emptycart">
+            </div>
         <cfelse>
             <div class="cartBox">
             <div class="cart-container">
@@ -43,7 +46,6 @@
                                         alt="Analog Magazine Rack"
                                     >
                                    <a href="productDetails.cfm?productId=#product.productId#" class="productLink">#product.productName#</a><br>
-                                   <small></small>
                                 </td>
                                 <td class="cartProductPrice">
                                     <div>
@@ -145,6 +147,7 @@
         <cfinclude template="addAdress.cfm">
         <script src="./Script/jquery-3.7.1.min.js"></script>
         <script src="./Script/bootstrapScript.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="./Script/userPageScript.js"></script>
     </body>
 </html>

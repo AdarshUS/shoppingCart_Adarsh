@@ -66,7 +66,7 @@
                 FROM
                     tblcart C 
                     INNER JOIN tblproduct P ON C.fldProductId = P.fldProduct_Id
-                    LEFT JOIN tblproductimages PI ON P.fldProduct_Id = PI.fldProductId AND fldDefaultImage = 1
+                    INNER JOIN tblproductimages PI ON P.fldProduct_Id = PI.fldProductId AND fldDefaultImage = 1
                 WHERE 
                     fldUserId = <cfqueryparam value = #application.objUser.decryptId(session.loginuserId)# cfsqltype="integer">
             </cfquery>
@@ -105,11 +105,11 @@
                     tblcart
                 SET 
                     fldQuantity = 
-                CASE 
-                    WHEN <cfqueryparam value="#arguments.step#" cfsqltype="varchar"> = 'increment' THEN fldQuantity + 1
-                    WHEN fldQuantity > 1 THEN fldQuantity - 1
-                    ELSE fldQuantity
-                END
+                        CASE 
+                            WHEN <cfqueryparam value="#arguments.step#" cfsqltype="varchar"> = 'increment' THEN fldQuantity + 1
+                            WHEN fldQuantity > 1 THEN fldQuantity - 1
+                            ELSE fldQuantity
+                        END
                 WHERE fldCart_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.cartId)#" cfsqltype="integer">
             </cfquery>
         <cfcatch>
@@ -123,7 +123,7 @@
 
     <cffunction name="deleteCart" access="remote" returntype="numeric" returnformat="JSON">
         <cfargument name="cartId" required="false" type="string"> 
-        <!--- <cftry> --->
+        <cftry>
             <cftransaction>
                 <cfquery datasource="#application.datasource#">
                     DELETE FROM 
@@ -135,22 +135,21 @@
 
                 <cfquery name="local.remainingCartCount" datasource="#application.datasource#">
                     SELECT 
-                        count(*) AS remainingcount
+                        count(*) AS remainingCount
                     FROM
                         tblcart
                     WHERE
                         fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
-                        AND fldCart_Id = <cfqueryparam value = "#application.objUser.decryptId(arguments.cartId)#" cfsqltype="integer">
                 </cfquery>
             </cftransaction>
-        <!--- <cfcatch>
+        <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
                 subject = "error in function: deleteCart",
                 body = "#cfcatch#"
             )>
         </cfcatch>
-        </cftry> --->
-        <cfreturn local.remainingCartCount.remainingcount>
+        </cftry>
+        <cfreturn local.remainingCartCount.remainingCount>
     </cffunction>
 
     <cffunction name="getNumberOfCartItems" access="public" returntype="numeric">
@@ -306,7 +305,9 @@
     <cffunction name="getOrderedItems" access="public" returntype="struct">
         <cfargument name="orderId" type="string" required="false">
         <cfargument name="page" type="integer" required="false">
-        <cfset local.startIndex = (arguments.page - 1) * 5>
+        <cfif structKeyExists(arguments,"page")>
+             <cfset local.startIndex = (arguments.page - 1) * 5>
+        </cfif>
         <cfset local.result = {
             "success": false,
             "orders": [],
@@ -357,11 +358,11 @@
                     INNER JOIN tbladdress A ON A.fldAddress_Id = O.fldAddressId
                     INNER JOIN tblproduct P ON P.fldProduct_Id = OI.fldProductId
                     INNER JOIN tblbrand B ON B.fldBrand_Id = P.fldBrandId
-                    LEFT JOIN tblproductimages PI ON PI.fldProductId = P.fldProduct_Id AND fldDefaultImage = 1
+                    INNER JOIN tblproductimages PI ON PI.fldProductId = P.fldProduct_Id AND fldDefaultImage = 1
                 WHERE
                     O.fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="varchar">
-                <cfif structKeyExists(arguments,"orderId") AND arguments.orderId NEQ 0>
-                    AND O.fldOrder_Id = <cfqueryparam value="#arguments.orderId#" cfsqltype="varchar">
+                <cfif structKeyExists(arguments,"orderId")>
+                    AND O.fldOrder_Id LIKE <cfqueryparam value="%#arguments.orderId#%" cfsqltype="varchar">
                 </cfif>
                 <cfif structKeyExists(arguments,"page")>
                     AND O.fldOrder_Id IN (<cfqueryparam value='#arrayToList(local.orderSet)#' list="true">)

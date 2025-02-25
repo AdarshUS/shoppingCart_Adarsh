@@ -12,24 +12,25 @@
         <cfinclude template="header.cfm">
         <cfinclude template="navbar.cfm">
         <div class="SliderContainer">
-        <div id="carouselExampleControlsNoTouching" class="carousel slide" data-bs-touch="false">
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img src="./Assets/Images/sliderimage4.png" class="d-block w-100" alt="...">
+            <div id="carouselExampleControlsNoTouching" class="carousel slide" data-bs-touch="false" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img src="./Assets/Images/sliderimage4.png" class="d-block w-100" alt="...">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="./Assets/Images/sliderimage1.png" class="d-block w-100" alt="...">
+                    </div>
+                    <div class="carousel-item">
+                        <img src="./Assets/Images/sliderimage2.png" class="d-block w-100" alt="...">
+                    </div>
                 </div>
-                <div class="carousel-item">
-                    <img src="./Assets/Images/sliderimage1.png" class="d-block w-100" alt="...">
-                </div>
-                <div class="carousel-item">
-                    <img src="./Assets/Images/sliderimage2.png" class="d-block w-100" alt="...">
-                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="##carouselExampleControlsNoTouching" data-bs-slide="prev">
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="##carouselExampleControlsNoTouching" data-bs-slide="next">
+                </button>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="##carouselExampleControlsNoTouching" data-bs-slide="prev">
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="##carouselExampleControlsNoTouching" data-bs-slide="next">
-            </button>
         </div>
-        <h5 class="productText">Products</h5>
+        <h5 class="productText">Popular Products</h5>
         <div class="randomProducts d-flex flex-wrap">
             <cfloop array = "#variables.randomProducts.products#" item = product>
                 <a class="productBox" href="productDetails.cfm?productId=#URLEncodedFormat(product.productId)#">
@@ -49,6 +50,7 @@
     </body>
     <script src="./Script/jquery-3.7.1.min.js"></script>
     <script src="./Script/bootstrapScript.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="./Script/userPageScript.js"></script>
 </html>
 </cfoutput>

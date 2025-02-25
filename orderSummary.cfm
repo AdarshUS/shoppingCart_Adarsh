@@ -20,8 +20,8 @@
     <div class="order-summary">
         <h2>ORDER SUMMARY</h2>
         <div class="address">
-            <span class="firstName">#session.loginuserfirstName#</span>
-            <span class="lastName">#session.loginuserlastName#</span>
+            <span class="firstName">#variables.selectedAddress.Address[1].firstName#</span>
+            <span class="lastName">#variables.selectedAddress.Address[1].lastName#</span>
             <span class="phone">#variables.selectedAddress.Address[1].phone#</span>
             <div class="addressLine1">#variables.selectedAddress.Address[1].addressline1#</div>
             <div class="addressLine2">#variables.selectedAddress.Address[1].addressline2#</div>
@@ -35,30 +35,28 @@
             <cfset variables.cartItems = application.objCart.fetchCart()>
             <cfset variables.cancelOrderPath = "cart.cfm">
             <cfloop array="#variables.cartItems.data#" item="product">
-            <cfset variables.payableAmount = 0>
-                <div class="product">
-                    <img 
-                        src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" 
-                        alt="productImage"
-                    >
-                    <div class="details">
-                        <cfset variables.payableAmount = (product.unitPrice + (product.unitPrice * product.unitTax / 100) )* product.quantity>
-                        <cfset variables.totalPrice += product.unitPrice * product.quantity>
-                        <cfset variables.totalTax += (product.unitPrice * product.unitTax / 100) * product.quantity>
-                        <p><strong>#product.productName#</strong></p>
-                        <p class="price">Actual Price: <i class="fa-solid fa-indian-rupee-sign"></i>#product.unitPrice#</p>
-                        <p>Tax: #product.unitTax#%</p>
-                        <p class="payable">
-                            Payable amount: <i class="fa-solid fa-indian-rupee-sign"></i>
-                            <span id="payableAmt">#variables.payableAmount#</span>
-                        </p>
-                        <div class="quantity">
-                            <button>-</button>
-                            <input type="text" name="orderInput" id="orderInput" class="orderInput" value="#product.quantity#" readonly>
-                            <button>+</button>
+                <cfset variables.payableAmount = 0>
+                    <div class="product">
+                        <img 
+                            src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" 
+                            alt="productImage"
+                        >
+                        <div class="details">
+                            <cfset variables.payableAmount = (product.unitPrice + (product.unitPrice * product.unitTax / 100) )* product.quantity>
+                            <cfset variables.totalPrice += product.unitPrice * product.quantity>
+                            <cfset variables.totalTax += (product.unitPrice * product.unitTax / 100) * product.quantity>
+                            <p><strong>#product.productName#</strong></p>
+                            <p class="price">Actual Price: <i class="fa-solid fa-indian-rupee-sign"></i>#product.unitPrice#</p>
+                            <p>Tax: #product.unitTax#%</p>
+                            <p class="payable">
+                                Payable amount: <i class="fa-solid fa-indian-rupee-sign"></i>
+                                <span id="payableAmt">#variables.payableAmount#</span>
+                            </p>
+                            <div class="quantity">
+                                <span>Quantity:</span><input type="text" name="orderInput" id="orderInput" class="orderInput m-3" value="#product.quantity#" readonly>
+                            </div>
                         </div>
                     </div>
-                </div>
             </cfloop>
             <div class="totals">
                 <p class="totlPrice"><strong>Total Price: </strong><i class="fa-solid fa-indian-rupee-sign"></i> #variables.totalPrice#</p>
@@ -73,7 +71,7 @@
             <cfset variables.payableAmount = 0>
             <cfset variables.product = application.objProductManagement.getProductDetails(url.productId)>
             <cfset variables.payableAmount = variables.product.data.unitPrice + 
-                                            ( variables.product.data.unitPrice * variables.product.data.unitTax / 100)
+                ( variables.product.data.unitPrice * variables.product.data.unitTax / 100)
             >
             <cfset variables.cancelOrderPath = "productDetails.cfm?productId=#urlEncodedFormat(variables.product.data.productId)#">
             <div class="product">

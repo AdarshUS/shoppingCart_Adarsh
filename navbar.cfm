@@ -9,7 +9,7 @@
             </a>
             <ul class="dropdown-menu">
                 <cfloop array = #subcategoriesResultNav.subcategory# item = "subcategory">
-                    <cfif category.categoryId EQ subcategory.categoryId>
+                    <cfif subcategory.categoryId EQ category.categoryId>
                         <li>
                             <a 
                                 class="dropdown-item" 
