@@ -54,6 +54,7 @@
     </main>
     <script src="./Script/jquery-3.7.1.min.js"></script>
     <script src="./Script/script.js"></script>
+    <script src="./Script/validation.js"></script>
 </body>
 </html>
 </cfoutput>

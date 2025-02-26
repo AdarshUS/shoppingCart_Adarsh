@@ -78,19 +78,18 @@
         <div class="alert alert-danger m-3 subcategoryMsg">#variables.message#</div>
     </cfif>
     </main>
-    <div class="modal fade" id="subCategoryModal" tabindex="-1" aria-labelledby="subCategoryModalLabel" aria-hidden="true">
+    <div class="modal fade" id="subCategoryModal" tabindex="-1" aria-labelledby="subCategoryModalLabel" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="subCategoryModalLabel">Add Subcategory</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="resetSubcategoryError()"></button>
                 </div>
                 <form method="POST" onsubmit="return validateSubCategory()">
                     <div class="modal-body">
                         <div class="mb-3">
                             <label for="categoryNameSelect" class="form-label">Select Category Name</label>
                             <select class="form-control" id="categoryNameSelect" name = "selectCategory">
-                                <option value="0">--</option>
                                 <cfloop array ="#variables.categoriesResult.categories#" item = category>
                                    <option value="#category.categoryId#"
                                         <cfif category.categoryId EQ url.categoryId>
@@ -109,7 +108,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="resetSubcategoryError()">Close</button>
                         <button type="submit" class="btn btn-primary insertSubCategoryBtn" name="submit">Save changes</button>
                     </div>
                 </form>
@@ -119,6 +118,7 @@
     <script src="./Script/bootstrapScript.js"></script>
     <script src="./Script/jquery-3.7.1.min.js"></script>
     <script src="./Script/script.js"></script>
+     <script src="./Script/validation.js"></script>
 </body>
 </html>
 </cfoutput>

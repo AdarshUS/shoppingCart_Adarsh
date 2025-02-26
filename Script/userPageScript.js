@@ -1,82 +1,4 @@
 let startindex = 0;
-function validateUserDetails() {
-    let validDetails = true;
-    const firstName = document.getElementById("firstName").value;
-    const lastName = document.getElementById("lastName").value;
-    const userEmail = document.getElementById("userEmail").value;
-    const userPhone = document.getElementById("userPhone").value;
-    const userPassword = document.getElementById("userPassword").value;
-
-    document.getElementById("firstNameError").innerHTML = "";
-    document.getElementById("lastNameError").innerHTML = "";
-    document.getElementById("userEmailError").innerHTML = "";
-    document.getElementById("userPhoneError").innerHTML = "";
-    document.getElementById("userPasswordError").innerHTML = "";
-
-    if (firstName.trim() === "") {
-        document.getElementById("firstNameError").innerHTML = "Enter the FirstName";
-        validDetails = false;
-    }
-
-    if (lastName.trim() === "") {
-        document.getElementById("lastNameError").innerHTML = "Enter the LastName";
-        validDetails = false;
-    }
-
-    if (userEmail.trim() === "" || !(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(userEmail))) {
-        document.getElementById("userEmailError").innerHTML = "Please enter a valid email address";
-        validDetails = false;
-    }
-
-    if (userPhone.trim() === "" || !(userPhone.length == 10)) {
-        document.getElementById("userPhoneError").innerHTML = "Please enter a valid 10-digit phone number";
-        validDetails = false;
-    }
-
-    if (userPassword.trim() === "" || userPassword.search(/[a-z]/i) < 0 || userPassword.search(/[0-9]/) < 0 || userPassword.length < 6) {
-        document.getElementById("userPasswordError").innerHTML = "Password must be at least 6 characters long & should contain 1 letter and digit";
-        validDetails = false;
-    }
-
-    return validDetails;
-}
-
-function validateUserLogin() {
-    let validUserInput = true;
-    const userName = document.getElementById("userName").value.trim();
-    const password = document.getElementById("userPassword").value.trim();
-
-    document.getElementById("userNameError").innerHTML = "";
-    document.getElementById("userPasswordError").innerHTML = "";
-
-    if (userName === "") {
-        document.getElementById("userNameError").innerHTML = "Enter the UserName";
-        validUserInput = false;
-    } else if (
-        !isValidEmail(userName) && !isValidPhone(userName)
-    ) {
-        document.getElementById("userNameError").innerHTML = "UserName must be a valid email or phone number";
-        validUserInput = false;
-    }
-
-    if (password === "") {
-        document.getElementById("userPasswordError").innerHTML = "Enter the Password";
-        validUserInput = false;
-    }
-    return validUserInput;
-}
-
-function isValidEmail(email) {
-    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    return emailRegex.test(email);
-}
-
-function isValidPhone(phone) {
-    const phoneRegex = /^[0-9]{10}$/;
-    return phoneRegex.test(phone);
-}
-
-
 function filterPrices(subcategoryId,searchText) {
     let priceRange = document.querySelector('input[name="filterPrice"]:checked');
     let minPrice;
@@ -138,7 +60,7 @@ async function fetchProductsRemote(methodName, parameters) {
         const parsedResult = JSON.parse(result);
         const products = parsedResult.products;
         const productContainer = document.getElementById("productContainer");
-        if(products.length === 0)
+        if(products.length < 4)
         {
             document.getElementById("viewMoreBtn").style.display = "none";
         }
@@ -191,7 +113,7 @@ async function fetchProductsRemote(methodName, parameters) {
     }
 }
 
-async function loadMoreProducts(subcategoryId,sort,searchText) 
+   function loadMoreProducts(subcategoryId,sort,searchText) 
 {
     startindex+=4;
     if(searchText)
@@ -199,6 +121,7 @@ async function loadMoreProducts(subcategoryId,sort,searchText)
         fetchProductsRemote("fetchProducts", {
             startindex: startindex,
             searchText: searchText,
+             sort: sort,
             limit: 4
         });
     }
@@ -346,10 +269,12 @@ $(document).ready(function() {
         checkQnty();
         calculateTotalPrice();
     }
-    let cartItemCount = Number(document.getElementById("itemcount").innerHTML);
-    if(cartItemCount<=0)
-    {
-        document.getElementById("itemcount").style.display="none";
+    let itemCountElement = document.getElementById("itemcount");
+    if (itemCountElement) {
+        let cartItemCount = parseInt(itemCountElement.innerHTML, 10) || 0;
+        if (cartItemCount <= 0) {
+            itemCountElement.style.display = "none";
+        }
     }
 });
 
@@ -430,61 +355,6 @@ function calculateTotalPrice() {
     document.getElementById("subtotal").innerHTML = totalPrice.toFixed(2);
 }
 
-
-function validateAddress() {
-    let validAddress = true;
-    const firstName = document.getElementById("firstName").value;
-    const phone = document.getElementById("phone").value;
-    const address1 = document.getElementById("address1").value;
-    const city = document.getElementById("city").value;
-    const state = document.getElementById("state").value;
-    const pincode = document.getElementById("pincode").value;
-
-    document.getElementById("firstNameError").innerHTML = "";
-    document.getElementById("phoneError").innerHTML = "";
-    document.getElementById("address1Error").innerHTML = "";
-    document.getElementById("cityError").innerHTML = "";
-    document.getElementById("stateError").innerHTML = "";
-    document.getElementById("pincodeError").innerHTML = "";
-
-    if (firstName.trim() === "") {
-        document.getElementById("firstNameError").innerHTML = "firstName cannot be empty";
-        validAddress = false;
-    }
-
-    if (phone.trim() === "") {
-        document.getElementById("phoneError").innerHTML = "phone cannot be empty";
-        validAddress = false;
-    } else if (!/^[0-9]{10}$/.test(phone)) {
-        document.getElementById("phoneError").innerHTML = "Enter valid phoneNumber";
-        validAddress = false;
-    }
-
-    if (address1.trim() === "") {
-        document.getElementById("address1Error").innerHTML = "address cannot be empty";
-        validAddress = false;
-    }
-
-    if (city.trim() === "") {
-        document.getElementById("cityError").innerHTML = "city cannot be empty";
-        validAddress = false;
-    }
-
-    if (state.trim() === "") {
-        document.getElementById("stateError").innerHTML = "state cannot be empty";
-        validAddress = false;
-    }
-
-    if (pincode.trim() === "") {
-        document.getElementById("pincodeError").innerHTML = "pincode cannot be empty";
-        validAddress = false;
-    } else if (!/^[0-9]{6}$/.test(pincode)) {
-        document.getElementById("pincodeError").innerHTML = "Enter a valid pincode";
-        validAddress = false;
-    }
-    return validAddress;
-}
-
 function resetAddresseror()
 {
     document.getElementById("firstNameError").innerHTML = "";
@@ -561,71 +431,6 @@ if(input)
         document.getElementById("maxPrice").disabled = false;
     }
 });
-}
-
-function validateProfile()
-{
-    let isValid = true;
-    const firstName = document.getElementById("userFirstName").value;
-    const lastName = document.getElementById("userLastName").value;
-    const email = document.getElementById("userEmail").value;
-    const phone = document.getElementById("userPhone").value;
-    let namePattern = /^[a-zA-Z\s-]+$/;
-    let emailPattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    let firstNameError = document.getElementById("userFirstNameError");
-    let lastNameError = document.getElementById("userLastNameError");
-    let emailError = document.getElementById("userEmailError");
-    let phoneError = document.getElementById("userPhoneError");
-
-    firstNameError.innerHTML = "";
-    lastNameError.innerHTML = "";
-    emailError.innerHTML = "";
-    phoneError.innerHTML = "";
-
-    if(firstName.trim() === "")
-    {
-        firstNameError.innerHTML = "firstName cannot be empty";
-        isValid = false;
-    }
-    else if(!namePattern.test(firstName))
-    {
-        firstNameError.innerHTML = "Invalid firstName";
-        isValid = false;
-    }
-
-    if(lastName.trim() === "")
-    {
-        lastNameError.innerHTML = "lastName cannot be empty";
-        isValid = false;
-    }
-    else if(!namePattern.test(lastName))
-    {
-        firstNameError.innerHTML = "Invalid lastName";
-        isValid = false;
-    }
-
-    if(email.trim() === "")
-    {
-        emailError.innerHTML = "email cannot be empty";
-        isValid = false;
-    }
-    else if(!emailPattern.test(email))
-    {
-        emailError.innerHTML = "Invalid Email";
-        isValid = false;
-    }
-
-    if(phone.trim() === "")
-    {
-        phoneError.innerHTML = "Phone cannot be empty";
-        isValid = false;
-    }
-    else if(phone.length != 10)
-    {
-        phoneError.innerHTML = "Invalid Phone";
-        isValid = false;
-    }
-    return isValid;
 }
 
 function clearProfilErrorMsg()

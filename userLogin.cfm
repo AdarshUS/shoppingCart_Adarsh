@@ -28,12 +28,12 @@
             <form method="POST" onsubmit="return validateUserLogin()">
                 <div class="mb-3">
                     <label for="userName" class="form-label">UserName</label>
-                    <input type="text" class="form-control" placeholder="Email or Phone" id="userName" name="userName" required>
+                    <input type="text" class="form-control" placeholder="Email or Phone" id="userName" name="userName">
                     <div id="userNameError" class="error"></div>
                 </div>
                 <div class="mb-3 passwordCntr">
                     <label for="userPassword" class="form-label">Password</label>
-                    <input type="password" class="form-control" placeholder="Enter the Password" id="userPassword" name="userPassword" required>
+                    <input type="password" class="form-control" placeholder="Enter the Password" id="userPassword" name="userPassword">
                     <div class="passwordToggle" onclick="togglePassword()">
                         <i class="fa-solid fa-eye"></i>
                     </div>
@@ -66,6 +66,7 @@
         </div>
     </main>
    <script src="./Script/userPageScript.js"></script>
+   <script src="./Script/validation.js"></script>
 </body>
 </html>
 </cfoutput>

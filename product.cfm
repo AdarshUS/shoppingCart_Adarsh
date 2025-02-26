@@ -43,7 +43,7 @@
     <cfinclude template="adminHeader.cfm">
     <main>
         <cfif LEN(trim(variables.message))>
-            <div class="alert alert-danger m-3 subcategoryMsg">#variables.message#</div>
+            <div class="alert alert-danger m-3 productMsg">#variables.message#</div>
         </cfif>
         <div class="productContainer">
             <div class="productheader">
@@ -95,12 +95,12 @@
             </cfloop>
         </div>
     </main>
-    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true" data-bs-backdrop="static">
         <div class="modal-dialog">
             <div class="modal-content">
             <div class="modal-header">
                <h5 class="modal-title" id="productModalLabel">Add product</h5>
-               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="resetProducterror()"></button>
             </div>
             <form method="POST" enctype="multipart/form-data" onsubmit="return validateProduct()" id="productForm">
                 <div class="modal-body">
@@ -167,7 +167,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="resetProducterror()">Close</button>
                     <button type="submit" class="btn btn-primary" class="insertBtn" id="submit" name="submit">Save changes</button>
                 </div>
             </form>
@@ -200,6 +200,7 @@
     <script src="./Script/bootstrapScript.js"></script>
     <script src="./Script/jquery-3.7.1.min.js"></script>
     <script src="./Script/script.js"></script>
+    <script src="./Script/validation.js"></script>
 </body>
 </html>
 </cfoutput>

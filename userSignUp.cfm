@@ -70,6 +70,7 @@
         </div>
     </main>
    <script src="./Script/userPageScript.js"></script>
+   <script src="./Script/validation.js"></script>
 </body>
 </html>
 </cfoutput>

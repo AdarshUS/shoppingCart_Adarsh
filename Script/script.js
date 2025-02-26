@@ -1,51 +1,6 @@
-function validateAdminLogin() {
-    let validInput = true;
-    let username = document.getElementById("userName").value;
-    let passsword = document.getElementById("password").value;
-    let usernameError = document.getElementById("userNameError");
-    let passswordError = document.getElementById("passwordError");
-
-    usernameError.textContent = "";
-    passswordError.textContent = "";
-
-    if (username.trim() === "") {
-        usernameError.textContent = "userName cannot be empty";
-        validInput = false;
-    }
-
-    if (passsword.trim() === "") {
-        passswordError.textContent = "password cannot be empty";
-        validInput = false;
-    }
-
-    return validInput;
-}
-
 function resetErrorMsg()
 {
     document.getElementById("categoryError").innerHTML = " ";
-}
-
-function validateSubCategory() {
-    let validSubCategory = true;
-    let categoryName = document.getElementById("categoryNameSelect").value;
-    let subCategoryName = document.getElementById("subCategoryName").value;
-
-    let categorySelectError = document.getElementById("categorySelectError");
-    let subCategoryNameError = document.getElementById("subCategoryNameError");
-
-    categorySelectError.innerHTML = "";
-    subCategoryNameError.innerHTML = "";
-
-    if (categoryName === "" || categoryName === "--") {
-        categorySelectError.innerHTML = "Category Cannot be Empty"
-        validSubCategory = false;
-    }
-    if (subCategoryName.trim() === "") {
-        subCategoryNameError.innerHTML = "Subcategory Cannot be Empty"
-        validSubCategory = false;
-    }
-    return validSubCategory;
 }
 
 $(".logout").click(function() {
@@ -66,12 +21,13 @@ $(".logout").click(function() {
 $(document).on("click", function() {
     $("#user_error").hide();
     $(".subcategoryMsg").hide();
+    $(".productMsg").hide();
 });
 
-$(".subcategoryAddbtn").click(function() {
-    document.getElementById("categorySelectError").innerHTML = "";
+function resetSubcategoryError()
+{
     document.getElementById("subCategoryNameError").innerHTML = "";
-});
+}
 
 function insertEditCategory() {
     let inputValue = $("#categoryInput").val();
@@ -255,78 +211,13 @@ function getSubcategory(urlSubCategoryId){
         });
     }
 }
-function validateProduct() {
-    let validProduct = true;
-    let categoryName = document.getElementById("categoryNameSelectPr").value;
-    let subCategoryName = document.getElementById("selectSubCategory").value;
-    let productName = document.getElementById("productName").value;
-    let brandName = document.getElementById("brandName").value;
-    let productDesc = document.getElementById("productDesc").value;
-    let unitPrice = document.getElementById("unitPrice").value;
-    let unitTax = document.getElementById("unitTax").value;
-
-    let categorySelectError = document.getElementById("categorySelectError");
-    let subCategorySelectError = document.getElementById("subCategorySelectError");
-    let productNameError = document.getElementById("productNameError");
-    let brandNameError = document.getElementById("brandNameError");
-    let productDescError = document.getElementById("productDescError");
-    let unitPriceError = document.getElementById("unitPriceError");
-    let unitTaxError = document.getElementById("unitTaxError");
-    let productImageError = document.getElementById("productImageError");
-
-    categorySelectError.innerHTML = "";
-    subCategorySelectError.innerHTML = "";
-    productNameError.innerHTML = "";
-    brandNameError.innerHTML = "";
-    productDescError.innerHTML = "";
-    unitPriceError.innerHTML = "";
-    unitTaxError.innerHTML = "";
-    productImageError.innerHTML = "";
-
-    if (categoryName.trim() === "" || categoryName.trim() === "--") {
-        categorySelectError.innerHTML = "Select Any Category";
-        validProduct = false;
-    }
-
-    if (subCategoryName.trim() === "" || subCategoryName.trim() === "--") {
-        subCategorySelectError.innerHTML = "Select Any SubCategory";
-        validProduct = false;
-    }
-
-    if (productName.trim() === "") {
-        productNameError.innerHTML = "Enter the ProductName";
-        validProduct = false;
-    }
-
-    if (brandName.trim() === "" || brandName.trim() === "--") {
-        brandNameError.innerHTML = "Select Any Brand";
-        validProduct = false;
-    }
-
-    if (productDesc.trim() === "") {
-        productDescError.innerHTML = "Enter the pro Desc";
-        validProduct = false;
-    }
-
-    if (unitPrice.trim() === "") {
-        unitPriceError.innerHTML = "Enter the UnitPrice";
-        validProduct = false;
-    }
-
-    if (unitTax.trim() === "") {
-        unitTaxError.innerHTML = "Enter the unit Tax";
-        validProduct = false;
-    }
-    else if(isNaN(unitTax) || unitTax < 0 || unitTax > 100)
-    {
-        unitTaxError.innerHTML = "Enter valid unit Tax in percent";
-        validProduct = false;
-    }
-
-    return validProduct;
-}
 
 function createproduct(subCategoryId) {
+    getSubcategory(subCategoryId);
+}
+
+function resetProducterror()
+{
     let categorySelectError = document.getElementById("categorySelectError");
     let subCategorySelectError = document.getElementById("subCategorySelectError");
     let productNameError = document.getElementById("productNameError");
@@ -344,8 +235,7 @@ function createproduct(subCategoryId) {
     unitPriceError.innerHTML = "";
     unitTaxError.innerHTML = "";
     productImageError.innerHTML = "";
-    document.getElementById('productForm').reset();
-    getSubcategory(subCategoryId);
+    document.getElementById("productForm").reset();
 }
 
 function editProduct(editObj) {

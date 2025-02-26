@@ -4,7 +4,7 @@
 <cfparam name="startIndex" default="0">
 <cfparam name="searchText" default="">
 <cfset variables.categoriesResult = application.objProductManagement.fetchAllCategories()>
-<cfif structKeyExists(url,"searchText")>
+<cfif structKeyExists(url,"searchText") AND url.searchText NEQ "">
     <cfset variables.message = "Search Results for ""#url.searchText#""">
     <cfset searchText = url.searchText>
     <cfif searchText EQ "">
@@ -45,7 +45,7 @@
                 </cfif>
                 <div class="priceFilterContainer">
                 <div class="priceSort" id="priceSort">
-                    <cfif structKeyExists(url,subcategoryId) AND url.subcategoryId NEQ "">
+                    <cfif structKeyExists(url,"subcategoryId") AND url.subcategoryId NEQ "">
                         <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(url.subcategoryId)#&sort=ASC">price: Low to High</a>
                         <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(url.subcategoryId)#&sort=DESC">price :High to Low</a>
                     <cfelse>

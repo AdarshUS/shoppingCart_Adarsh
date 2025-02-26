@@ -732,7 +732,6 @@
         <cfargument name="productId" required="true" type="numeric">
         <cfargument name="productImages" required="true" type="string">
         <cfargument name="adminId" required="true" type="numeric">
-
         <cfset local.productDirectory = expandPath('Assets/uploads/product' & arguments.productId)>
         <cfset local.newPath = uploadFile(productImages = arguments.productImages, productDirectory = local.productDirectory)>
 
