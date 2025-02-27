@@ -45,7 +45,7 @@
                                         src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilepath#" 
                                         alt="Analog Magazine Rack"
                                     >
-                                   <a href="productDetails.cfm?productId=#product.productId#" class="productLink">#product.productName#</a><br>
+                                   <a href="productDetails.cfm?productId=#urlEncodedFormat(product.productId)#" class="productLink">#product.productName#</a><br>
                                 </td>
                                 <td class="cartProductPrice">
                                     <div>
@@ -64,9 +64,9 @@
                                 </td>
                                 <td>
                                     <div class="quantity-controls">
-                                       <button onclick="decreaseQuantity('#product.cartId#','decrement')" id="decreaseQntyBtn">-</button>
+                                       <button onclick="updateQuantity('#product.cartId#',-1)" id="decreaseQntyBtn">-</button>
                                        <input type="text" value="#product.quantity#" id="qntyNo#product.cartId#" class="qntyNo" readonly>
-                                       <button onclick="increaseQuantity('#product.cartId#','increment')">+</button>
+                                       <button onclick="updateQuantity('#product.cartId#',1)" id="increaseQntyBtn">+</button>
                                     </div>
                                 </td>
                                 <td>
@@ -136,7 +136,7 @@
                             class="btn btn-primary" 
                             id="submit" 
                             name="submit" 
-                            onclick="redirectCartToorder()"
+                            onclick="placeOrder()"
                         >
                         Payment Details
                         </button>

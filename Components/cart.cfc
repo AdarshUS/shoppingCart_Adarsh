@@ -1,7 +1,6 @@
 <cfcomponent>
     <cffunction name="addTocart" access="remote" returntype="struct" returnformat="JSON">
         <cfargument name = "productId" required="true" type="string">
-        <cfargument name = "quantity" required="true" type="integer">
         <cfset local.result = {
             success = false,
             "message" = ""
@@ -18,7 +17,7 @@
                     fldProductId = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">
             </cfquery>
             <cfif local.checkProductExist.RecordCount>
-                <cfset updateCart(cartId = application.objUser.encryptId(checkProductExist.cartId), step="increment")>
+                <cfset updateCartQnty(cartId = application.objUser.encryptId(checkProductExist.cartId), step="increment")>
                 <cfset local.result.message = "product updated">
             <cfelse>
                 <cfquery datasource="#application.datasource#">
@@ -30,10 +29,10 @@
                     VALUES(
                         <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">,
                         <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">,
-                        <cfqueryparam value="#arguments.quantity#" cfsqltype="integer">
+                        1
                     )
                 </cfquery>
-                <cfset local.result.message = "quantity Added">
+                <cfset local.result.message = "product added">
                 <cfset session.cartItemCount+=1>
             </cfif>
             <cfset local.result.success = true>
@@ -97,25 +96,25 @@
         <cfreturn local.result>
     </cffunction>
 
-    <cffunction name="updateCart" access="remote" returntype="void"> 
+    <cffunction name="updateCartQnty" access="remote" returntype="void"> 
         <cfargument name="cartId" required = "true" type = "string">
-        <cfargument name="step" required="true" type="string">
+        <cfargument name="step" required="true" type="integer">
         <cftry>
             <cfquery datasource="#application.datasource#">
-                UPDATE 
-                    tblcart
-                SET 
-                    fldQuantity = 
+                UPDATE tblcart
+                    SET fldQuantity = 
                         CASE 
-                            WHEN <cfqueryparam value="#arguments.step#" cfsqltype="varchar"> = 'increment' THEN fldQuantity + 1
-                            WHEN fldQuantity > 1 THEN fldQuantity - 1
+                            WHEN <cfqueryparam value="#arguments.step#" cfsqltype="cf_sql_integer"> = 1 
+                                THEN fldQuantity + 1
+                            WHEN fldQuantity > 1 AND <cfqueryparam value="#arguments.step#" cfsqltype="cf_sql_integer"> = -1
+                                THEN fldQuantity - 1
                             ELSE fldQuantity
                         END
-                WHERE fldCart_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.cartId)#" cfsqltype="integer">
+                    WHERE fldCart_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.cartId)#" cfsqltype="cf_sql_integer">
             </cfquery>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = "error in function: updateCart",
+                subject = "error in function: updateCartQnty",
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -242,6 +241,7 @@
                         fldProductId = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#">
                 </cfquery>
             </cftransaction>
+            <cfset session.cartItemCount-=1>
             <cfset sendOrderConfirmationMail(local.orderId)>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
@@ -266,6 +266,7 @@
                     '#local.orderId#'
                 );
             </cfquery>
+            <cfset session.cartItemCount = 0>
             <cfset sendOrderConfirmationMail(local.orderId)>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(

@@ -14,8 +14,8 @@
         </a>
         <div class="header_searchBar">
             <i class="fa-solid fa-magnifying-glass"></i>
-            <form method="post" id="searchForm" action="subCategoryList.cfm?">
-                <input type="text" name = "searchInput" placeholder="Search for Products, Brands and More" id="searchInput">
+            <form method="post" id="searchForm">
+                <input type="text" name = "searchInput" placeholder="Search for Products, Brands and More" id="searchInput" required>
                 <button class="searchBtn" name="searchBtn" type="submit">Search</button>
             </form>
         </div>

@@ -47,11 +47,11 @@
             <cfif structKeyExists(form, "submitBtn")>
                 <cfset variables.result = application.objUser.userLogin(userName = form.userName, password = form.userPassword,role = 1)>
                 <cfif NOT variables.result.success>
-                   <div class="alert alert-danger">#variables.result.message#</div>
+                   <div class="alert alert-danger userLoginError">#variables.result.message#</div>
                 <cfelse>
                 <cfif structKeyExists(url, "redirect")>
                     <cfif url.redirect EQ "cart" AND structKeyExists(url, "productId")>
-                        <cfset application.objCart.addTocart(url.productId, 1)>
+                        <cfset application.objCart.addTocart(url.productId)>
                         <cflocation url="cart.cfm" addtoken="no">
                     <cfelseif url.redirect EQ "cartpage">
                         <cflocation url="cart.cfm" addToken="no">
@@ -65,8 +65,9 @@
             </cfif>
         </div>
     </main>
-   <script src="./Script/userPageScript.js"></script>
-   <script src="./Script/validation.js"></script>
+    <script src="./Script/jquery-3.7.1.min.js"></script>
+    <script src="./Script/userPageScript.js"></script>
+    <script src="./Script/validation.js"></script>
 </body>
 </html>
 </cfoutput>

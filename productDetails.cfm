@@ -1,3 +1,4 @@
+<cfinclude  template="addAdress.cfm">
 <cfset variables.productDetails = application.objProductManagement.getProductDetails(productId = url.productId)>
 <cfset addresses = {}>
 <cfif structKeyExists(session, "loginuserId")>
@@ -139,7 +140,7 @@
                                 class="btn btn-primary" 
                                 id="submit" 
                                 name="submit" 
-                                onclick="redirectToOrder('#url.productId#')"
+                                onclick="placeOrder('#url.productId#')"
                             >
                                 Payment Details
                             </button>
@@ -147,11 +148,11 @@
                     </div>
                 </div>
             </div>
-            <cfinclude  template="addAdress.cfm">
             <script src="./Script/jquery-3.7.1.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
             <script src="./Script/bootstrapScript.js"></script>
             <script src="./Script/userPageScript.js"></script>
+            <script src="./Script/validation.js"></script>
         </body>
     </html>
 </cfoutput>

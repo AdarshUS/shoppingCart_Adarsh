@@ -3,9 +3,6 @@ function filterPrices(subcategoryId,searchText) {
     let priceRange = document.querySelector('input[name="filterPrice"]:checked');
     let minPrice;
     let maxPrice;
-    document.getElementById("productContainer").innerHTML = "";
-    document.getElementById("viewMoreBtn").style.display = "none";
-    document.getElementById("priceSort").innerHTML = "";
     if(priceRange.value === "custom")
     {
         minPrice = document.getElementById("minimumPrice").value;
@@ -20,11 +17,20 @@ function filterPrices(subcategoryId,searchText) {
             alert("Minimum price should be less than Maximum price");
             return;
         }
+        if(parseInt(minPrice) < 0 || parseInt(maxPrice) < 0)
+        {
+            alert("enter positive range");
+            return;
+        }
     }
     else
     {
         minPrice = priceRange.dataset.start;
         maxPrice = priceRange.dataset.end;
+
+        document.getElementById("productContainer").innerHTML = "";
+        document.getElementById("viewMoreBtn").style.display = "none";
+        document.getElementById("priceSort").innerHTML = "";
     }
     if(searchText)
     {
@@ -44,11 +50,14 @@ function filterPrices(subcategoryId,searchText) {
     }
 }
 
-document.getElementById("searchForm").addEventListener("submit", function(event) {
+let searchElement = document.getElementById("searchForm");
+if(searchElement)
+{
+    document.getElementById("searchForm").addEventListener("submit", function(event) {
     window.location.href = "subCategorylist.cfm?searchText=" + document.getElementById("searchInput").value;
     event.preventDefault();
     });
-
+}
 
 async function fetchProductsRemote(methodName, parameters) {
     try {
@@ -113,7 +122,7 @@ async function fetchProductsRemote(methodName, parameters) {
     }
 }
 
-   function loadMoreProducts(subcategoryId,sort,searchText) 
+function loadMoreProducts(subcategoryId,sort,searchText) 
 {
     startindex+=4;
     if(searchText)
@@ -166,10 +175,10 @@ function logoutUser() {
         $.ajax({
             url: 'components/cart.cfc?method=addTocart',
             type: 'POST',
-            data: {productId : productId,quantity:1},
+            data: {productId : productId},
             success: function(response) {
                 let result = JSON.parse(response);
-                if(result.message === "quantity Added")
+                if(result.message === "product added")
                 {
                     if(document.getElementById("itemcount").innerHTML == 0)
                     {
@@ -191,7 +200,7 @@ function logoutUser() {
                 });
             },
             error: function() {
-                alert("Error in addTocart");
+                alert("Error in addTocart");                             
             }
         });
         let cartButton = document.getElementById("cartButton");
@@ -201,14 +210,14 @@ function logoutUser() {
         };
     }
 
-    function increaseQuantity(cartId, step) {
+    function updateQuantity(cartId, step) {
         document.getElementById("decreaseQntyBtn").disabled = false;
-        let qnty = document.getElementById("qntyNo" + cartId).value;
-        qnty++;
+        let qnty = parseInt(document.getElementById("qntyNo" + cartId).value);
+        qnty+=step;
         document.getElementById("qntyNo" + cartId).value = qnty;
 
         $.ajax({
-            url: 'components/cart.cfc?method=updateCart',
+            url: 'components/cart.cfc?method=updateCartQnty',
             type: 'POST',
             data: {
                 cartId: cartId,
@@ -221,36 +230,12 @@ function logoutUser() {
             }
         });
         document.getElementById("totalPrice" + cartId).innerHTML =
-            document.getElementById("qntyNo" + cartId).value *
-            document.getElementById("productPrice" + cartId).innerHTML;
+            (document.getElementById("qntyNo" + cartId).value *
+            document.getElementById("productPrice" + cartId).innerHTML).toFixed(2);
         checkQnty();
         calculateTotalPrice();
     }
-
-function decreaseQuantity(cartId, step) {
-    let qnty = document.getElementById("qntyNo" + cartId).value;
-    qnty--;
-    document.getElementById("qntyNo" + cartId).value = qnty;
-    $.ajax({
-        url: 'components/cart.cfc?method=updateCart',
-        type: 'POST',
-        data: {
-            cartId: cartId,
-            step: step
-        },
-        success: function(result) {
-        },
-        error: function() {
-            alert("failed")
-        }
-    });
-    document.getElementById("totalPrice" + cartId).innerHTML =
-        document.getElementById("qntyNo" + cartId).value *
-        document.getElementById("productPrice" + cartId).innerHTML;
-    checkQnty();
-    calculateTotalPrice();
-}
-
+    
 function checkQnty() {
     let qnty = $(".qntyNo");
     for (let index = 0; index < qnty.length; index++) {
@@ -388,12 +373,7 @@ function deleteAddress(addressId) {
                 alert("failed")
             }
         });
-    Swal.fire({
-      title: "Deleted!",
-      text: "Your file has been deleted.",
-      icon: "success"
-    });
-  }
+    } 
 });
 }
 
@@ -409,17 +389,18 @@ $(document).ready(function() {
     });
 })
 
-function redirectToOrder(productId) {
+function placeOrder(productId) {
     let selectedAddress = document.querySelector('input[name="address"]:checked');
     let addressId = selectedAddress.value;
-    handleCartAction(productId);
-    window.location.href = `orderSummary.cfm?addressId=${addressId}&productId=${encodeURIComponent(productId)}&type=single`;
-}
-
-function redirectCartToorder() {
-    let selectedAddress = document.querySelector('input[name="address"]:checked');
-    let addressId = selectedAddress.value;
-    window.location.href = `orderSummary.cfm?addressId=${addressId}&type=cart`;
+    if(productId)
+    {
+        handleCartAction(productId);
+        window.location.href = `orderSummary.cfm?addressId=${addressId}&productId=${encodeURIComponent(productId)}&type=single`;
+    }
+    else
+    {
+        window.location.href = `orderSummary.cfm?addressId=${addressId}&type=cart`;
+    }
 }
 
 var input = document.getElementById('customFilterInput');
@@ -446,3 +427,7 @@ function clearProfilErrorMsg()
     phoneError.innerHTML = "";
     location.reload();
 }
+
+$(document).on("click", function() {
+    $(".userLoginError").hide();
+});
