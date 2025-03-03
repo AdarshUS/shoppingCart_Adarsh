@@ -32,6 +32,7 @@ function checkout(addressId, productId) {
     document.getElementById("cardMonthError").innerHTML = "";
     document.getElementById("cardCvvError").innerHTML = "";
     document.getElementById("cardYearError").innerHTML = "";
+    document.getElementById("cardVerify").innerHTML = " ";
 
     if (cardNumber === "") {
         document.getElementById("cardNoError").innerHTML = "Enter Card Number";
@@ -42,7 +43,7 @@ function checkout(addressId, productId) {
     }
 
     if (isNaN(cardYear) || cardYear < today.getFullYear()) {
-        document.getElementById("cardYearError").innerHTML = "Enter year";
+        document.getElementById("cardYearError").innerHTML = "Enter valid year";
         isValidData = false;
     }
 

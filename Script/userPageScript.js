@@ -34,7 +34,7 @@ function filterPrices(subcategoryId,searchText) {
     }
     if(searchText)
     {
-        fetchProductsRemote("fetchProducts", {
+        getAndDisplayProducts("fetchProducts", {
             searchText: searchText,
             startPrice: minPrice,
             endPrice: maxPrice
@@ -42,7 +42,7 @@ function filterPrices(subcategoryId,searchText) {
     }
     else
     {
-    fetchProductsRemote("fetchProducts", {
+    getAndDisplayProducts("fetchProducts", {
         subcategoryId: subcategoryId,
         startPrice: minPrice,
         endPrice: maxPrice
@@ -59,10 +59,10 @@ if(searchElement)
     });
 }
 
-async function fetchProductsRemote(methodName, parameters) {
+async function getAndDisplayProducts(parameters) {
     try {
         const result = await $.ajax({
-            url: `components/ProductManagement.cfc?method=${methodName}`,
+            url: `components/ProductManagement.cfc?method=fetchProducts`,
             type: 'POST',
             data: parameters,
         });
@@ -127,7 +127,7 @@ function loadMoreProducts(subcategoryId,sort,searchText)
     startindex+=4;
     if(searchText)
     {
-        fetchProductsRemote("fetchProducts", {
+        getAndDisplayProducts({
             startindex: startindex,
             searchText: searchText,
              sort: sort,
@@ -136,7 +136,7 @@ function loadMoreProducts(subcategoryId,sort,searchText)
     }
     else
     {
-        fetchProductsRemote("fetchProducts", {
+        getAndDisplayProducts({
         subcategoryId: subcategoryId,
         sort: sort,
         limit: 4,

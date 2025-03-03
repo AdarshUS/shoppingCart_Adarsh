@@ -318,22 +318,24 @@
          }>
          <cfset local.orderSet = []>
         <cftry>
-            <cfquery name="local.getDistinctOrders" datasource="#application.datasource#">
-                SELECT
-                    fldOrder_Id
-                FROM
-                    tblorder
-                WHERE
-                    fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="varchar">
-                ORDER BY fldOrderDate DESC
-                Limit 5
-                <cfif structKeyExists(arguments,"page") AND arguments.page NEQ 0>
-                    OFFSET <cfqueryparam value="#local.startIndex#" cfsqltype="integer">;
-                </cfif>
-            </cfquery>
-            <cfloop query="local.getDistinctOrders">
-                <cfset arrayAppend(local.orderSet,local.getDistinctOrders.fldOrder_Id)>
-            </cfloop>
+            <cfif structKeyExists(arguments,"page")>
+                <cfquery name="local.getDistinctOrders" datasource="#application.datasource#">
+                    SELECT
+                        fldOrder_Id
+                    FROM
+                        tblorder
+                    WHERE
+                        fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="varchar">
+                    ORDER BY fldOrderDate DESC
+                    Limit 5
+                    <cfif structKeyExists(arguments,"page") AND arguments.page NEQ 0>
+                        OFFSET <cfqueryparam value="#local.startIndex#" cfsqltype="integer">;
+                    </cfif>
+                </cfquery>
+                <cfloop query="local.getDistinctOrders">
+                    <cfset arrayAppend(local.orderSet,local.getDistinctOrders.fldOrder_Id)>
+                </cfloop>
+            </cfif>
             <cfquery name="local.fetchOrderItems" datasource="#application.datasource#">
                 SELECT
 	                O.fldOrder_Id,

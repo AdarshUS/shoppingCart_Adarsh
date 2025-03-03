@@ -136,7 +136,7 @@
                             Proceed
                         </button>
                     </cfif>
-                    <div id="cardVerify"></div>
+                    <div id="cardVerify" class = "text-danger"></div>
                 </div>
             </div>
         </div>

@@ -43,6 +43,7 @@
                     <i class="fa-solid fa-plus categoryPlus"></i>
                 </button>
             </div>
+            <div class = "mx-2 text-decoration-none"><a href = "category.cfm"><i class="fa-solid fa-backward"></i>Back to Category</a></div>
             <div class="categoryBody">
                 <cfloop array="#variables.subcategoriesResult.subcategory#" item="subCategory">
                     <div class="categoryItem" id="#subCategory.subcategoryId#">
@@ -95,7 +96,9 @@
                                         <cfif category.categoryId EQ url.categoryId>
                                             selected
                                         </cfif>
-                                   >#category.categoryName#</option>
+                                   >
+                                    #category.categoryName#
+                                   </option>
                                 </cfloop>
                             </select>
                             <div id = "categorySelectError" class = "error"></div>
@@ -103,7 +106,7 @@
                         <div class="mb-3">
                             <label for="subCategoryName" class="form-label">Enter SubCategory Name</label>
                             <input type="text" class="form-control" id="subCategoryName" name="subCategoryName">
-                            <input type="hidden" id="distinguishSubCreateEdit" name = "distinguishSubCreateEdit" >
+                            <input type="hidden" id="distinguishSubCreateEdit" name = "distinguishSubCreateEdit">
                             <div id = "subCategoryNameError" class = "error"></div>
                         </div>
                     </div>

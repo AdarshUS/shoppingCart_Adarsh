@@ -56,43 +56,58 @@
                 >
                 <span>Add</span><i class="fa-solid fa-plus productPlus"></i></button>
             </div>
-            <cfloop array = "#variables.productDetails.products#"  index="product">
-                <div class="productBody" id="#product.productId#">
-                   <div class="productItem">
-                        <div class="productItemLeft">
-                            <h4 class="productName">#product.productName#</h4>
-                            <h6 class="productBrand">#product.brandName#</h6>
-                            <div class="productprice"><i class="fa-solid fa-indian-rupee-sign">#product.unitPrice#</i></div>
-                        </div>
-                        <div class="productItemImage" data-bs-toggle="modal" data-bs-target="##imageModal" onclick="editImages('#product.productId#')">
-                            <img 
-                                src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" 
-                                alt="productImage"
-                            >
-                        </div>
-                        <div class="productItemRight">
-                            <button class="productfnBtn" 
+            <div class = "mx-2 text-decoration-none">
+                <a href = "subcategory.cfm?categoryId=#urlEncodedFormat(url.categoryId)#">
+                    <i class="fa-solid fa-backward"></i>
+                    Back to Subcategory
+                </a>
+            </div>
+            <cfif arrayLen(#variables.productDetails.products#)>
+                <cfloop array = "#variables.productDetails.products#"  index="product">
+                    <div class="productBody" id="#product.productId#">
+                       <div class="productItem">
+                            <div class="productItemLeft">
+                                <h4 class="productName">#product.productName#</h4>
+                                <h6 class="productBrand">#product.brandName#</h6>
+                                <div class="productprice"><i class="fa-solid fa-indian-rupee-sign">#product.unitPrice#</i></div>
+                            </div>
+                            <div 
+                                class="productItemImage" 
                                 data-bs-toggle="modal" 
-                                data-bs-target="##productModal" 
-                                id="editProductBtn" 
-                                value="#product.productId#" 
-                                onclick="editProduct({ 
-                                    productId: '#product.productId#', 
-                                    categoryId: '#url.categoryId#', 
-                                    subCategoryId: '#url.subCategoryId#' 
-                                })">
-                                <i class="fa-solid fa-pen-to-square productfns"></i>
-                            </button>
-                            <button 
-                                class="productfnBtn" 
-                                onclick="deleteProduct('#product.productId#')"
+                                data-bs-target="##imageModal" 
+                                onclick="editImages('#product.productId#')"
                             >
-                                <i class="fa-solid fa-trash productfns"></i>
-                            </button>
+                                <img 
+                                    src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" 
+                                    alt="productImage"
+                                >
+                            </div>
+                            <div class="productItemRight">
+                                <button class="productfnBtn" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="##productModal" 
+                                    id="editProductBtn" 
+                                    value="#product.productId#" 
+                                    onclick="editProduct({ 
+                                        productId: '#product.productId#', 
+                                        categoryId: '#url.categoryId#', 
+                                        subCategoryId: '#url.subCategoryId#' 
+                                    })">
+                                    <i class="fa-solid fa-pen-to-square productfns"></i>
+                                </button>
+                                <button 
+                                    class="productfnBtn" 
+                                    onclick="deleteProduct('#product.productId#')"
+                                >
+                                    <i class="fa-solid fa-trash productfns"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </cfloop>
+                </cfloop>
+            <cfelse>
+                <div class = "mx-2">No products</div>
+            </cfif>
         </div>
     </main>
     <div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true" data-bs-backdrop="static">

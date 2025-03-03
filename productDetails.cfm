@@ -75,7 +75,9 @@
                     <form method="post">
                         <div class="buttonContainer">
                             <cfif NOT structKeyExists(session, "loginuserId")>
-                                <button type="button" class="btn btn-info p-2" 
+                                <button 
+                                    type="button" 
+                                    class="btn btn-info p-2" 
                                     onclick="window.location.href='userLogin.cfm?productId=#URLEncodedFormat(variables.productDetails.data.productId)#&redirect=product'">
                                     Buy Now
                                 </button>
