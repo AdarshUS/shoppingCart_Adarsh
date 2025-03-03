@@ -37,7 +37,7 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset sendErrorEmail(
-                subject = "error in function: addCategory", 
+                subject = "error in function: addCategory",
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -390,13 +390,13 @@
                 <cfelse>
                     <cfquery result="product" datasource="#application.datasource#">
                         INSERT INTO tblproduct (
-                            fldSubCategoryId
-                            ,fldProductName
-                            ,fldBrandId
-                            ,fldDescription
-                            ,fldUnitPrice
-                            ,fldUnitTax
-                            ,fldCreatedBy
+                            fldSubCategoryId,
+                            fldProductName,
+                            fldBrandId,
+                            fldDescription,
+                            fldUnitPrice,
+                            fldUnitTax,
+                            fldCreatedBy
                             )
                         VALUES(
                             <cfqueryparam value="#local.decryptedSubCategoryId#" cfsqltype="integer">,
@@ -409,29 +409,11 @@
                         )
                     </cfquery>
                     <cfif len(trim(arguments.productImages))>
-                        <cfset productDirectory = expandPath('Assets/uploads/product'&product.GENERATEDKEY)>
-                        <cfdirectory action="create" directory="#productDirectory#">
-                        <cfset local.newPath = uploadFile(productImages = arguments.productImages,productDirectory = productDirectory)>
-                        <cfloop array="#local.newPath#" index="i"  item="image">
-                            <cfquery datasource="#application.datasource#">
-                                INSERT INTO tblproductimages (
-                                    fldProductId,
-                                    fldImageFilePath,
-                                    fldCreatedBy,
-                                    fldDefaultImage
-                                    )
-                                VALUES(
-                                    <cfqueryparam value="#product.GENERATEDKEY#" cfsqltype="integer">,
-                                    <cfqueryparam value="#image.serverFile#" cfsqltype="varchar">,
-                                    <cfqueryparam value="#application.objUser.decryptId(session.loginAdminId)#" cfsqltype="varchar">,
-                                    <cfif i EQ 1>
-                                        <cfqueryparam value=1 cfsqltype="integer">
-                                    <cfelse>
-                                        <cfqueryparam value=0 cfsqltype="integer">
-                                    </cfif>
-                                )
-                            </cfquery>
-                        </cfloop>
+                        <cfset insertProductImages(
+                            productId = product.generatedKey,
+                            productImages = arguments.productImages,
+                            adminId = application.objUser.decryptId(session.loginAdminId)
+                        )>
                     </cfif>
                     <cfset local.result.success = true>
                     <cfset local.result.message = "successful Operation">
@@ -672,7 +654,7 @@
             "success": false,
             "message": ""
         }>
-        <cftry>
+        <!--- <cftry> --->
             <cfif len(trim(arguments.productId))
                 AND len(trim(arguments.subCategoryId))
                 AND len(trim(arguments.productName))
@@ -711,20 +693,24 @@
                             fldProduct_Id = <cfqueryparam value="#local.decryptedProductId#">
                     </cfquery>
                     <cfif len(arguments.productImages)>
-                        <cfset insertProductImages(local.decryptedProductId, arguments.productImages, local.adminId)>
+                        <cfset insertProductImages(
+                            productId = local.decryptedProductId,
+                            productImages = arguments.productImages,
+                            adminId = local.adminId
+                        )>
                     </cfif>
                     <cfset local.result.success = true>
                     <cfset local.result.message = "successful Operation">
                 </cfif>
             </cfif>
-        <cfcatch>
+        <!--- <cfcatch>
             <cfset local.result = "some error occured">
             <cfset sendErrorEmail(
                 subject = "Error in function: updateProduct "&cfcatch.message,
                 body = "#cfcatch#"
             )>
         </cfcatch>
-        </cftry>
+        </cftry> --->
         <cfreturn local.result>
     </cffunction>
 
@@ -733,18 +719,31 @@
         <cfargument name="productImages" required="true" type="string">
         <cfargument name="adminId" required="true" type="numeric">
         <cfset local.productDirectory = expandPath('Assets/uploads/product' & arguments.productId)>
-        <cfset local.newPath = uploadFile(productImages = arguments.productImages, productDirectory = local.productDirectory)>
-
-        <cfloop array="#local.newPath#" index="image">
+        <cfif NOT directoryExists(local.productDirectory)>
+            <cfset DirectoryCreate(local.productDirectory)>
+        </cfif>
+        <cfset local.newPath = uploadFile(
+            productImages = arguments.productImages,
+            productDirectory = local.productDirectory
+        )>
+        <cfloop array="#local.newPath#" item = "image" index="i">
             <cfif structKeyExists(image, "serverFile")>
                 <cfquery datasource="#application.datasource#">
                     INSERT INTO tblproductimages (
-                        fldProductId, fldImageFilePath, fldCreatedBy, fldDefaultImage
-                    ) VALUES (
+                        fldProductId,
+                        fldImageFilePath,
+                        fldCreatedBy,
+                        fldDefaultImage
+                    ) 
+                    VALUES (
                         <cfqueryparam value="#arguments.productId#" cfsqltype="integer">,
                         <cfqueryparam value="#image.serverFile#" cfsqltype="varchar">,
                         <cfqueryparam value="#arguments.adminId#" cfsqltype="integer">,
-                        0
+                        <cfif i EQ 1>
+                            1
+                        <cfelse>
+                            0
+                        </cfif>
                     )
                 </cfquery>
             </cfif>
@@ -872,17 +871,17 @@
         <cfargument name="productImages" type="string" required="true">
         <cfargument name="productDirectory" type="string" required="true">
         <cfset var result = {}>
-        <cffile 
+        <cffile
             action="uploadall" 
             destination="#arguments.productDirectory#"
-            nameconflict="MakeUnique" 
+            nameconflict="MakeUnique"
             filefield="#arguments.productImages#" 
             allowedExtensions="jpg,png,gif,jpeg,webp"
             strict="true" 
             result="local.newPath"
         >
         <cfset result = local.newPath>
-    <cfreturn result>
+        <cfreturn result>
     </cffunction>
 </cfcomponent>
 

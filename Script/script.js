@@ -6,7 +6,7 @@ function resetErrorMsg()
 $(".logout").click(function() {
     if (confirm("Are you sure you want to Logout")) {
         $.ajax({
-            url: 'components/User.cfc?method=logoutAdmin',
+            url: 'components/User.cfc?method=logoutUser',
             type: 'POST',
             success: function(result) {
                 location.reload();
@@ -235,6 +235,7 @@ function resetProducterror()
     unitPriceError.innerHTML = "";
     unitTaxError.innerHTML = "";
     productImageError.innerHTML = "";
+    document.getElementById("imageCntr").innerHTML = "";
     document.getElementById("productForm").reset();
 }
 
@@ -400,4 +401,51 @@ function deleteProductImage(productImage, productId) {
             alert("Error deleting image.");
         }
     });
+}
+
+function readURL(input)
+{
+     document.getElementById("imageCntr").innerHTML = "";
+
+      if (input.files && input.files.length > 0) {
+        for (let i = 0; i < input.files.length; i++) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            let img = document.createElement("img");
+            img.src = e.target.result;
+            img.id = "product"+i;
+            img.style.width = "90px";
+            img.style.height = "150px"
+            img.style.margin = "5px";
+            document.getElementById("imageCntr").appendChild(img);
+            let radioInput = document.createElement('input');
+            radioInput.setAttribute('type', 'radio');
+            radioInput.setAttribute('name',"defaultImg");
+            document.getElementById("imageCntr").appendChild(radioInput);
+            let removeBtn = document.createElement('i');
+            removeBtn.classList.add("fa-solid");
+            removeBtn.classList.add("fa-xmark");
+            removeBtn.setAttribute("onclick",`deleteImage('${input.files[i].name}','product${i}')`)
+            document.getElementById("imageCntr").appendChild(removeBtn);
+          };
+          reader.readAsDataURL(input.files[i]);
+        }
+      }
+}
+
+function deleteImage(fileName,productId)
+{
+    let imageData = new DataTransfer();
+    let images = document.getElementById("productImages").files;
+    for (let index = 0; index < images.length; index++) {
+        if(images[index].name != fileName)
+        {
+            imageData.items.add(images[index]);
+        }
+        
+    }
+    console.log(imageData)
+    document.getElementById("productImages").files = imageData.files;
+    document.getElementById(productId).remove();
+
 }

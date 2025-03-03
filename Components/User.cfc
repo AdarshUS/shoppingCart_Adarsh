@@ -11,8 +11,8 @@
             <cftry>
                 <cfquery name="local.getUserDetails" datasource="#application.datasource#">
                     SELECT 
-                        U.fldUser_Id, 
-                        U.fldHashedPassword, 
+                        U.fldUser_Id,
+                        U.fldHashedPassword,
                         U.fldUserSaltString,
                         U.fldFirstName,
                         U.fldLastName,
@@ -57,10 +57,6 @@
         <cfreturn local.result>
     </cffunction>
     
-    <cffunction name="logoutAdmin" access="remote" returntype="void">
-        <cfset StructClear(Session)>
-    </cffunction>
-
     <cffunction name="encryptId" access="public" returntype="string">
         <cfargument name="inputId" required="true" type="string">
         <cfset local.encryptedId =  encrypt(arguments.inputId,application.encryptionkey,'AES','Base64')>

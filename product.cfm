@@ -176,10 +176,11 @@
                     </div>
                     <div class="mb-3">
                         <label for="productImages">Select Product Images</label>
-                        <input type="file" class="form-control-file" id="productImages" multiple name="productImages">
+                        <input type="file" class="form-control-file" id="productImages" multiple name="productImages" accept="image/*" onchange="readURL(this)">
                         <div id="productImageError" class="error"></div>
                         <input type="hidden" id="hiddenValue" name="hiddenValue">
                     </div>
+                    <div id="imageCntr"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="resetProducterror()">Close</button>

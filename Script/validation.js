@@ -357,4 +357,5 @@ function isValidPassword(password, errorElementId) {
         setError(errorElementId, "");
         return true;
     }
+
 }
