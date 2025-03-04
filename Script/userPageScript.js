@@ -200,7 +200,7 @@ function logoutUser() {
                 });
             },
             error: function() {
-                alert("Error in addTocart");                             
+                alert("Error in addTocart");
             }
         });
         let cartButton = document.getElementById("cartButton");

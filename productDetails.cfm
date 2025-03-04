@@ -24,16 +24,16 @@
                   <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel"> 
                        <div class="carousel-inner">
                            <cfloop array="#variables.productDetails.data.images#" item = image>
-                              <cfif image EQ variables.productDetails.data.defaultImagePath>
+                              <cfif image.imagePath EQ variables.productDetails.data.defaultImagePath>
                                  <div class="carousel-item active">
                                     <img 
-                                        src="#'./Assets/uploads/product'&application.objUser.decryptId(variables.productDetails.data.productId)#/#image#"
+                                        src="#'./Assets/uploads/product'&application.objUser.decryptId(variables.productDetails.data.productId)#/#image.imagePath#"
                                     >
                                  </div>
                                  <cfelse>
                                  <div class="carousel-item">
                                     <img 
-                                        src="#'./Assets/uploads/product'&application.objUser.decryptId(variables.productDetails.data.productId)#/#image#"
+                                        src="#'./Assets/uploads/product'&application.objUser.decryptId(variables.productDetails.data.productId)#/#image.imagePath#"
                                     >
                                  </div>
                               </cfif>

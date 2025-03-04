@@ -285,11 +285,11 @@ function validateProduct() {
         validProduct = false;
     }
 
-    if (productImages.files.length === 0) {
+    /* if (productImages.files.length === 0) {
         setError(productImageError, "select atleast one image");
         validProduct = false;
     }
-
+ */
     return validProduct;
 }
 

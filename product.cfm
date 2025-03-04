@@ -10,7 +10,8 @@
             productDescription = form.productDesc,
             unitPrice = form.unitPrice,
             unitTax = form.unitTax,
-            productImages = form.productImages
+            productImages = form.productImages,
+            defaultImageIndex = form.defaultImg
         )>
         <cfset variables.message = variables.result.message>
     <cfelse>
@@ -21,7 +22,8 @@
             description = form.productDesc,
             unitPrice = form.unitPrice,
             unitTax = form.unitTax,
-            productImages = form.productImages
+            productImages = form.productImages,
+            defaultImageIndex = form.defaultImg
         )>
         <cfset variables.message = "#variables.result.message#">
     </cfif>

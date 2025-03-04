@@ -1,5 +1,4 @@
-function resetErrorMsg()
-{
+function resetErrorMsg() {
     document.getElementById("categoryError").innerHTML = " ";
 }
 
@@ -24,8 +23,7 @@ $(document).on("click", function() {
     $(".productMsg").hide();
 });
 
-function resetSubcategoryError()
-{
+function resetSubcategoryError() {
     document.getElementById("subCategoryNameError").innerHTML = "";
 }
 
@@ -94,7 +92,7 @@ function editCategory(editBtn) {
             let parsedResult = JSON.parse(result);
             let categoryId = parsedResult.CATEGORIES[0].categoryId;
             let categoryName = parsedResult.CATEGORIES[0].categoryName;
-            
+
             $.ajax({
                 url: 'components/User.cfc?method=decryptId',
                 data: {
@@ -175,7 +173,7 @@ $("#categoryNameSelectPr").change(function() {
     getSubcategory();
 });
 
-function getSubcategory(urlSubCategoryId){
+function getSubcategory(urlSubCategoryId) {
     let categorySelected = $('#categoryNameSelectPr').val();
     let subCategoryElement = document.getElementById("selectSubCategory");
     if (categorySelected === "--") {
@@ -194,10 +192,8 @@ function getSubcategory(urlSubCategoryId){
                 for (let i = 0; i < subcategories.length; i++) {
                     let opt = document.createElement('option');
                     opt.value = subcategories[i].subCategoryId;
-                    if(urlSubCategoryId != undefined)
-                    {
-                        if(urlSubCategoryId === opt.value)
-                        {
+                    if (urlSubCategoryId != undefined) {
+                        if (urlSubCategoryId === opt.value) {
                             opt.selected = true;
                         }
                     }
@@ -216,8 +212,7 @@ function createproduct(subCategoryId) {
     getSubcategory(subCategoryId);
 }
 
-function resetProducterror()
-{
+function resetProducterror() {
     let categorySelectError = document.getElementById("categorySelectError");
     let subCategorySelectError = document.getElementById("subCategorySelectError");
     let productNameError = document.getElementById("productNameError");
@@ -241,48 +236,103 @@ function resetProducterror()
 
 function editProduct(editObj) {
     let subCategoryElement = document.getElementById("selectSubCategory");
+    let imageContainer = document.getElementById("imageCntr");
+    let decryptedId;
     $.ajax({
-        url: 'components/ProductManagement.cfc?method=getProductDetails',
+        url: 'components/User.cfc?method=decryptId',
         data: {
-            productId: editObj.productId
+            encryptedId: editObj.productId
         },
         type: 'POST',
-        success: function(result) {
-            let product = JSON.parse(result);
-            document.getElementById("productName").value = product.DATA.productName;
-            document.getElementById("brandName").value = product.DATA.brandId;
-            document.getElementById("productDesc").value = product.DATA.description;
-            document.getElementById("unitPrice").value = product.DATA.unitPrice;
-            document.getElementById("unitTax").value = product.DATA.unitTax;
-            document.getElementById("categoryNameSelectPr").value = editObj.categoryId;
-            document.getElementById("hiddenValue").value = editObj.productId;
-            $.ajax({
-                url: 'components/ProductManagement.cfc?method=fetchSubCategories',
-                type: 'POST',
-                data: {
-                    categoryId: editObj.categoryId
-                },
-                success: function(result) {
-                    let subcategories = JSON.parse(result).SUBCATEGORY;
-                    subCategoryElement.innerHTML = "";
-                    for (let i = 0; i < subcategories.length; i++) {
-                        let opt = document.createElement('option');
-                        opt.value = subcategories[i].subCategoryId;
-                        opt.innerHTML = subcategories[i].subCategoryName;
-                        subCategoryElement.appendChild(opt);
-                    }
-                    subCategoryElement.value = editObj.subCategoryId;
+        success: function(decryptResult) {
+            decryptedId = JSON.parse(decryptResult);
+            console.log(decryptedId);
 
+            $.ajax({
+                url: 'components/ProductManagement.cfc?method=getProductDetails',
+                data: {
+                    productId: editObj.productId
+                },
+                type: 'POST',
+                success: function(result) {
+                    let product = JSON.parse(result);
+                    console.log(product);
+                    let defaultImage = product.DATA.defaultImagePath;
+                    for (let i = 0; i < product.DATA.images.length; i++) {
+                        let imgBox = document.createElement('div');
+                        imgBox.style.display = "inline-block";
+                        imgBox.style.margin = "10px";
+                        imgBox.style.textAlign = "center";
+                        imgBox.id = product.DATA.images[i].imageId;
+                        let img = document.createElement('img');
+                        img.src = `./Assets/uploads/product${decryptedId}/${product.DATA.images[i].imagePath}`;
+                        img.style.width = "100px";
+                        img.style.height = "100px";
+                        img.style.display = "block";
+                        /* img.style.border = imagePath === defaultImage ? "2px solid green" : "1px solid gray"; */
+                        imgBox.appendChild(img);
+
+                        let radioInput = document.createElement('input');
+                        radioInput.setAttribute('type', 'radio');
+                        radioInput.setAttribute('name', "defaultImg");
+                        radioInput.setAttribute('value',`existing-${product.DATA.images[i].imageId}`);
+
+                        if (product.DATA.images[i].imagePath === defaultImage) {
+                            radioInput.checked = true;
+                        }
+                        else
+                        {
+                        let removeBtn = document.createElement('i');
+                        removeBtn.classList.add("fa-solid");
+                        removeBtn.classList.add("fa-xmark");
+                        removeBtn.style.margin = "10px";
+                        removeBtn.onclick = function() {
+                            deleteProductImage(product.DATA.images[i].imageId,product.DATA.images[i].imagePath, editObj.productId);
+                        };
+                         imgBox.appendChild(removeBtn);
+                        }
+                        imgBox.appendChild(radioInput);
+                        imageContainer.appendChild(imgBox);
+                        
+                    }
+                    
+                    document.getElementById("productName").value = product.DATA.productName;
+                    document.getElementById("brandName").value = product.DATA.brandId;
+                    document.getElementById("productDesc").value = product.DATA.description;
+                    document.getElementById("unitPrice").value = product.DATA.unitPrice;
+                    document.getElementById("unitTax").value = product.DATA.unitTax;
+                    document.getElementById("categoryNameSelectPr").value = editObj.categoryId;
+                    document.getElementById("hiddenValue").value = editObj.productId;
+                    $.ajax({
+                        url: 'components/ProductManagement.cfc?method=fetchSubCategories',
+                        type: 'POST',
+                        data: {
+                            categoryId: editObj.categoryId
+                        },
+                        success: function(result) {
+                            let subcategories = JSON.parse(result).SUBCATEGORY;
+                            subCategoryElement.innerHTML = "";
+                            for (let i = 0; i < subcategories.length; i++) {
+                                let opt = document.createElement('option');
+                                opt.value = subcategories[i].subCategoryId;
+                                opt.innerHTML = subcategories[i].subCategoryName;
+                                subCategoryElement.appendChild(opt);
+                            }
+                            subCategoryElement.value = editObj.subCategoryId;
+
+                        },
+                        error: function() {
+                            alert("Error fetching SubCategory");
+                        }
+                    });
                 },
                 error: function() {
-                    alert("Error fetching SubCategory");
+                    alert("Failed to edit product");
                 }
             });
-        },
-        error: function() {
-            alert("Failed to edit product");
         }
-    });
+    })
+
 }
 
 function deleteProduct(productId) {
@@ -378,7 +428,6 @@ function setThumbnail(productImage, productId) {
         },
         success: function() {
             editImages(productId);
-            location.reload()
         },
         error: function() {
             alert("Error setting thumbnail.");
@@ -386,16 +435,18 @@ function setThumbnail(productImage, productId) {
     });
 }
 
-function deleteProductImage(productImage, productId) {
+function deleteProductImage(productImageId,productImage, productId) {
     $.ajax({
         url: 'components/ProductManagement.cfc?method=deleteProductImage',
         type: 'POST',
         data: {
             productImage: productImage,
-            productId: productId
+            productId: productId,
+            productImageId:productImageId
         },
         success: function() {
-            editImages(productId);
+           /*  editImages(productId); */
+           document.getElementById(productImageId).remove();
         },
         error: function() {
             alert("Error deleting image.");
@@ -403,48 +454,51 @@ function deleteProductImage(productImage, productId) {
     });
 }
 
-function readURL(input)
-{
-     document.getElementById("imageCntr").innerHTML = "";
+function readURL(input) {
+  
+    document.querySelectorAll(".newImage").forEach(el => el.remove());
 
-      if (input.files && input.files.length > 0) {
+    if (input.files && input.files.length > 0) {
         for (let i = 0; i < input.files.length; i++) {
-          const reader = new FileReader();
-          reader.onload = function (e) {
-            let img = document.createElement("img");
-            img.src = e.target.result;
-            img.id = "product"+i;
-            img.style.width = "90px";
-            img.style.height = "150px"
-            img.style.margin = "5px";
-            document.getElementById("imageCntr").appendChild(img);
-            let radioInput = document.createElement('input');
-            radioInput.setAttribute('type', 'radio');
-            radioInput.setAttribute('name',"defaultImg");
-            document.getElementById("imageCntr").appendChild(radioInput);
-            let removeBtn = document.createElement('i');
-            removeBtn.classList.add("fa-solid");
-            removeBtn.classList.add("fa-xmark");
-            removeBtn.setAttribute("onclick",`deleteImage('${input.files[i].name}','product${i}')`)
-            document.getElementById("imageCntr").appendChild(removeBtn);
-          };
-          reader.readAsDataURL(input.files[i]);
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let img = document.createElement("img");
+                img.src = e.target.result;
+                img.style.width = "90px";
+                img.style.height = "150px"
+                img.style.margin = "5px";
+                let radioInput = document.createElement('input');
+                radioInput.setAttribute('type', 'radio');
+                radioInput.setAttribute('name', "defaultImg");
+                console.log(i)
+                radioInput.setAttribute('value',`new-${i}`);
+                let removeBtn = document.createElement('i');
+                removeBtn.classList.add("fa-solid");
+                removeBtn.classList.add("fa-xmark");
+                removeBtn.setAttribute("onclick", `deleteImage('${input.files[i].name}','product${i}')`)
+                let imageBox = document.createElement('div');
+                imageBox.classList.add("newImage");
+                imageBox.id = "product" + i;
+                imageBox.appendChild(img);
+                imageBox.appendChild(radioInput);
+                imageBox.appendChild(removeBtn);
+                document.getElementById("imageCntr").appendChild(imageBox);
+            };
+            reader.readAsDataURL(input.files[i]);
         }
-      }
+    }
 }
 
-function deleteImage(fileName,productId)
-{
+function deleteImage(fileName, productId) {
     let imageData = new DataTransfer();
     let images = document.getElementById("productImages").files;
     for (let index = 0; index < images.length; index++) {
-        if(images[index].name != fileName)
-        {
+        if (images[index].name != fileName) {
             imageData.items.add(images[index]);
         }
-        
+
     }
-    console.log(imageData)
+    console.log(productId)
     document.getElementById("productImages").files = imageData.files;
     document.getElementById(productId).remove();
 

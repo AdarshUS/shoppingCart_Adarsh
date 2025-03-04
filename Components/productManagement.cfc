@@ -361,6 +361,7 @@
         <cfargument  name="unitPrice" required="true" type="integer">
         <cfargument name="unitTax" required="true" type="integer" >
         <cfargument name="productImages" required="true" type="string">
+        <cfargument name="defaultImageIndex" required="true" type="string">
         <cfset local.result = {
             success = false,
             message = ""
@@ -410,9 +411,10 @@
                     </cfquery>
                     <cfif len(trim(arguments.productImages))>
                         <cfset insertProductImages(
-                            productId = product.generatedKey,
+                            productId = application.objUser.encryptId(product.generatedKey),
                             productImages = arguments.productImages,
-                            adminId = application.objUser.decryptId(session.loginAdminId)
+                            adminId = session.loginAdminId,
+                            defaultImageIndex = arguments.defaultImageIndex
                         )>
                     </cfif>
                     <cfset local.result.success = true>
@@ -574,6 +576,7 @@
                     TP.fldDescription,
                     TP.fldUnitPrice,
                     TP.fldUnitTax,
+                    TPI.fldProductImage_Id,
                     TPI.fldImageFilePath,
                     TPI.fldDefaultImage,
                     TB.fldBrandName,
@@ -597,7 +600,10 @@
             <cfif local.fetchProduct.recordCount>
                 <cfloop query="local.fetchProduct">
                     <cfif local.fetchProduct.fldImageFilePath NEQ "">
-                        <cfset arrayAppend(local.images, local.fetchProduct.fldImageFilePath)>
+                        <cfset arrayAppend(local.images, {
+                            "imageId": application.objUser.encryptId(local.fetchProduct.fldProductImage_Id),
+                            "imagePath": local.fetchProduct.fldImageFilePath
+                        })>
                     </cfif>
                     <cfif local.fetchProduct.fldDefaultImage EQ 1>
                         <cfset local.defaultImagePath = local.fetchProduct.fldImageFilePath> 
@@ -605,7 +611,7 @@
                 </cfloop>
     
                 <cfif local.defaultImagePath EQ "" AND arrayLen(local.images) GT 0>
-                    <cfset local.defaultImagePath = local.images[1]> 
+                    <cfset local.defaultImagePath = local.images[1]["imagePath"]> 
                 </cfif>
                 <cfset local.result.success = true>
                 <cfset local.result.message = "Successful operation">
@@ -647,14 +653,15 @@
         <cfargument name="unitPrice" required="true" type="integer">
         <cfargument name="unitTax" required="true" type="integer">
         <cfargument name="productImages" required="true" type="string">
-        <cfset local.decryptedProductId = int(application.objUser.decryptId(arguments.productId))>
+        <cfargument name="defaultImageIndex" required="true" type="string">
+        <cfset local.decryptedProductId = application.objUser.decryptId(arguments.productId)>
         <cfset local.decryptedSubCategoryId = application.objUser.decryptId(arguments.subCategoryId)>
         <cfset local.decryptedBrandId = application.objUser.decryptId(arguments.brandId)>
         <cfset local.result = {
             "success": false,
             "message": ""
         }>
-        <!--- <cftry> --->
+        <cftry>
             <cfif len(trim(arguments.productId))
                 AND len(trim(arguments.subCategoryId))
                 AND len(trim(arguments.productName))
@@ -692,33 +699,48 @@
                         WHERE
                             fldProduct_Id = <cfqueryparam value="#local.decryptedProductId#">
                     </cfquery>
-                    <cfif len(arguments.productImages)>
-                        <cfset insertProductImages(
-                            productId = local.decryptedProductId,
-                            productImages = arguments.productImages,
-                            adminId = local.adminId
-                        )>
+                    <cfif findNoCase("existing",arguments.defaultImageIndex)>
+                        <cfset local.productImageId = listLast(arguments.defaultImageIndex,"-")>
+                        <cfset updateDefaultImage(local.productImageId,arguments.productId)>
+                    </cfif>
+                    <cfif len(trim(arguments.productImages))>
+                        <cfif findNoCase("existing",arguments.defaultImageIndex)>
+                            <cfset insertProductImages(
+                                productId = arguments.productId,
+                                productImages = arguments.productImages,
+                                adminId = session.loginAdminId
+                            )>
+                        <cfelse>
+                            <cfset insertProductImages(
+                                productId = arguments.productId,
+                                productImages = arguments.productImages,
+                                adminId = session.loginAdminId,
+                                defaultImageIndex = arguments.defaultImageIndex
+                            )>
+                        </cfif>
                     </cfif>
                     <cfset local.result.success = true>
                     <cfset local.result.message = "successful Operation">
                 </cfif>
             </cfif>
-        <!--- <cfcatch>
-            <cfset local.result = "some error occured">
+        <cfcatch>
+            <cfset local.result.message = "some error occured">
             <cfset sendErrorEmail(
                 subject = "Error in function: updateProduct "&cfcatch.message,
                 body = "#cfcatch#"
             )>
         </cfcatch>
-        </cftry> --->
+        </cftry>
         <cfreturn local.result>
     </cffunction>
 
     <cffunction name="insertProductImages" access="private" returntype="void">
-        <cfargument name="productId" required="true" type="numeric">
+        <cfargument name="productId" required="true" type="string">
         <cfargument name="productImages" required="true" type="string">
-        <cfargument name="adminId" required="true" type="numeric">
-        <cfset local.productDirectory = expandPath('Assets/uploads/product' & arguments.productId)>
+        <cfargument name="adminId" required="true" type="string">
+        <cfargument name="defaultImageIndex" required="false" type="string">
+        <cfset local.productId = application.objUser.decryptId(arguments.productId)>
+        <cfset local.productDirectory = expandPath('Assets/uploads/product' & local.productId)>
         <cfif NOT directoryExists(local.productDirectory)>
             <cfset DirectoryCreate(local.productDirectory)>
         </cfif>
@@ -726,6 +748,9 @@
             productImages = arguments.productImages,
             productDirectory = local.productDirectory
         )>
+        <cfif structKeyExists(arguments,"defaultImageIndex")>
+            <cfset local.imageIndex = ListLast(arguments.defaultImageIndex, "-")>
+        </cfif>
         <cfloop array="#local.newPath#" item = "image" index="i">
             <cfif structKeyExists(image, "serverFile")>
                 <cfquery datasource="#application.datasource#">
@@ -736,10 +761,10 @@
                         fldDefaultImage
                     ) 
                     VALUES (
-                        <cfqueryparam value="#arguments.productId#" cfsqltype="integer">,
+                        <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">,
                         <cfqueryparam value="#image.serverFile#" cfsqltype="varchar">,
-                        <cfqueryparam value="#arguments.adminId#" cfsqltype="integer">,
-                        <cfif i EQ 1>
+                        <cfqueryparam value="#application.objUser.decryptId(arguments.adminId)#" cfsqltype="integer">,
+                        <cfif structKeyExists(local,"imageIndex") AND i EQ local.imageIndex + 1>
                             1
                         <cfelse>
                             0
@@ -784,9 +809,10 @@
     </cffunction>
 
     <cffunction name="updateDefaultImage" access="remote" returntype="void">
-        <cfargument name="productImage" required="true" type="string">
+        <cfargument name="productImageId" required="true" type="string">
         <cfargument name="productId" required="true" type="string">
-        <cfset local.decryptedProductId = application.objUser.decryptId(arguments.productId)>
+        <cfset local.productId = application.objUser.decryptId(arguments.productId)>
+        <cfset local.ProductImageId = application.objUser.decryptId(arguments.productImageId)>
         <cftry>
             <cfquery datasource="#application.datasource#">
                 UPDATE
@@ -794,7 +820,7 @@
                 SET
                     fldDefaultImage = 0
                 WHERE
-                    fldProductId = <cfqueryparam  value="#local.decryptedProductId#" cfsqltype="integer">
+                    fldProductId = <cfqueryparam  value="#local.productId#" cfsqltype="integer">
                     AND fldDefaultImage = 1
             </cfquery>
             <cfquery datasource="#application.datasource#">
@@ -802,8 +828,8 @@
                     tblproductimages
                 SET
                     fldDefaultImage = 1
-                WHERE
-                    fldImageFilePath = <cfqueryparam value = #arguments.productImage# cfsqltype="varchar">
+                WHERE 
+                    fldProductImage_Id = <cfqueryparam value="#local.ProductImageId#" cfsqltype="integer">
                     AND fldDefaultImage = 0
             </cfquery>
         <cfcatch>
@@ -818,7 +844,9 @@
     <cffunction name="deleteProductImage" access="remote" returntype="void">
         <cfargument name="productImage" required="true" type="string">
         <cfargument name="productId" required="true" type="string">
-        <cfset local.decryptedProductId =  application.objUser.decryptId(arguments.productId)>
+        <cfargument name="productimageId" required="true" type="string" >
+        <cfset local.productId = application.objUser.decryptId(arguments.productId)>
+        <cfset local.productImageId = application.objUser.decryptId(arguments.productimageId)>
         <cftry>
             <cfquery datasource="#application.datasource#">
                 UPDATE
@@ -828,10 +856,10 @@
                     fldDeactivatedBy = <cfqueryparam value="#application.objUser.decryptId(session.loginAdminId)#" cfsqltype="varchar">,
                     fldDeactivatedDate = now()
                 WHERE
-                    fldImageFilePath = <cfqueryparam value="#arguments.productImage#" cfsqltype="varchar">
+                    fldProductImage_Id = <cfqueryparam value="#local.productImageId#" cfsqltype="integer">
                     AND fldActive = 1
             </cfquery>
-            <cfset local.imagePath = expandPath('../Assets/uploads/product' & local.decryptedProductId & '/' & arguments.productImage)>
+            <cfset local.imagePath = expandPath('../Assets/uploads/product' & local.productId & '/' & arguments.productImage)>
             <cffile
                 action = "delete"
                 file = "#local.imagePath#"
