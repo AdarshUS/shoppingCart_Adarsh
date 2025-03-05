@@ -246,8 +246,6 @@ function editProduct(editObj) {
         type: 'POST',
         success: function(decryptResult) {
             decryptedId = JSON.parse(decryptResult);
-            console.log(decryptedId);
-
             $.ajax({
                 url: 'components/ProductManagement.cfc?method=getProductDetails',
                 data: {
@@ -256,20 +254,21 @@ function editProduct(editObj) {
                 type: 'POST',
                 success: function(result) {
                     let product = JSON.parse(result);
-                    console.log(product);
                     let defaultImage = product.DATA.defaultImagePath;
                     for (let i = 0; i < product.DATA.images.length; i++) {
                         let imgBox = document.createElement('div');
                         imgBox.style.display = "inline-block";
                         imgBox.style.margin = "10px";
+                        imgBox.style.width = "100px";
+                        imgBox.style.height = "100px";
                         imgBox.style.textAlign = "center";
                         imgBox.id = product.DATA.images[i].imageId;
                         let img = document.createElement('img');
                         img.src = `./Assets/uploads/product${decryptedId}/${product.DATA.images[i].imagePath}`;
-                        img.style.width = "100px";
-                        img.style.height = "100px";
+                        img.style.maxWidth = "100%";
+                        img.style.maxHeight = "100%";
                         img.style.display = "block";
-                        /* img.style.border = imagePath === defaultImage ? "2px solid green" : "1px solid gray"; */
+                        img.style.border = product.DATA.images[i].imagePath === defaultImage ? "2px solid green" : "1px solid gray";
                         imgBox.appendChild(img);
 
                         let radioInput = document.createElement('input');
@@ -285,7 +284,9 @@ function editProduct(editObj) {
                         let removeBtn = document.createElement('i');
                         removeBtn.classList.add("fa-solid");
                         removeBtn.classList.add("fa-xmark");
-                        removeBtn.style.margin = "10px";
+                        removeBtn.style.margin = "0 10px";
+                        removeBtn.style.color = "red";
+                        removeBtn.style.cursor = "pointer"
                         removeBtn.onclick = function() {
                             deleteProductImage(product.DATA.images[i].imageId,product.DATA.images[i].imagePath, editObj.productId);
                         };
@@ -293,9 +294,7 @@ function editProduct(editObj) {
                         }
                         imgBox.appendChild(radioInput);
                         imageContainer.appendChild(imgBox);
-                        
                     }
-                    
                     document.getElementById("productName").value = product.DATA.productName;
                     document.getElementById("brandName").value = product.DATA.brandId;
                     document.getElementById("productDesc").value = product.DATA.description;
@@ -353,89 +352,16 @@ function deleteProduct(productId) {
     }
 }
 
-function editImages(productId) {
-    $.ajax({
-        url: 'components/ProductManagement.cfc?method=getProductDetails',
-        data: {
-            productId: productId
-        },
-        type: 'POST',
-        success: function(result) {
-            let productData = JSON.parse(result).DATA;
-            let images = productData.images;
-            let defaultImage = productData.defaultImagePath;
-            $.ajax({
-                url: 'components/User.cfc?method=decryptId',
-                data: {
-                    encryptedId: productId
-                },
-                type: 'POST',
-                success: function(decryptResult) {
-                    let decryptedId = JSON.parse(decryptResult);
-
-                    let carouselContainer = document.getElementById("carouselContainer");
-                    carouselContainer.innerHTML = '';
-
-                    images.forEach((image, i) => {
-                        let div = document.createElement("div");
-                        div.setAttribute('class', image === defaultImage ? 'carousel-item active' : 'carousel-item');
-
-                        const img = document.createElement('img');
-                        img.src = `./Assets/uploads/product${decryptedId}/${image}`;
-                        img.alt = `Product Image ${i + 1}`;
-
-                        if (image !== defaultImage) {
-                            let setThumbnailBtn = document.createElement('button');
-                            setThumbnailBtn.innerHTML = "Set Thumbnail";
-                            setThumbnailBtn.className = 'thumbnailBtn btn btn-success m-2';
-                            setThumbnailBtn.onclick = function() {
-                                setThumbnail(image, productId);
-                            };
-
-                            let deleteImageBtn = document.createElement('button');
-                            deleteImageBtn.innerHTML = "Delete Image";
-                            deleteImageBtn.className = 'deleteImageBtn btn btn-danger m-2';
-                            deleteImageBtn.onclick = function() {
-                                deleteProductImage(image, productId);
-                            };
-
-                            div.appendChild(setThumbnailBtn);
-                            div.appendChild(deleteImageBtn);
-                        }
-
-                        div.appendChild(img);
-                        carouselContainer.appendChild(div);
-                    });
-                },
-                error: function() {
-                    alert("Failed to decrypt product ID.");
-                }
-            });
-        },
-        error: function() {
-            alert("Failed to fetch product details.");
-        }
-    });
-}
-
-function setThumbnail(productImage, productId) {
-    $.ajax({
-        url: 'components/ProductManagement.cfc?method=updateDefaultImage',
-        type: 'POST',
-        data: {
-            productImage: productImage,
-            productId: productId
-        },
-        success: function() {
-            editImages(productId);
-        },
-        error: function() {
-            alert("Error setting thumbnail.");
-        }
-    });
-}
-
 function deleteProductImage(productImageId,productImage, productId) {
+    Swal.fire({
+        title: "Are you sure you want to delete Image?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "remove"
+    }).then((result) => {
+  if (result.isConfirmed) {
     $.ajax({
         url: 'components/ProductManagement.cfc?method=deleteProductImage',
         type: 'POST',
@@ -445,48 +371,63 @@ function deleteProductImage(productImageId,productImage, productId) {
             productImageId:productImageId
         },
         success: function() {
-           /*  editImages(productId); */
            document.getElementById(productImageId).remove();
         },
         error: function() {
             alert("Error deleting image.");
         }
     });
+  }})
 }
 
 function readURL(input) {
   
     document.querySelectorAll(".newImage").forEach(el => el.remove());
+if (input.files && input.files.length > 0) {
+    for (let i = 0; i < input.files.length; i++) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            let img = document.createElement("img");
+            img.src = e.target.result;
+            img.style.maxWidth = "100%";
+            img.style.maxHeight = "100%";
+            img.style.display = "block";
 
-    if (input.files && input.files.length > 0) {
-        for (let i = 0; i < input.files.length; i++) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                let img = document.createElement("img");
-                img.src = e.target.result;
-                img.style.width = "90px";
-                img.style.height = "150px"
-                img.style.margin = "5px";
-                let radioInput = document.createElement('input');
-                radioInput.setAttribute('type', 'radio');
-                radioInput.setAttribute('name', "defaultImg");
-                console.log(i)
-                radioInput.setAttribute('value',`new-${i}`);
-                let removeBtn = document.createElement('i');
-                removeBtn.classList.add("fa-solid");
-                removeBtn.classList.add("fa-xmark");
-                removeBtn.setAttribute("onclick", `deleteImage('${input.files[i].name}','product${i}')`)
-                let imageBox = document.createElement('div');
-                imageBox.classList.add("newImage");
-                imageBox.id = "product" + i;
-                imageBox.appendChild(img);
-                imageBox.appendChild(radioInput);
-                imageBox.appendChild(removeBtn);
-                document.getElementById("imageCntr").appendChild(imageBox);
-            };
-            reader.readAsDataURL(input.files[i]);
-        }
+            let radioInput = document.createElement('input');
+            radioInput.setAttribute('type', 'radio');
+            radioInput.setAttribute('name', "defaultImg");
+            radioInput.setAttribute('value', `new-${i}`);      
+
+            let radios = document.getElementsByName("defaultImg");
+            let isChecked = Array.from(radios).some(radio => radio.checked);
+            if (i === 0 && !isChecked) {
+                radioInput.checked = true;
+            }
+            let removeBtn = document.createElement('i');
+            removeBtn.classList.add("fa-solid", "fa-xmark");
+            removeBtn.setAttribute("onclick", `deleteImage('${input.files[i].name}','product${i}')`);
+            removeBtn.style.margin = "0 10px";
+            removeBtn.style.color = "red";
+            removeBtn.style.cursor = "pointer";
+
+            let imageBox = document.createElement('div');
+            imageBox.classList.add("newImage");
+            imageBox.id = "product" + i;
+            imageBox.style.display = "inline-block";
+            imageBox.style.width = "100px";
+            imageBox.style.height = "100px";
+            imageBox.style.border = "1px solid gray";
+            imageBox.style.margin = "10px"
+
+            imageBox.appendChild(img);
+            imageBox.appendChild(radioInput);
+            imageBox.appendChild(removeBtn);
+            document.getElementById("imageCntr").appendChild(imageBox);
+        };
+        reader.readAsDataURL(input.files[i]);
     }
+}
+
 }
 
 function deleteImage(fileName, productId) {
@@ -498,7 +439,6 @@ function deleteImage(fileName, productId) {
         }
 
     }
-    console.log(productId)
     document.getElementById("productImages").files = imageData.files;
     document.getElementById(productId).remove();
 

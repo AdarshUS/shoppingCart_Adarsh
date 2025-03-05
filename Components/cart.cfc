@@ -19,7 +19,7 @@
                     fldUserId = <cfqueryparam value="#local.userId#" cfsqltype="integer">
             </cfquery>
             <cfif local.checkProductExist.RecordCount>
-                <cfset updateCartQnty(cartId = application.objUser.encryptId(checkProductExist.cartId), step="increment")>
+                <cfset updateCartQnty(cartId = application.objUser.encryptId(checkProductExist.cartId), step = 1)>
                 <cfset local.result.message = "product updated">
             <cfelse>
                 <cfquery datasource="#application.datasource#">

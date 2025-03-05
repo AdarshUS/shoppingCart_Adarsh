@@ -1,4 +1,4 @@
-<cfinclude  template="addAdress.cfm">
+<cfinclude template="addAdress.cfm">
 <cfset variables.productDetails = application.objProductManagement.getProductDetails(productId = url.productId)>
 <cfset addresses = {}>
 <cfif structKeyExists(session, "loginuserId")>
@@ -75,17 +75,19 @@
                     <form method="post">
                         <div class="buttonContainer">
                             <cfif NOT structKeyExists(session, "loginuserId")>
-                                <button 
-                                    type="button" 
-                                    class="btn btn-info p-2" 
-                                    onclick="window.location.href='userLogin.cfm?productId=#URLEncodedFormat(variables.productDetails.data.productId)#&redirect=product'">
+                                <button
+                                    type="button"
+                                    class="btn btn-info p-2"
+                                    onclick="window.location.href='userLogin.cfm?productId=#URLEncodedFormat(variables.productDetails.data.productId)#&redirect=product'"
+                                >
                                     Buy Now
                                 </button>
-                                <button 
+                                <button
                                     type="button"
                                     class="btn btn-success p-2" 
-                                    id="cartButton" 
-                                    onclick="window.location.href='userLogin.cfm?productId=#URLEncodedFormat(variables.productDetails.data.productId)#&redirect=cart'">
+                                    id="cartButton"
+                                    onclick="window.location.href='userLogin.cfm?productId=#URLEncodedFormat(variables.productDetails.data.productId)#&redirect=cart'"
+                                >
                                     Add to Cart
                                 </button>
                             <cfelse>

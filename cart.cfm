@@ -13,7 +13,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Your Cart</title>
-        <link rel="stylesheet" href="./Style/bootstrap.css">
+        <link rel="stylesheet" href="./Style/bootstrap.css"> 
         <link rel="stylesheet" href="./Style/fontawesome.css">
         <link rel="stylesheet" href="Style/homestyle.css">
     </head>
@@ -42,7 +42,7 @@
                             <tr id="#product.cartId#">
                                 <td>
                                    <img 
-                                        src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilepath#" 
+                                        src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilepath#"
                                         alt="Analog Magazine Rack"
                                     >
                                    <a href="productDetails.cfm?productId=#urlEncodedFormat(product.productId)#" class="productLink">#product.productName#</a><br>
@@ -54,7 +54,7 @@
                                             #(product.unitPrice + (product.unitPrice * (product.unittax / 100)))#
                                         </span>
                                     </div>
-                                    <span id="actualprice#product.cartId#" class="actualPric">
+                                    <span id="actualprice#product.cartId#" class="actualPrice">
                                         actualprice:
                                         <span class="actualPriceCart">#product.unitPrice#</span>
                                     </span>
@@ -122,20 +122,20 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                         <button 
-                            type="button" 
-                            class="btn btn-success addressAddBtn" 
-                            id="addAddressBtn" 
-                            name="submit" 
-                            data-bs-toggle="modal" 
+                            type="button"
+                            class="btn btn-success addressAddBtn"
+                            id="addAddressBtn"
+                            name="submit"
+                            data-bs-toggle="modal"
                             data-bs-target="##addressAddModal"
                         >
                         Add Address
                         </button>
-                        <button 
-                            type="button" 
-                            class="btn btn-primary" 
-                            id="submit" 
-                            name="submit" 
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            id="submit"
+                            name="submit"
                             onclick="placeOrder()"
                         >
                         Payment Details
@@ -149,6 +149,7 @@
         <script src="./Script/bootstrapScript.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="./Script/userPageScript.js"></script>
+        <script src="./Script/validation.js"></script>
     </body>
 </html>
 </cfoutput>

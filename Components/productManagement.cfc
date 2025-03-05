@@ -816,24 +816,29 @@
         <cfset local.productId = application.objUser.decryptId(arguments.productId)>
         <cfset local.ProductImageId = application.objUser.decryptId(arguments.productImageId)>
         <cftry>
-            <cfquery datasource="#application.datasource#">
-                UPDATE
-                    tblproductimages
-                SET
-                    fldDefaultImage = 0
-                WHERE
-                    fldProductId = <cfqueryparam  value="#local.productId#" cfsqltype="integer">
-                    AND fldDefaultImage = 1
-            </cfquery>
-            <cfquery datasource="#application.datasource#">
-                UPDATE
-                    tblproductimages
-                SET
-                    fldDefaultImage = 1
-                WHERE 
-                    fldProductImage_Id = <cfqueryparam value="#local.ProductImageId#" cfsqltype="integer">
-                    AND fldDefaultImage = 0
-            </cfquery>
+            <cftransaction>
+                <cfquery datasource="#application.datasource#">
+                    UPDATE
+                        tblproductimages
+                    SET
+                        fldDefaultImage = 0
+                    WHERE
+                        fldProductId = <cfqueryparam  value="#local.productId#" cfsqltype="integer">
+                        AND fldDefaultImage = 1
+                </cfquery>
+                <cfquery datasource="#application.datasource#" result="updateDefaultImage">
+                    UPDATE
+                        tblproductimages
+                    SET
+                        fldDefaultImage = 1
+                    WHERE 
+                        fldProductImage_Id = <cfqueryparam value="#local.ProductImageId#" cfsqltype="integer">
+                        AND fldDefaultImage = 0
+                </cfquery>
+                <cfif updateDefaultImage.recordCount EQ 0>
+                    <cftransaction action = "rollback">
+                </cfif>
+            </cftransaction>
         <cfcatch>
             <cfset sendErrorEmail(
                 subject = "Error in function: updateDefaultImage "&cfcatch.message, 
