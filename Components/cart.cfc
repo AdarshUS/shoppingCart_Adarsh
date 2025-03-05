@@ -6,15 +6,17 @@
             "message" = ""
         }>
         <cftry>
+            <cfset local.productId = application.objUser.decryptId(arguments.productId)>
+            <cfset local.userId = application.objUser.decryptId(session.loginuserId)>
             <cfquery name = "local.checkProductExist" datasource="#application.datasource#">
                 SELECT
                     fldCart_Id AS cartId
                 FROM
                     tblcart
                 WHERE
-                    fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
+                    fldProductId = <cfqueryparam value="#local.productId#" cfsqltype="integer">
                     AND
-                    fldProductId = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">
+                    fldUserId = <cfqueryparam value="#local.userId#" cfsqltype="integer">
             </cfquery>
             <cfif local.checkProductExist.RecordCount>
                 <cfset updateCartQnty(cartId = application.objUser.encryptId(checkProductExist.cartId), step="increment")>
@@ -27,8 +29,8 @@
                         fldQuantity
                         )
                     VALUES(
-                        <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">,
-                        <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">,
+                        <cfqueryparam value="#local.userId#" cfsqltype="integer">,
+                        <cfqueryparam value="#local.productId#" cfsqltype="integer">,
                         1
                     )
                 </cfquery>
@@ -39,7 +41,7 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = "error in function: addTocart", 
+                subject = "error in function: addTocart",
                 body = "#cfcatch#"
            )>
         </cfcatch>
@@ -124,12 +126,13 @@
     <cffunction name="deleteCart" access="remote" returntype="numeric" returnformat="JSON">
         <cfargument name="cartId" required="false" type="string"> 
         <cftry>
+            <cfset local.userId = application.objUser.decryptId(session.loginuserId)>
             <cftransaction>
                 <cfquery datasource="#application.datasource#">
                     DELETE FROM 
                         tblcart
                     WHERE
-                        fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
+                        fldUserId = <cfqueryparam value="#local.userId#" cfsqltype="integer">
                         AND fldCart_Id = <cfqueryparam value = "#application.objUser.decryptId(arguments.cartId)#" cfsqltype="integer">
                 </cfquery>
 
@@ -139,7 +142,7 @@
                     FROM
                         tblcart
                     WHERE
-                        fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
+                        fldUserId = <cfqueryparam value="#local.userId#" cfsqltype="integer">
                 </cfquery>
                 <cfset session.cartItemCount-=1>
             </cftransaction>
@@ -183,6 +186,7 @@
         <cfset local.orderId = createUUID()>
         <cfset local.cardDigits = right(arguments.cardnumber,4)>
         <cftry>
+            <cfset local.productId = application.objUser.decryptId(arguments.productId)>
             <cftransaction>
                 <cfquery name="getPriceDetails" datasource="#application.datasource#">
                     SELECT
@@ -191,7 +195,7 @@
                     FROM
                         tblproduct
                     WHERE
-                        fldProduct_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#">
+                        fldProduct_Id = <cfqueryparam value="#local.productId#">
                 </cfquery>
                 <cfset local.unitPrice = getPriceDetails.fldunitPrice>
                 <cfset local.unitTax = getPriceDetails.fldunitTax>
@@ -227,7 +231,7 @@
                     )
                     VALUES (
                         <cfqueryparam value="#local.orderId#" cfsqltype="varchar">,
-                        <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">,
+                        <cfqueryparam value="#local.productId#" cfsqltype="integer">,
                         <cfqueryparam value="#arguments.quantity#" cfsqltype="integer">,
                         <cfqueryparam value="#local.unitPrice#" cfsqltype="integer">,
                         <cfqueryparam value="#local.unitTax#" cfsqltype="integer">
@@ -238,7 +242,7 @@
                     FROM
                         tblcart
                     WHERE
-                        fldProductId = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#">
+                        fldProductId = <cfqueryparam value="#local.productId#">
                 </cfquery>
             </cftransaction>
             <cfset session.cartItemCount-=1>
