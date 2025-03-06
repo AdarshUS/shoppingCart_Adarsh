@@ -274,23 +274,21 @@ function editProduct(editObj) {
                         let radioInput = document.createElement('input');
                         radioInput.setAttribute('type', 'radio');
                         radioInput.setAttribute('name', "defaultImg");
-                        radioInput.setAttribute('value',`existing-${product.DATA.images[i].imageId}`);
+                        radioInput.setAttribute('value', `existing-${product.DATA.images[i].imageId}`);
 
                         if (product.DATA.images[i].imagePath === defaultImage) {
                             radioInput.checked = true;
-                        }
-                        else
-                        {
-                        let removeBtn = document.createElement('i');
-                        removeBtn.classList.add("fa-solid");
-                        removeBtn.classList.add("fa-xmark");
-                        removeBtn.style.margin = "0 10px";
-                        removeBtn.style.color = "red";
-                        removeBtn.style.cursor = "pointer"
-                        removeBtn.onclick = function() {
-                            deleteProductImage(product.DATA.images[i].imageId,product.DATA.images[i].imagePath, editObj.productId);
-                        };
-                         imgBox.appendChild(removeBtn);
+                        } else {
+                            let removeBtn = document.createElement('i');
+                            removeBtn.classList.add("fa-solid");
+                            removeBtn.classList.add("fa-xmark");
+                            removeBtn.style.margin = "0 10px";
+                            removeBtn.style.color = "red";
+                            removeBtn.style.cursor = "pointer"
+                            removeBtn.onclick = function() {
+                                deleteProductImage(product.DATA.images[i].imageId, product.DATA.images[i].imagePath, editObj.productId);
+                            };
+                            imgBox.appendChild(removeBtn);
                         }
                         imgBox.appendChild(radioInput);
                         imageContainer.appendChild(imgBox);
@@ -352,7 +350,7 @@ function deleteProduct(productId) {
     }
 }
 
-function deleteProductImage(productImageId,productImage, productId) {
+function deleteProductImage(productImageId, productImage, productId) {
     Swal.fire({
         title: "Are you sure you want to delete Image?",
         icon: "warning",
@@ -361,76 +359,90 @@ function deleteProductImage(productImageId,productImage, productId) {
         cancelButtonColor: "#d33",
         confirmButtonText: "remove"
     }).then((result) => {
-  if (result.isConfirmed) {
-    $.ajax({
-        url: 'components/ProductManagement.cfc?method=deleteProductImage',
-        type: 'POST',
-        data: {
-            productImage: productImage,
-            productId: productId,
-            productImageId:productImageId
-        },
-        success: function() {
-           document.getElementById(productImageId).remove();
-        },
-        error: function() {
-            alert("Error deleting image.");
+        if (result.isConfirmed) {
+            $.ajax({
+                url: 'components/ProductManagement.cfc?method=deleteProductImage',
+                type: 'POST',
+                data: {
+                    productImage: productImage,
+                    productId: productId,
+                    productImageId: productImageId
+                },
+                success: function() {
+                    document.getElementById(productImageId).remove();
+                },
+                error: function() {
+                    alert("Error deleting image.");
+                }
+            });
         }
-    });
-  }})
+    })
 }
 
 function readURL(input) {
-  
-    document.querySelectorAll(".newImage").forEach(el => el.remove());
-if (input.files && input.files.length > 0) {
-    for (let i = 0; i < input.files.length; i++) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            let img = document.createElement("img");
-            img.src = e.target.result;
-            img.style.maxWidth = "100%";
-            img.style.maxHeight = "100%";
-            img.style.display = "block";
 
-            let radioInput = document.createElement('input');
-            radioInput.setAttribute('type', 'radio');
-            radioInput.setAttribute('name', "defaultImg");
-            radioInput.setAttribute('value', `new-${i}`);      
+    $(".newImage").remove();
+    if (input.files && input.files.length > 0) {
+        for (let i = 0; i < input.files.length; i++) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let mainContainer = document.createElement('div');
+                mainContainer.classList.add("newImage");
+                mainContainer.style.display = "inline-block";
+                mainContainer.style.margin = "4px";
+                mainContainer.style.textAlign = "center";
+                mainContainer.id = "image" + i;
+                let imageBox = document.createElement('div');
+                imageBox.style.display = "flex";
+                imageBox.style.flexDirection = "column";
+                imageBox.style.alignItems = "center";
+                imageBox.style.width = "100px";
+                imageBox.style.height = "120px";
+                imageBox.style.border = "1px solid gray";
+                imageBox.style.margin = "10px"
 
-            let radios = document.getElementsByName("defaultImg");
-            let isChecked = Array.from(radios).some(radio => radio.checked);
-            if (i === 0 && !isChecked) {
-                radioInput.checked = true;
-            }
-            let removeBtn = document.createElement('i');
-            removeBtn.classList.add("fa-solid", "fa-xmark");
-            removeBtn.setAttribute("onclick", `deleteImage('${input.files[i].name}','product${i}')`);
-            removeBtn.style.margin = "0 10px";
-            removeBtn.style.color = "red";
-            removeBtn.style.cursor = "pointer";
+                let img = document.createElement("img");
+                img.src = e.target.result;
+                img.style.maxWidth = "100%";
+                img.style.maxHeight = "100%";
+                img.style.display = "block";
+                imageBox.appendChild(img);
 
-            let imageBox = document.createElement('div');
-            imageBox.classList.add("newImage");
-            imageBox.id = "product" + i;
-            imageBox.style.display = "inline-block";
-            imageBox.style.width = "100px";
-            imageBox.style.height = "100px";
-            imageBox.style.border = "1px solid gray";
-            imageBox.style.margin = "10px"
+                let imageControlsCntr = document.createElement('div');
+                imageControlsCntr.style.display = "flex";
+                imageControlsCntr.style.justifyContent = "center";
+                imageControlsCntr.style.alignItems = "center";
+                let radioInput = document.createElement('input');
+                radioInput.setAttribute('type', 'radio');
+                radioInput.setAttribute('name', "defaultImg");
+                radioInput.setAttribute('value', `new-${i}`);
 
-            imageBox.appendChild(img);
-            imageBox.appendChild(radioInput);
-            imageBox.appendChild(removeBtn);
-            document.getElementById("imageCntr").appendChild(imageBox);
-        };
-        reader.readAsDataURL(input.files[i]);
+                let radios = document.getElementsByName("defaultImg");
+                let isChecked = Array.from(radios).some(radio => radio.checked);
+                if (i === 0 && !isChecked) {
+                    radioInput.checked = true;
+                }
+                let removeBtn = document.createElement('i');
+                removeBtn.classList.add("fa-solid", "fa-xmark");
+                removeBtn.setAttribute("onclick", `deleteImage('${input.files[i].name}','image${i}')`);
+                removeBtn.style.margin = "0 10px";
+                removeBtn.style.color = "red";
+                removeBtn.style.cursor = "pointer";
+             
+                imageControlsCntr.appendChild(radioInput);
+                imageControlsCntr.appendChild(removeBtn);
+                mainContainer.appendChild(imageBox);
+                mainContainer.appendChild(imageControlsCntr);
+                document.getElementById("imageCntr").appendChild(mainContainer);
+            };
+            reader.readAsDataURL(input.files[i]);
+        }
     }
-}
 
 }
 
-function deleteImage(fileName, productId) {
+function deleteImage(fileName, ImageContainerId) {
+    console.log(ImageContainerId);
     let imageData = new DataTransfer();
     let images = document.getElementById("productImages").files;
     for (let index = 0; index < images.length; index++) {
@@ -440,6 +452,6 @@ function deleteImage(fileName, productId) {
 
     }
     document.getElementById("productImages").files = imageData.files;
-    document.getElementById(productId).remove();
-
+    document.getElementById(ImageContainerId).remove();
+    readURL(document.getElementById("productImages"));
 }

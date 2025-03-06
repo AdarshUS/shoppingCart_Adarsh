@@ -911,7 +911,7 @@
             destination="#arguments.productDirectory#"
             nameconflict="MakeUnique"
             filefield="#arguments.productImages#" 
-            allowedExtensions="jpg,png,gif,jpeg,webp"
+            allowedExtensions="jpg,png,gif,jpeg,webp,avif"
             strict="true" 
             result="local.newPath"
         >

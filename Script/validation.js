@@ -230,7 +230,7 @@ function validateProduct() {
     const unitPrice = document.getElementById("unitPrice").value;
     const unitTax = document.getElementById("unitTax").value;
     const productImages = document.getElementById("productImages");
-   
+    const hiddenValue = document.getElementById("hiddenValue").value;
     const categorySelectError = "categorySelectError";
     const subCategorySelectError = "subCategorySelectError";
     const productNameError = "productNameError";
@@ -285,11 +285,13 @@ function validateProduct() {
         validProduct = false;
     }
 
-    /* if (productImages.files.length === 0) {
+    if(!hiddenValue)
+    {
+        if (productImages.files.length === 0) {
         setError(productImageError, "select atleast one image");
         validProduct = false;
+        }
     }
- */
     return validProduct;
 }
 
