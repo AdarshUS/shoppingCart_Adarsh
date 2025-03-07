@@ -598,7 +598,6 @@
                     AND TP.fldActive = 1
                     AND TPI.fldActive = 1
             </cfquery>
-            
             <cfif local.fetchProduct.recordCount>
                 <cfloop query="local.fetchProduct">
                     <cfif local.fetchProduct.fldImageFilePath NEQ "">
@@ -701,10 +700,7 @@
                         WHERE
                             fldProduct_Id = <cfqueryparam value="#local.productId#">
                     </cfquery>
-                    <cfif findNoCase("existing",arguments.defaultImageIndex)>
-                        <cfset local.productImageId = listLast(arguments.defaultImageIndex,"-")>
-                        <cfset updateDefaultImage(local.productImageId,arguments.productId)>
-                    </cfif>
+                    <cfset updateDefaultImage(arguments.defaultImageIndex,arguments.productId)>
                     <cfif len(trim(arguments.productImages))>
                         <cfif findNoCase("existing",arguments.defaultImageIndex)>
                             <cfset insertProductImages(
@@ -811,10 +807,10 @@
     </cffunction>
 
     <cffunction name="updateDefaultImage" access="remote" returntype="void">
-        <cfargument name="productImageId" required="true" type="string">
+        <cfargument name="defaultImageIndex" required="true" type="string">
         <cfargument name="productId" required="true" type="string">
+        <cfdump var="#arguments.defaultImageIndex#">
         <cfset local.productId = application.objUser.decryptId(arguments.productId)>
-        <cfset local.ProductImageId = application.objUser.decryptId(arguments.productImageId)>
         <cftry>
             <cftransaction>
                 <cfquery datasource="#application.datasource#">
@@ -826,17 +822,21 @@
                         fldProductId = <cfqueryparam  value="#local.productId#" cfsqltype="integer">
                         AND fldDefaultImage = 1
                 </cfquery>
-                <cfquery datasource="#application.datasource#" result="updateDefaultImage">
-                    UPDATE
-                        tblproductimages
-                    SET
-                        fldDefaultImage = 1
-                    WHERE 
-                        fldProductImage_Id = <cfqueryparam value="#local.ProductImageId#" cfsqltype="integer">
-                        AND fldDefaultImage = 0
-                </cfquery>
-                <cfif updateDefaultImage.recordCount EQ 0>
-                    <cftransaction action = "rollback">
+                <cfif findNoCase("existing",arguments.defaultImageIndex)>
+                    <cfset local.encryptedProductImageId = listLast(arguments.defaultImageIndex,"-")>
+                    <cfset local.ProductImageId = application.objUser.decryptId(local.encryptedProductImageId)>
+                    <cfquery datasource="#application.datasource#" result="updateDefaultImage">
+                        UPDATE
+                            tblproductimages
+                        SET
+                            fldDefaultImage = 1
+                        WHERE 
+                            fldProductImage_Id = <cfqueryparam value="#local.ProductImageId#" cfsqltype="integer">
+                            AND fldDefaultImage = 0
+                    </cfquery>
+                    <cfif updateDefaultImage.recordCount EQ 0>
+                        <cftransaction action = "rollback">
+                    </cfif>
                 </cfif>
             </cftransaction>
         <cfcatch>
@@ -907,12 +907,12 @@
         <cfargument name="productDirectory" type="string" required="true">
         <cfset var result = {}>
         <cffile
-            action="uploadall" 
+            action="uploadall"
             destination="#arguments.productDirectory#"
             nameconflict="MakeUnique"
-            filefield="#arguments.productImages#" 
+            filefield="#arguments.productImages#"
             allowedExtensions="jpg,png,gif,jpeg,webp,avif"
-            strict="true" 
+            strict="true"
             result="local.newPath"
         >
         <cfset result = local.newPath>

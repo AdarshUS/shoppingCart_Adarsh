@@ -384,6 +384,7 @@ function readURL(input) {
     $(".newImage").remove();
     if (input.files && input.files.length > 0) {
         for (let i = 0; i < input.files.length; i++) {
+            console.log(i);
             const reader = new FileReader();
             reader.onload = function(e) {
                 let mainContainer = document.createElement('div');

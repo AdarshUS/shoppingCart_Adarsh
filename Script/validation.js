@@ -291,6 +291,17 @@ function validateProduct() {
         setError(productImageError, "select atleast one image");
         validProduct = false;
         }
+        else{
+            for (let index = 0; index < productImages.files.length; index++) {
+                const image = productImages.files[index];
+                if (!productImages.files[0].name.match(/\.(jpg|jpeg|png|gif)$/i))
+                {
+                    setError(productImageError, "Invalid image format");
+                    validProduct = false;
+                }
+                
+            }
+        }
     }
     return validProduct;
 }
