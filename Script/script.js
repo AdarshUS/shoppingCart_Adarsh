@@ -232,6 +232,7 @@ function resetProducterror() {
     productImageError.innerHTML = "";
     document.getElementById("imageCntr").innerHTML = "";
     document.getElementById("productForm").reset();
+    markedImages = [];
 }
 
 function setClassForDefault(imageId)
@@ -303,7 +304,7 @@ function editProduct(editObj) {
                             removeBtn.classList.add("removeBtn");
                       
                             removeBtn.onclick = function() {
-                            deleteProductImage(product.DATA.images[i].imageId, product.DATA.images[i].imagePath, editObj.productId);
+                                markImagesForDeletion(product.DATA.images[i].imageId, product.DATA.images[i].imagePath, editObj.productId);
                             };
                             dltBtn.appendChild(removeBtn);
                         }
@@ -462,3 +463,38 @@ function deleteImage(fileName, ImageContainerId) {
     document.getElementById(ImageContainerId).remove();
     readURL(document.getElementById("productImages"));
 }
+
+let markedImages = [];
+function markImagesForDeletion(productImageId,imagePath)
+{
+    if(!markedImages.includes(productImageId))
+    {
+        markedImages.push({imageId:productImageId,imagePath:imagePath});
+        document.getElementById(productImageId).remove();
+    }
+}
+
+$( "#productForm").on( "submit", function( event ) {
+    let productId = document.getElementById("hiddenValue").value;
+    if(markedImages.length > 0)
+    {
+        markedImages.forEach(productImage => {
+            $.ajax({
+                url: 'components/ProductManagement.cfc?method=deleteProductImage',
+                type: 'POST',
+                data: {
+                    productImage: productImage.imagePath,
+                    productId: productId,
+                    productImageId: productImage.imageId
+                },
+                success: function() {
+                    document.getElementById(productImageId).remove();
+                },
+                error: function() {
+                    alert("Error deleting image.");
+                }
+            });
+            
+        })
+    }
+});
