@@ -173,7 +173,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="productImages">Select Product Images</label>
-                        <input type="file" class="form-control-file" id="productImages" multiple name="productImages" accept="image/*" onchange="readURL(this)">
+                        <input type="file" class="form-control-file" id="productImages" multiple name="productImages" accept="image/*" onchange="displayImagePreview(this)">
                         <div id="productImageError" class="error"></div>
                         <input type="hidden" id="hiddenValue" name="hiddenValue">
                     </div>

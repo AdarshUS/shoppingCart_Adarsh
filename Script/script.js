@@ -264,17 +264,27 @@ function editProduct(editObj) {
                     console.log(product);
                     let defaultImage = product.DATA.defaultImagePath;
                     for (let i = 0; i < product.DATA.images.length; i++) {
-                        let imageId = "image"+i;
+                        let imageId = product.DATA.images[i].imageId;
                         let imageSrc = `./Assets/uploads/product${decryptedId}/${product.DATA.images[i].imagePath}`
-                        let mainContainer = createImageContainer(imageId = imageId,imageSrc = imageSrc,isExisting = true,productId = editObj.productId,imagePath = product.DATA.images[i].imagePath);
-                        let imageControlsCntr = createDefaultImageControls(imageId = imageId,isDefault = product.DATA.images[i].imagePath === defaultImage,isExisting = true,productImageId = product.DATA.images[i].imageId)
+                        let mainContainer = createImageContainer(
+                            imageId = imageId,
+                            imageSrc = imageSrc,
+                            isExisting = true,
+                            productId = editObj.productId,
+                            imagePath = product.DATA.images[i].imagePath
+                        );
+                        let imageControlsCntr = createDefaultImageSelector(
+                            imageId = imageId,
+                            isDefault = product.DATA.images[i].imagePath === defaultImage,
+                            isExisting = true,
+                            productImageId = product.DATA.images[i].imageId
+                        )
                         mainContainer.appendChild(imageControlsCntr);
                         imageContainer.appendChild(mainContainer);
                         if(product.DATA.images[i].imagePath === defaultImage)
                         {
                             setClassForDefault(imageId)
                         }
-                        
                     }
                     document.getElementById("productName").value = product.DATA.productName;
                     document.getElementById("brandName").value = product.DATA.brandId;
@@ -299,7 +309,6 @@ function editProduct(editObj) {
                                 subCategoryElement.appendChild(opt);
                             }
                             subCategoryElement.value = editObj.subCategoryId;
-
                         },
                         error: function() {
                             alert("Error fetching SubCategory");
@@ -362,33 +371,41 @@ function deleteProductImage(productImageId, productImage, productId) {
     })
 }
 
-function readURL(input) {
+function displayImagePreview(input) {
     $(".newImage").remove();
     if (input.files && input.files.length > 0) {
         for (let i = 0; i < input.files.length; i++) {
             const reader = new FileReader();
             reader.onload = function(e) {
+                console.log(reader.result)
                 let isDefault = false;
+                let imageId = "image"+i;
                 if($("input[name = defaultImg]:checked").length == 0)
                 {
                     isDefault = true;
                 }
-                let mainContainer = createImageContainer(imageId = "image"+i, imageSrc = e.target.result, isExisting = false, productId = null, imagePath = input.files[i].name);
-                let imageControlsCntr =  createDefaultImageControls(imageId = "image"+i, isDefault = isDefault, isExisting = false)
-              
+                let mainContainer = createImageContainer(
+                    imageId = imageId,
+                    imageSrc = e.target.result,
+                    isExisting = false,
+                    productId = null,
+                    imagePath = input.files[i].name
+                );
+                let imageControlsCntr = createDefaultImageSelector(
+                    imageId = imageId,
+                    isDefault = isDefault,
+                    isExisting = false
+                )
                 mainContainer.appendChild(imageControlsCntr);
-
                 document.getElementById("imageCntr").appendChild(mainContainer);
-                if (isDefault) {
-      
+                if (isDefault)   
+                {
                 setClassForDefault(imageId);
-    }
-
+                }
             };
             reader.readAsDataURL(input.files[i]);
         }
-    }
-
+    } 
 }
 
 function createImageContainer(imageId, imageSrc, isExisting, productId, imagePath) {
@@ -410,7 +427,7 @@ function createImageContainer(imageId, imageSrc, isExisting, productId, imagePat
 
     if (isExisting) {
         removeBtn.onclick = function() {
-            markImagesForDeletion(imageId.replace(/^\D+/g, ''), imagePath, productId);
+            markImagesForDeletion(imageId, imagePath, productId);
         };
     } else {
         removeBtn.onclick = function() {
@@ -425,7 +442,7 @@ function createImageContainer(imageId, imageSrc, isExisting, productId, imagePat
     return mainContainer;
 }
 
-function createDefaultImageControls(imageId, isDefault, isExisting,productImageId) {
+function createDefaultImageSelector(imageId, isDefault, isExisting,productImageId) {
     let imageControlsCntr = document.createElement('div');
     imageControlsCntr.classList.add("imageControlsCntr");
 
@@ -444,7 +461,6 @@ function createDefaultImageControls(imageId, isDefault, isExisting,productImageI
     
     if (isDefault) {
         radioInput.checked = true;
-        
     }
 
     imageControlsCntr.appendChild(radioInput);
@@ -465,7 +481,7 @@ function deleteImage(fileName, ImageContainerId) {
     }
     document.getElementById("productImages").files = imageData.files;
     document.getElementById(ImageContainerId).remove();
-    readURL(document.getElementById("productImages"));
+   displayImagePreview(document.getElementById("productImages"));
 }
 
 let markedImages = [];
@@ -473,12 +489,13 @@ function markImagesForDeletion(productImageId,imagePath)
 {
     if(!markedImages.includes(productImageId))
     {
+        console.log(productImageId)
         markedImages.push({imageId:productImageId,imagePath:imagePath});
-        document.getElementById("image"+productImageId).remove();
+        document.getElementById(productImageId).remove();
     }
 }
 
-$( "#productForm").on( "submit", function( event ) {
+$( "#productForm").on( "submit", function() {
     let productId = document.getElementById("hiddenValue").value;
     if(markedImages.length > 0)
     {
