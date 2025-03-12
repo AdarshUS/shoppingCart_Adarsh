@@ -237,6 +237,7 @@ function resetProducterror() {
 
 function setClassForDefault(imageId)
 {
+    alert("dd")
     $(".defaultImage").removeClass("defaultImage");
     document.getElementById(imageId).classList.add("defaultImage");
 }
@@ -297,7 +298,7 @@ function editProduct(editObj) {
                             radioInput.checked = true;
                             radioInput.classList.add("defaultImg");
                             label.innerHTML = "current default";
-                        } else {
+                        }
                             let removeBtn = document.createElement('i');
                             removeBtn.classList.add("fa-solid");
                             removeBtn.classList.add("fa-trash");
@@ -307,7 +308,7 @@ function editProduct(editObj) {
                                 markImagesForDeletion(product.DATA.images[i].imageId, product.DATA.images[i].imagePath, editObj.productId);
                             };
                             dltBtn.appendChild(removeBtn);
-                        }
+                        
                         mainContainer.appendChild(imgBox);
                         mainContainer.appendChild(imageControlsCntr);
                         imageContainer.appendChild(mainContainer);
@@ -404,18 +405,20 @@ function readURL(input) {
         for (let i = 0; i < input.files.length; i++) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                let mainContainer = document.createElement('div');
-                mainContainer.classList.add("newImage");
-                mainContainer.id = "image" + i;
-                let imageBox = document.createElement('div');
-                imageBox.classList.add("imageBox");
-                let img = document.createElement("img");
-                img.classList.add("ProdImg");
-                img.src = e.target.result;
-                imageBox.appendChild(img);
-                let dltBtn = document.createElement('div');
-                dltBtn.classList.add("deleteBtn");
-                imageBox.appendChild(dltBtn);
+                let mainContainer = createImageContainer(imageId = "image"+i, imageSrc = e.target.result, isExisting = false, productId = null, imagePath = file.name);
+                // let mainContainer = document.createElement('div');
+                // mainContainer.classList.add("newImage");
+                // mainContainer.id = "image" + i;
+                // let imageBox = document.createElement('div');
+                // imageBox.classList.add("imageBox");
+                // let img = document.createElement("img");
+                // img.classList.add("ProdImg");
+                // img.src = e.target.result;
+                // imageBox.appendChild(img);
+                // let dltBtn = document.createElement('div');
+                // dltBtn.classList.add("deleteBtn");
+                // imageBox.appendChild(dltBtn);
+                createDefaultImageControls(imageId = "image"+i, isDefault = , isExisting)
                 let imageControlsCntr = document.createElement('div');
                 imageControlsCntr.classList.add("imageControlsCntr");
                 let label = document.createElement('label');
@@ -424,7 +427,7 @@ function readURL(input) {
                 imageControlsCntr.appendChild(label);
                 let radioInput = document.createElement('input');
                 radioInput.onclick = function() {
-                    setClassForDefault(product.DATA.images[i].imageId);
+                    setClassForDefault("image"+i);
                 }
                 radioInput.setAttribute('type', 'radio');
                 radioInput.setAttribute('name', "defaultImg");
@@ -433,6 +436,7 @@ function readURL(input) {
                 let isChecked = Array.from(radios).some(radio => radio.checked);
                 if (i === 0 && !isChecked) {
                     radioInput.checked = true;
+                    mainContainer.classList.add("defaultImage");
                 }
                 let removeBtn = document.createElement('i');
                 removeBtn.classList.add("fa-solid", "fa-trash","removeBtn");
@@ -448,6 +452,67 @@ function readURL(input) {
     }
 
 }
+
+function createImageContainer(imageId, imageSrc, isExisting, productId, imagePath) {
+    let mainContainer = document.createElement('div');
+    mainContainer.classList.add(isExisting ? "existingImage" : "newImage");
+    mainContainer.id = imageId;
+
+    let imageBox = document.createElement('div');
+    imageBox.classList.add("imageBox");
+    let img = document.createElement("img");
+    img.classList.add("ProdImg");
+    img.src = imageSrc;
+    imageBox.appendChild(img);
+
+    let dltBtn = document.createElement('div');
+    dltBtn.classList.add("deleteBtn");
+    let removeBtn = document.createElement('i');
+    removeBtn.classList.add("fa-solid", "fa-trash", "removeBtn");
+
+    if (isExisting) {
+        removeBtn.onclick = function() {
+            markImagesForDeletion(imageId, imagePath, productId);
+        };
+    } else {
+        removeBtn.onclick = function() {
+            deleteImage(imagePath, imageId);
+        };
+    }
+
+    dltBtn.appendChild(removeBtn);
+    imageBox.appendChild(dltBtn);
+    mainContainer.appendChild(imageBox);
+    
+    return mainContainer;
+}
+
+function createDefaultImageControls(imageId, isDefault, isExisting) {
+    let imageControlsCntr = document.createElement('div');
+    imageControlsCntr.classList.add("imageControlsCntr");
+
+    let label = document.createElement('label');
+    label.innerHTML = isDefault ? "Current Default" : "Set Default";
+    label.classList.add('imgLabel');
+    imageControlsCntr.appendChild(label);
+
+    let radioInput = document.createElement('input');
+    radioInput.onclick = function() {
+        setClassForDefault(imageId);
+    };
+    radioInput.setAttribute('type', 'radio');
+    radioInput.setAttribute('name', "defaultImg");
+    radioInput.setAttribute('value', `${isExisting ? "existing" : "new"}-${imageId}`);
+
+    if (isDefault) {
+        radioInput.checked = true;
+    }
+
+    imageControlsCntr.appendChild(radioInput);
+    return imageControlsCntr;
+}
+
+
 
 function deleteImage(fileName, ImageContainerId) {
     console.log(ImageContainerId);
