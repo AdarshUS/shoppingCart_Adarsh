@@ -370,7 +370,7 @@
         }>
         <cfset local.decryptedSubCategoryId = application.objUser.decryptId(arguments.subCategoryId)>
         <cfset local.decryptedBrandId = application.objUser.decryptId(arguments.brandId)>
-        <cftry>
+       <!---  <cftry> --->
             <cfif len(trim(arguments.subCategoryId))
                 AND len(trim(arguments.productName))
                 AND len(trim(arguments.brandId))
@@ -423,14 +423,14 @@
                     <cfset local.result.message = "successful Operation">
                 </cfif>
             </cfif>
-        <cfcatch>
+        <!--- <cfcatch>
             <cfset local.result.message = "some error occured">
             <cfset sendErrorEmail(
                 subject = "Error in function: addProduct "&cfcatch.message,
                 body = "#cfcatch#"
             )>
         </cfcatch>
-        </cftry>
+        </cftry> --->
         <cfreturn local.result>
     </cffunction>
 
@@ -809,7 +809,6 @@
     <cffunction name="updateDefaultImage" access="remote" returntype="void">
         <cfargument name="defaultImageIndex" required="true" type="string">
         <cfargument name="productId" required="true" type="string">
-        <cfdump var="#arguments.defaultImageIndex#">
         <cfset local.productId = application.objUser.decryptId(arguments.productId)>
         <cftry>
             <cftransaction>
@@ -854,7 +853,8 @@
         <cfargument name="productimageId" required="true" type="string" >
         <cfset local.productId = application.objUser.decryptId(arguments.productId)>
         <cfset local.productImageId = application.objUser.decryptId(arguments.productimageId)>
-        <cftry>
+        <cfdump var="#local.productImageId#" abort>
+       <!---  <cftry> --->
             <cfquery datasource="#application.datasource#">
                 UPDATE
                     tblproductimages
@@ -871,14 +871,14 @@
                 action = "delete"
                 file = "#local.imagePath#"
             >
-        <cfcatch>
+        <!--- <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset sendErrorEmail(
                 subject = "Error in function: deleteProductImage "&cfcatch.message,
                 body = "#cfcatch#"
             )>
         </cfcatch>
-        </cftry>
+        </cftry> --->
     </cffunction>
   
     <cffunction name="sendErrorEmail" access="public" returntype="void" output="false">

@@ -294,7 +294,7 @@ function validateProduct() {
         else{
             for (let index = 0; index < productImages.files.length; index++) {
                 const image = productImages.files[index];
-                if (!productImages.files[0].name.match(/\.(jpg|jpeg|png|gif)$/i))
+                if (!productImages.files[0].name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i))
                 {
                     setError(productImageError, "Invalid image format");
                     validProduct = false;

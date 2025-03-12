@@ -237,10 +237,10 @@ function resetProducterror() {
 
 function setClassForDefault(imageId)
 {
-    alert("dd")
     $(".defaultImage").removeClass("defaultImage");
     document.getElementById(imageId).classList.add("defaultImage");
 }
+
 function editProduct(editObj) {
     let subCategoryElement = document.getElementById("selectSubCategory");
     let imageContainer = document.getElementById("imageCntr");
@@ -261,57 +261,20 @@ function editProduct(editObj) {
                 type: 'POST',
                 success: function(result) {
                     let product = JSON.parse(result);
+                    console.log(product);
                     let defaultImage = product.DATA.defaultImagePath;
                     for (let i = 0; i < product.DATA.images.length; i++) {
-                        let mainContainer = document.createElement('div');
-                        mainContainer.classList.add("existingImage");
-                        let imgBox = document.createElement('div');
-                        imgBox.classList.add("imageBox");
-                       
-                        mainContainer.id = product.DATA.images[i].imageId;
-                        let img = document.createElement('img');
-                        img.classList.add("ProdImg");
-                        img.src = `./Assets/uploads/product${decryptedId}/${product.DATA.images[i].imagePath}`;
-                        imgBox.style.border = product.DATA.images[i].imagePath === defaultImage ? "2px solid green" : "1px solid gray";
-                        imgBox.appendChild(img);
-                        let dltBtn = document.createElement('div');
-                        dltBtn.classList.add("deleteBtn");
-                        imgBox.appendChild(dltBtn);
-                        let imageControlsCntr = document.createElement('div');
-                        imageControlsCntr.classList.add("imageControlsCntr");
-                        let label = document.createElement('label');
-                        label.innerHTML = "Set Default";
-                        label.classList.add('imgLabel');
-                        imageControlsCntr.appendChild(label);
-                        let radioInput = document.createElement('input');
-                        radioInput.onclick = function() {
-                            setClassForDefault(product.DATA.images[i].imageId);
-                        }
-                        radioInput.setAttribute('type', 'radio');
-                        radioInput.setAttribute('name', "defaultImg");
-                        radioInput.setAttribute('value', `existing-${product.DATA.images[i].imageId}`);
-                        radioInput.classList.add('setDefaultBtn');
-                        imageControlsCntr.appendChild(radioInput);
-                        if (product.DATA.images[i].imagePath === defaultImage) {
-                            mainContainer.classList.add("defaultImage");
-                            mainContainer.classList.add("currentImage");
-                            radioInput.checked = true;
-                            radioInput.classList.add("defaultImg");
-                            label.innerHTML = "current default";
-                        }
-                            let removeBtn = document.createElement('i');
-                            removeBtn.classList.add("fa-solid");
-                            removeBtn.classList.add("fa-trash");
-                            removeBtn.classList.add("removeBtn");
-                      
-                            removeBtn.onclick = function() {
-                                markImagesForDeletion(product.DATA.images[i].imageId, product.DATA.images[i].imagePath, editObj.productId);
-                            };
-                            dltBtn.appendChild(removeBtn);
-                        
-                        mainContainer.appendChild(imgBox);
+                        let imageId = "image"+i;
+                        let imageSrc = `./Assets/uploads/product${decryptedId}/${product.DATA.images[i].imagePath}`
+                        let mainContainer = createImageContainer(imageId = imageId,imageSrc = imageSrc,isExisting = true,productId = editObj.productId,imagePath = product.DATA.images[i].imagePath);
+                        let imageControlsCntr = createDefaultImageControls(imageId = imageId,isDefault = product.DATA.images[i].imagePath === defaultImage,isExisting = true,productImageId = product.DATA.images[i].imageId)
                         mainContainer.appendChild(imageControlsCntr);
                         imageContainer.appendChild(mainContainer);
+                        if(product.DATA.images[i].imagePath === defaultImage)
+                        {
+                            setClassForDefault(imageId)
+                        }
+                        
                     }
                     document.getElementById("productName").value = product.DATA.productName;
                     document.getElementById("brandName").value = product.DATA.brandId;
@@ -405,47 +368,22 @@ function readURL(input) {
         for (let i = 0; i < input.files.length; i++) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                let mainContainer = createImageContainer(imageId = "image"+i, imageSrc = e.target.result, isExisting = false, productId = null, imagePath = file.name);
-                // let mainContainer = document.createElement('div');
-                // mainContainer.classList.add("newImage");
-                // mainContainer.id = "image" + i;
-                // let imageBox = document.createElement('div');
-                // imageBox.classList.add("imageBox");
-                // let img = document.createElement("img");
-                // img.classList.add("ProdImg");
-                // img.src = e.target.result;
-                // imageBox.appendChild(img);
-                // let dltBtn = document.createElement('div');
-                // dltBtn.classList.add("deleteBtn");
-                // imageBox.appendChild(dltBtn);
-                createDefaultImageControls(imageId = "image"+i, isDefault = , isExisting)
-                let imageControlsCntr = document.createElement('div');
-                imageControlsCntr.classList.add("imageControlsCntr");
-                let label = document.createElement('label');
-                label.innerHTML = "Set Default";
-                label.classList.add('imgLabel')
-                imageControlsCntr.appendChild(label);
-                let radioInput = document.createElement('input');
-                radioInput.onclick = function() {
-                    setClassForDefault("image"+i);
+                let isDefault = false;
+                if($("input[name = defaultImg]:checked").length == 0)
+                {
+                    isDefault = true;
                 }
-                radioInput.setAttribute('type', 'radio');
-                radioInput.setAttribute('name', "defaultImg");
-                radioInput.setAttribute('value', `new-${i}`);
-                let radios = document.getElementsByName("defaultImg");
-                let isChecked = Array.from(radios).some(radio => radio.checked);
-                if (i === 0 && !isChecked) {
-                    radioInput.checked = true;
-                    mainContainer.classList.add("defaultImage");
-                }
-                let removeBtn = document.createElement('i');
-                removeBtn.classList.add("fa-solid", "fa-trash","removeBtn");
-                removeBtn.setAttribute("onclick", `deleteImage('${input.files[i].name}','image${i}')`);
-                imageControlsCntr.appendChild(radioInput);
-                dltBtn.appendChild(removeBtn);
-                mainContainer.appendChild(imageBox);
+                let mainContainer = createImageContainer(imageId = "image"+i, imageSrc = e.target.result, isExisting = false, productId = null, imagePath = input.files[i].name);
+                let imageControlsCntr =  createDefaultImageControls(imageId = "image"+i, isDefault = isDefault, isExisting = false)
+              
                 mainContainer.appendChild(imageControlsCntr);
+
                 document.getElementById("imageCntr").appendChild(mainContainer);
+                if (isDefault) {
+      
+                setClassForDefault(imageId);
+    }
+
             };
             reader.readAsDataURL(input.files[i]);
         }
@@ -472,22 +410,22 @@ function createImageContainer(imageId, imageSrc, isExisting, productId, imagePat
 
     if (isExisting) {
         removeBtn.onclick = function() {
-            markImagesForDeletion(imageId, imagePath, productId);
+            markImagesForDeletion(imageId.replace(/^\D+/g, ''), imagePath, productId);
         };
     } else {
         removeBtn.onclick = function() {
-            deleteImage(imagePath, imageId);
+            deleteImage(imagePath,imageId);
         };
     }
 
-    dltBtn.appendChild(removeBtn);
     imageBox.appendChild(dltBtn);
+    dltBtn.appendChild(removeBtn);
     mainContainer.appendChild(imageBox);
     
     return mainContainer;
 }
 
-function createDefaultImageControls(imageId, isDefault, isExisting) {
+function createDefaultImageControls(imageId, isDefault, isExisting,productImageId) {
     let imageControlsCntr = document.createElement('div');
     imageControlsCntr.classList.add("imageControlsCntr");
 
@@ -502,10 +440,11 @@ function createDefaultImageControls(imageId, isDefault, isExisting) {
     };
     radioInput.setAttribute('type', 'radio');
     radioInput.setAttribute('name', "defaultImg");
-    radioInput.setAttribute('value', `${isExisting ? "existing" : "new"}-${imageId}`);
-
+    radioInput.setAttribute('value', isExisting?"existing-"+productImageId:"new-"+imageId.replace(/^\D+/g, ''));
+    
     if (isDefault) {
         radioInput.checked = true;
+        
     }
 
     imageControlsCntr.appendChild(radioInput);
@@ -535,7 +474,7 @@ function markImagesForDeletion(productImageId,imagePath)
     if(!markedImages.includes(productImageId))
     {
         markedImages.push({imageId:productImageId,imagePath:imagePath});
-        document.getElementById(productImageId).remove();
+        document.getElementById("image"+productImageId).remove();
     }
 }
 
