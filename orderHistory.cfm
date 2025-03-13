@@ -20,7 +20,7 @@
     <div class="mb-4 m-3">
         <form class="d-flex align-items-center" method="post">
             <span class="font-weight-bold">Order History</span>
-            <input class="form-control me-2" type="search" placeholder="Search orderId" aria-label="Search" name ="orderId">
+            <input class="form-control me-2" type="search" placeholder="Search orderId" aria-label="Search" name ="orderId" required>
             <button class="btn btn-outline-success" type="submit" name="submit">Search</button>
         </form>
     </div>

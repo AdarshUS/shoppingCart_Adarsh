@@ -27,14 +27,13 @@ function filterPrices(subcategoryId,searchText) {
     {
         minPrice = priceRange.dataset.start;
         maxPrice = priceRange.dataset.end;
-
         document.getElementById("productContainer").innerHTML = "";
         document.getElementById("viewMoreBtn").style.display = "none";
         document.getElementById("priceSort").innerHTML = "";
     }
     if(searchText)
     {
-        getAndDisplayProducts("fetchProducts", {
+        getAndDisplayProducts({
             searchText: searchText,
             startPrice: minPrice,
             endPrice: maxPrice
@@ -42,7 +41,7 @@ function filterPrices(subcategoryId,searchText) {
     }
     else
     {
-    getAndDisplayProducts("fetchProducts", {
+    getAndDisplayProducts({
         subcategoryId: subcategoryId,
         startPrice: minPrice,
         endPrice: maxPrice
@@ -68,6 +67,7 @@ async function getAndDisplayProducts(parameters) {
         });
         const parsedResult = JSON.parse(result);
         const products = parsedResult.products;
+        console.log(products)
         const productContainer = document.getElementById("productContainer");
         if(products.length < 4)
         {

@@ -7,7 +7,7 @@
         }>
         <cftry>
             <cfif LEN(trim(arguments.categoryName))>
-                <cfquery name="local.checkCategory" datasource="#application.datasource#">
+                <cfquery name="local.checkCategoryExist" datasource="#application.datasource#">
                     SELECT
                         count(*) AS categoryCount
                     FROM
@@ -16,7 +16,7 @@
                         fldCategoryName = <cfqueryparam value="#arguments.categoryName#" cfsqltype="varchar">
                         AND fldActive = 1;
                 </cfquery>
-                <cfif local.checkCategory.categoryCount>
+                <cfif local.checkCategoryExist.categoryCount>
                     <cfset local.result.message = "Category Already Exist">
                 <cfelse>
                     <cfquery datasource="#application.datasource#">
@@ -78,7 +78,7 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset sendErrorEmail(
-                subject = "Error in function: fetchAllCategories "&cfcatch.message, 
+                subject = "Error in function: fetchAllCategories "&cfcatch.message,
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -125,7 +125,6 @@
                 <cfset local.result.message = "empty category">
             </cfif>
         <cfcatch>
-            <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset sendErrorEmail(
                 subject = "Error in function: editCategory "&cfcatch.message, 
                 body = "#cfcatch#"
@@ -355,7 +354,7 @@
         </cftry>
     </cffunction>
 
-    <cffunction  name="addProduct" access="public" returntype="struct">
+    <cffunction name="addProduct" access="public" returntype="struct">
         <cfargument name="subCategoryId" required="true" type="string">
         <cfargument name="productName" required="true" type="string">
         <cfargument name="brandId" required="true" type="string">
@@ -447,6 +446,8 @@
                     fldBrandName
                 FROM
                     tblbrand
+                WHERE
+                    fldActive = 1 
             </cfquery>
             <cfloop query="local.fetchBrands">
                 <cfset arrayAppend(local.result.brands, {
@@ -747,30 +748,40 @@
             productDirectory = local.productDirectory
         )>
         <cfif structKeyExists(arguments,"defaultImageIndex")>
-            <cfset local.imageIndex = ListLast(arguments.defaultImageIndex, "-")>
+            <cfset local.imageIndex = ListLast(arguments.defaultImageIndex, "-")> 
         </cfif>
-        <cfloop array="#local.newPath#" item = "image" index="i">
-            <cfif structKeyExists(image, "serverFile")>
-                <cfquery datasource="#application.datasource#">
-                    INSERT INTO tblproductimages (
-                        fldProductId,
-                        fldImageFilePath,
-                        fldCreatedBy,
-                        fldDefaultImage
-                    ) 
-                    VALUES (
-                        <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">,
-                        <cfqueryparam value="#image.serverFile#" cfsqltype="varchar">,
-                        <cfqueryparam value="#application.objUser.decryptId(arguments.adminId)#" cfsqltype="integer">,
-                        <cfif structKeyExists(local,"imageIndex") AND i EQ local.imageIndex + 1>
-                            1
-                        <cfelse>
-                            0
+        <cftry>
+            <cfquery datasource="#application.datasource#">
+                INSERT INTO tblproductimages (
+                    fldProductId,
+                    fldImageFilePath,
+                    fldCreatedBy,
+                    fldDefaultImage
+                ) 
+                VALUES 
+                    <cfloop array="#local.newPath#" item = "image" index="i">
+                        (
+                            <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">,
+                            <cfqueryparam value="#image.serverFile#" cfsqltype="varchar">,
+                            <cfqueryparam value="#application.objUser.decryptId(arguments.adminId)#" cfsqltype="integer">,
+                            <cfif structKeyExists(local,"imageIndex") AND i EQ local.imageIndex + 1>
+                                1
+                            <cfelse>
+                                0
+                            </cfif>
+                        )
+                        <cfif i NEQ arrayLen(local.newPath)>
+                            ,
                         </cfif>
-                    )
-                </cfquery>
-            </cfif>
-        </cfloop>
+                    </cfloop>
+            </cfquery>
+        <cfcatch>
+            <cfset sendErrorEmail(
+                subject = "Error in function: insertProductImages "&cfcatch.message,
+                body = "#cfcatch#"
+            )>
+        </cfcatch>
+        </cftry>
     </cffunction>
 
     <cffunction name="deleteProduct" access="remote" returntype="void">
@@ -806,7 +817,7 @@
         </cftry>
     </cffunction>
 
-    <cffunction name="updateDefaultImage" access="remote" returntype="void">
+    <cffunction name="updateDefaultImage" access="public" returntype="void">
         <cfargument name="defaultImageIndex" required="true" type="string">
         <cfargument name="productId" required="true" type="string">
         <cfset local.productId = application.objUser.decryptId(arguments.productId)>
