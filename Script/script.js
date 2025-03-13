@@ -236,9 +236,20 @@ function resetProducterror() {
 }
 
 function setClassForDefault(imageId)
-{
-    $(".defaultImage").removeClass("defaultImage");
-    document.getElementById(imageId).classList.add("defaultImage");
+{ 
+    $(".defaultImage").removeClass("defaultImage").find(".imageBox").css("border", "1px solid gray");
+
+    $(".imgLabel").each(function () {
+        if ($(this).text().trim() === "Current Default") {
+            $(this).text("Set Default");
+        }
+    });
+
+    let selectedImage = document.getElementById(imageId);
+    selectedImage.classList.add("defaultImage");
+    
+    $(selectedImage).find(".imageBox").css("border", "2px solid green");
+    $(selectedImage).find(".imgLabel").text("Current Default");
 }
 
 function editProduct(editObj) {
