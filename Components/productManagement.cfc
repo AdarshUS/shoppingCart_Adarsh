@@ -470,8 +470,8 @@
 
     <cffunction name="fetchProducts" access="remote" returntype="struct" returnformat="JSON">
         <cfargument name="subCategoryId" type="string" required="false">
-        <cfargument name="startPrice" type="integer" required="false">
-        <cfargument name="endPrice" type="integer" required="false">
+        <cfargument name="startPrice" type="any" required="false">
+        <cfargument name="endPrice" type="any" required="false">
         <cfargument name="limit" type="integer" required="false">
         <cfargument name="searchText" type="string" required="false" >
         <cfargument name="sort" type="string" required="false">
@@ -496,7 +496,8 @@
                     P.fldUnitPrice,
                     P.fldUnitTax,
                     PI.fldImageFilePath,
-                    SC.fldSubCategoryName
+                    SC.fldSubCategoryName,
+                    count(*) over() AS totalProducts
                 FROM
                     tblproduct P
                     INNER JOIN tblbrand B ON P.fldBrandId = B.fldBrand_Id
@@ -508,7 +509,7 @@
                     <cfif structKeyExists(arguments, "subCategoryId") AND arguments.subCategoryId NEQ 0>
                         AND P.fldSubCategoryId = <cfqueryparam value="#local.subCategoryId#" cfsqltype="integer">
                     </cfif>
-                    <cfif structKeyExists(arguments, "startPrice") AND structKeyExists(arguments, "endPrice")>
+                    <cfif structKeyExists(arguments, "startPrice") AND structKeyExists(arguments, "endPrice") AND arguments.startIndex NEQ "" AND arguments.endPrice NEQ "">
                         AND P.fldUnitPrice BETWEEN <cfqueryparam value='#arguments.startPrice#' cfsqltype="integer"> 
                         AND <cfqueryparam value='#arguments.endPrice#' cfsqltype="integer">
                     </cfif>
@@ -544,7 +545,8 @@
                         "unitPrice": local.fetchProducts.fldUnitPrice,
                         "unitTax": local.fetchProducts.fldUnitTax,
                         "imageFilePath": local.fetchProducts.fldImageFilePath,
-                        "subcategoryName": local.fetchProducts.fldSubCategoryName
+                        "subcategoryName": local.fetchProducts.fldSubCategoryName,
+                        "totalProducts" : local.fetchProducts.totalProducts
                     })>
                 </cfloop>
             </cfif>
