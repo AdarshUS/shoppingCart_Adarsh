@@ -393,11 +393,11 @@ function displayImagePreview(input) {
                 {
                     isDefault = true;
                 }
+                    
                 let mainContainer = createImageContainer(
                     imageId = imageId,
                     imageSrc = e.target.result,
                     isExisting = false,
-                    productId = null,
                     imagePath = input.files[i].name
                 );
                 let imageControlsCntr = createDefaultImageSelector(
@@ -421,7 +421,6 @@ function createImageContainer(imageId, imageSrc, isExisting, imagePath) {
     let mainContainer = document.createElement('div');
     mainContainer.classList.add(isExisting ? "existingImage" : "newImage");
     mainContainer.id = imageId;
-
     let imageBox = document.createElement('div');
     imageBox.classList.add("imageBox");
     let img = document.createElement("img");
@@ -476,10 +475,7 @@ function createDefaultImageSelector(imageId, isDefault, isExisting,productImageI
     return imageControlsCntr;
 }
 
-
-
 function deleteImage(fileName, ImageContainerId) {
-    console.log(ImageContainerId);
     let imageData = new DataTransfer();
     let images = document.getElementById("productImages").files;
     for (let index = 0; index < images.length; index++) {
@@ -498,7 +494,6 @@ function markImagesForDeletion(productImageId,imagePath)
 {
     if(!markedImages.includes(productImageId))
     {
-        console.log(productImageId)
         markedImages.push({imageId:productImageId,imagePath:imagePath});
         document.getElementById(productImageId).remove();
     }

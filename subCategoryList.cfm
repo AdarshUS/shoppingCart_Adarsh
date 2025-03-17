@@ -61,8 +61,8 @@
                             <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(url.subcategoryId)#&sort=ASC&startPrice=#url.startPrice#&endPrice=#url.endPrice#">price: Low to High</a>
                             <a href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(url.subcategoryId)#&sort=DESC&startPrice=#url.startPrice#&endPrice=#url.endPrice#">price :High to Low</a>
                         <cfelse>
-                            <a href="subCategoryList.cfm?sort=ASC&searchText=#searchText#">price: Low to High</a>
-                            <a href="subCategoryList.cfm?sort=DESC&searchText=#searchText#">price :High to Low</a>
+                            <a href="subCategoryList.cfm?sort=ASC&searchText=#searchText#&startPrice=#url.startPrice#&endPrice=#url.endPrice#">price: Low to High</a>
+                            <a href="subCategoryList.cfm?sort=DESC&searchText=#searchText#&startPrice=#url.startPrice#&endPrice=#url.endPrice#">price :High to Low</a>
                         </cfif>
                     </div>
                     <div class="dropdown">
@@ -96,7 +96,7 @@
                                 <span class="align-self-center">-</span>
                                 <input type="number" class="form-control" id="maxPrice" placeholder="Max" disabled>
                             </div>
-                            <button class="btn btn-dark mt-3 filter-btn" onclick="filterPrices('#url.subcategoryId#','#searchText#')">Apply Filter</button>
+                            <button class="btn btn-dark mt-3 filter-btn" onclick="filterPrices()">Apply Filter</button>
                         </div>
                     </div>
                 </div>

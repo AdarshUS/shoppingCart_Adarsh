@@ -1,5 +1,5 @@
 let startindex = 0;
-function filterPrices(subcategoryId,searchText) {
+function filterPrices() {
     let priceRange = document.querySelector('input[name="filterPrice"]:checked');
     let minPrice;
     let maxPrice;
@@ -28,22 +28,11 @@ function filterPrices(subcategoryId,searchText) {
         minPrice = priceRange.dataset.start;
         maxPrice = priceRange.dataset.end;
     }
-   /*  if(searchText)
-    {
-        getAndDisplayProducts({
-            searchText: searchText,
-            startPrice: minPrice,
-            endPrice: maxPrice,
-            limit:4
-        });
-    }
-    else
-    { */
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('startPrice', minPrice);
-        urlParams.set('endPrice', maxPrice);
-        window.location.search = urlParams;
-  /*   } */
+
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('startPrice', minPrice);
+    urlParams.set('endPrice', maxPrice);
+    window.location.search = urlParams;
 }
 
 let searchElement = document.getElementById("searchForm");
@@ -127,7 +116,9 @@ function loadMoreProducts(subcategoryId,sort,searchText,startPrice,endPrice)
             startindex: startindex,
             searchText: searchText,
             sort: sort,
-            limit: 4
+            limit: 4,
+            startPrice:startPrice,
+            endPrice:endPrice
         });
     }
     else if(startPrice !== undefined && endPrice !== undefined)
