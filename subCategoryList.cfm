@@ -5,8 +5,6 @@
 <cfparam name="searchText" default="">
 <cfparam name="url.startPrice" default="">
 <cfparam name="url.endPrice" default="">
-<cfdump var="#url#" >
-<cfset variables.categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfif structKeyExists(url,"searchText") AND url.searchText NEQ "">
     <cfset variables.message = "Search Results for ""#url.searchText#""">
     <cfset searchText = url.searchText>
@@ -18,7 +16,6 @@
     )>
 <cfelse>
     <cfif structKeyExists(url,"startPrice")  AND url.startPrice NEQ "" AND structKeyExists(url,"endPrice") AND url.endPrice NEQ "">
-        <cfdump var="inside">
         <cfset variables.productDetails = application.objProductManagement.fetchProducts(
             subCategoryId = url.subCategoryId,
             startIndex = startIndex,

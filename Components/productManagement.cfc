@@ -136,7 +136,6 @@
 
     <cffunction name="deleteCategory" access="remote" returntype="void">
         <cfargument name="categoryId" required="true" type="string">
-        <cfset local.result = {success = false}>
         <cftry>
             <cfset local.adminId = application.objUser.decryptId(session.loginAdminId)>
             <cfquery datasource="#application.datasource#">
@@ -162,12 +161,9 @@
                     C.fldCategory_Id = <cfqueryparam value = "#application.objUser.decryptId(arguments.categoryId)#" cfsqltype = "integer">
                     AND C.fldActive = 1;
             </cfquery>
-            <cfset local.result.success = true>
-            <cfset local.result.message = "successful Operation">
         <cfcatch type="any">
-            <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset sendErrorEmail(
-                subject= "Error in function: deleteCategory "&cfcatch.message, 
+                subject= "Error in function: deleteCategory "&cfcatch.message,
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -235,7 +231,7 @@
         }>
         <cftry>
             <cfquery  name="local.fetchSubCategories" datasource="#application.datasource#">
-                SELECT 
+                SELECT
                     fldSubCategory_Id,
                     fldSubCategoryName,
                     fldCategoryId,
@@ -260,7 +256,7 @@
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset sendErrorEmail(
-                subject = "Error in function: fetchSubCategories "&cfcatch.message, 
+                subject = "Error in function: fetchSubCategories "&cfcatch.message,
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -348,6 +344,47 @@
         <cfcatch>
             <cfset sendErrorEmail(
                 subject = "Error in function: DeleteSubCategory "&cfcatch.message, 
+                body = "#cfcatch#"
+            )>
+        </cfcatch>
+        </cftry>
+    </cffunction>
+
+    <cffunction name="updateDefaultImage" access="public" returntype="void">
+        <cfargument name="defaultImageIndex" required="true" type="string">
+        <cfargument name="productId" required="true" type="string">
+        <cfset local.productId = application.objUser.decryptId(arguments.productId)>
+        <cftry>
+            <cftransaction>
+                <cfquery datasource="#application.datasource#">
+                    UPDATE
+                        tblproductimages
+                    SET
+                        fldDefaultImage = 0
+                    WHERE
+                        fldProductId = <cfqueryparam  value="#local.productId#" cfsqltype="integer">
+                        AND fldDefaultImage = 1
+                </cfquery>
+                <cfif findNoCase("existing",arguments.defaultImageIndex)>
+                    <cfset local.encryptedProductImageId = listLast(arguments.defaultImageIndex,"-")>
+                    <cfset local.ProductImageId = application.objUser.decryptId(local.encryptedProductImageId)>
+                    <cfquery datasource="#application.datasource#" result="updateDefaultImage">
+                        UPDATE
+                            tblproductimages
+                        SET
+                            fldDefaultImage = 1
+                        WHERE 
+                            fldProductImage_Id = <cfqueryparam value="#local.ProductImageId#" cfsqltype="integer">
+                            AND fldDefaultImage = 0
+                    </cfquery>
+                    <cfif updateDefaultImage.recordCount EQ 0>
+                        <cftransaction action = "rollback">
+                    </cfif>
+                </cfif>
+            </cftransaction>
+        <cfcatch>
+            <cfset sendErrorEmail(
+                subject = "Error in function: updateDefaultImage "&cfcatch.message, 
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -648,6 +685,8 @@
         <cfreturn local.result>
     </cffunction>
 
+    
+
     <cffunction name="updateProduct" access="public" returntype="struct">
         <cfargument name="productId" required="true" type="string">
         <cfargument name="subCategoryId" required="true" type="string">
@@ -665,7 +704,7 @@
             "success": false,
             "message": ""
         }>
-        <cftry>
+       <!---  <cftry> --->
             <cfif len(trim(arguments.productId))
                 AND len(trim(arguments.subCategoryId))
                 AND len(trim(arguments.productName))
@@ -703,7 +742,7 @@
                         WHERE
                             fldProduct_Id = <cfqueryparam value="#local.productId#">
                     </cfquery>
-                    <cfset updateDefaultImage(arguments.defaultImageIndex,arguments.productId)>
+                    <cfset updateDefaultImage(defaultImageIndex = arguments.defaultImageIndex,productId = arguments.productId)>
                     <cfif len(trim(arguments.productImages))>
                         <cfif findNoCase("existing",arguments.defaultImageIndex)>
                             <cfset insertProductImages(
@@ -724,14 +763,14 @@
                     <cfset local.result.message = "successful Operation">
                 </cfif>
             </cfif>
-        <cfcatch>
+        <!--- <cfcatch>
             <cfset local.result.message = "some error occured">
             <cfset sendErrorEmail(
                 subject = "Error in function: updateProduct "&cfcatch.message,
                 body = "#cfcatch#"
             )>
         </cfcatch>
-        </cftry>
+        </cftry> --->
         <cfreturn local.result>
     </cffunction>
 
@@ -805,7 +844,7 @@
                 WHERE
                     P.fldProduct_Id  = <cfqueryparam value="#local.decryptedProductId#" cfsqltype="integer">
                     AND P.fldActive = 1
-                    AND (PI.fldActive = 1 OR PI.fldActive IS NULL)
+                    AND PI.fldActive = 1
             </cfquery>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
@@ -819,46 +858,7 @@
         </cftry>
     </cffunction>
 
-    <cffunction name="updateDefaultImage" access="public" returntype="void">
-        <cfargument name="defaultImageIndex" required="true" type="string">
-        <cfargument name="productId" required="true" type="string">
-        <cfset local.productId = application.objUser.decryptId(arguments.productId)>
-        <cftry>
-            <cftransaction>
-                <cfquery datasource="#application.datasource#">
-                    UPDATE
-                        tblproductimages
-                    SET
-                        fldDefaultImage = 0
-                    WHERE
-                        fldProductId = <cfqueryparam  value="#local.productId#" cfsqltype="integer">
-                        AND fldDefaultImage = 1
-                </cfquery>
-                <cfif findNoCase("existing",arguments.defaultImageIndex)>
-                    <cfset local.encryptedProductImageId = listLast(arguments.defaultImageIndex,"-")>
-                    <cfset local.ProductImageId = application.objUser.decryptId(local.encryptedProductImageId)>
-                    <cfquery datasource="#application.datasource#" result="updateDefaultImage">
-                        UPDATE
-                            tblproductimages
-                        SET
-                            fldDefaultImage = 1
-                        WHERE 
-                            fldProductImage_Id = <cfqueryparam value="#local.ProductImageId#" cfsqltype="integer">
-                            AND fldDefaultImage = 0
-                    </cfquery>
-                    <cfif updateDefaultImage.recordCount EQ 0>
-                        <cftransaction action = "rollback">
-                    </cfif>
-                </cfif>
-            </cftransaction>
-        <cfcatch>
-            <cfset sendErrorEmail(
-                subject = "Error in function: updateDefaultImage "&cfcatch.message, 
-                body = "#cfcatch#"
-            )>
-        </cfcatch>
-        </cftry>
-    </cffunction>
+    
 
     <cffunction name="deleteProductImage" access="remote" returntype="void">
         <cfargument name="productImage" required="true" type="string">

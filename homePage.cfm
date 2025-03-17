@@ -36,8 +36,8 @@
                 <a class="productBox" href="productDetails.cfm?productId=#URLEncodedFormat(product.productId)#">
                     <div class="productImage">
                         <img 
-                            src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#" 
-                            alt="productImage" 
+                            src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#"
+                            alt="productImage"
                             class="prodimg"
                         >
                     </div>

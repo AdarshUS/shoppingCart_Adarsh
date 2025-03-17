@@ -30,7 +30,7 @@
 </cfif>
 <cfset variables.categoriesResult = application.objProductManagement.fetchAllCategories()>
 <cfset variables.brandsResult = application.objProductManagement.fetchBrands()>
-<cfset variables.productDetails = application.objProductManagement.fetchProducts(subCategoryId =url.subCategoryId)>
+<cfset variables.products = application.objProductManagement.fetchProducts(subCategoryId =url.subCategoryId)>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,8 +64,8 @@
                     Back to Subcategory
                 </a>
             </div>
-            <cfif arrayLen(#variables.productDetails.products#)>
-                <cfloop array = "#variables.productDetails.products#"  index="product">
+            <cfif arrayLen(#variables.products.products#)>
+                <cfloop array = "#variables.products.products#" index="product">
                     <div class="productBody" id="#product.productId#">
                        <div class="productItem">
                             <div class="productItemLeft">
@@ -80,20 +80,20 @@
                                 >
                             </div>
                             <div class="productItemRight">
-                                <button class="productfnBtn" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="##productModal" 
-                                    id="editProductBtn" 
-                                    value="#product.productId#" 
-                                    onclick="editProduct({ 
-                                        productId: '#product.productId#', 
-                                        categoryId: '#url.categoryId#', 
-                                        subCategoryId: '#url.subCategoryId#' 
+                                <button class="productfnBtn"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="##productModal"
+                                    id="editProductBtn"
+                                    value="#product.productId#"
+                                    onclick="editProduct({
+                                        productId: '#product.productId#',
+                                        categoryId: '#url.categoryId#',
+                                        subCategoryId: '#url.subCategoryId#'
                                     })">
                                     <i class="fa-solid fa-pen-to-square productfns"></i>
                                 </button>
                                 <button 
-                                    class="productfnBtn" 
+                                    class="productfnBtn"
                                     onclick="deleteProduct('#product.productId#')"
                                 >
                                     <i class="fa-solid fa-trash productfns"></i>
@@ -133,11 +133,7 @@
                     <div class="mb-3">
                         <label for="selectSubCategory" class="form-label">Select SubCategory Name</label>
                         <select class="form-control" id="selectSubCategory" name = "selectSubCategory">
-                            <option 
-                                <cfif category.categoryId EQ url.categoryId>
-                                    selected
-                                </cfif>
-                            >--</option>
+                            <option>--</option>
                         </select>
                         <div id="subCategorySelectError" class="error"></div>
                     </div>

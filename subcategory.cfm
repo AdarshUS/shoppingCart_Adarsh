@@ -53,19 +53,18 @@
                                 class="categoryBtn"
                                 value="#subCategory.subcategoryId#"
                                 onclick="editSubCategory({
-                                    categoryId: '#application.objUser.decryptId(url.categoryId)#',
                                     subCategoryName: '#JSStringFormat(subCategory.subCategoryName)#',
                                     subCategoryId: '#application.objUser.decryptId(subCategory.subcategoryId)#'
                                 })">
                                 <i class="fa-solid fa-pen-to-square categoryfns"></i>
                             </button>
-                            <button 
-                                class="categoryBtn" 
+                            <button
+                                class="categoryBtn"
                                 onclick="deleteSubCategory('#subCategory.subcategoryId#','#url.categoryId#')"
                             >
                                 <i class="fa-solid fa-trash categoryfns"></i></button>
                             <a 
-                                class="categoryBtn" 
+                                class="categoryBtn"
                                 href="./product.cfm?subCategoryId=#URLEncodedFormat(subcategory.subcategoryId)#&categoryId=#URLEncodedFormat(url.categoryId)#"
                             >
                                 <i class="fa-solid fa-circle-arrow-right categoryfns"></i>

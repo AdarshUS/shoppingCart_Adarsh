@@ -52,7 +52,7 @@ function insertEditCategory() {
 
             },
             error: function() {
-                onsole.error("Error in insertion.");
+                console.error("Error in insertion.");
             }
         });
     } else {
@@ -231,6 +231,7 @@ function resetProducterror() {
     unitTaxError.innerHTML = "";
     productImageError.innerHTML = "";
     document.getElementById("imageCntr").innerHTML = "";
+    document.getElementById("productModalLabel").innerHTML = "Add Product";
     document.getElementById("productForm").reset();
     markedImages = [];
 }
@@ -253,6 +254,7 @@ function setClassForDefault(imageId)
 }
 
 function editProduct(editObj) {
+    document.getElementById("productModalLabel").innerHTML = "Edit Product";
     let subCategoryElement = document.getElementById("selectSubCategory");
     let imageContainer = document.getElementById("imageCntr");
     let decryptedId;
@@ -281,7 +283,6 @@ function editProduct(editObj) {
                             imageId = imageId,
                             imageSrc = imageSrc,
                             isExisting = true,
-                            productId = editObj.productId,
                             imagePath = product.DATA.images[i].imagePath
                         );
                         let imageControlsCntr = createDefaultImageSelector(
@@ -419,7 +420,7 @@ function displayImagePreview(input) {
     } 
 }
 
-function createImageContainer(imageId, imageSrc, isExisting, productId, imagePath) {
+function createImageContainer(imageId, imageSrc, isExisting, imagePath) {
     let mainContainer = document.createElement('div');
     mainContainer.classList.add(isExisting ? "existingImage" : "newImage");
     mainContainer.id = imageId;
@@ -438,7 +439,7 @@ function createImageContainer(imageId, imageSrc, isExisting, productId, imagePat
 
     if (isExisting) {
         removeBtn.onclick = function() {
-            markImagesForDeletion(imageId, imagePath, productId);
+            markImagesForDeletion(imageId, imagePath);
         };
     } else {
         removeBtn.onclick = function() {
