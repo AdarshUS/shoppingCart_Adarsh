@@ -45,33 +45,40 @@
             </div>
             <div class = "mx-2 text-decoration-none"><a href = "category.cfm"><i class="fa-solid fa-backward"></i>Back to Category</a></div>
             <div class="categoryBody">
-                <cfloop array="#variables.subcategoriesResult.subcategory#" item="subCategory">
-                    <div class="categoryItem" id="#subCategory.subcategoryId#">
-                        <div class="categoryItemText">#subCategory.subCategoryName#</div>
-                        <div class="categoryItemRight">
-                            <button data-bs-toggle="modal" data-bs-target="##subCategoryModal"
-                                class="categoryBtn"
-                                value="#subCategory.subcategoryId#"
-                                onclick="editSubCategory({
-                                    subCategoryName: '#JSStringFormat(subCategory.subCategoryName)#',
-                                    subCategoryId: '#application.objUser.decryptId(subCategory.subcategoryId)#'
-                                })">
-                                <i class="fa-solid fa-pen-to-square categoryfns"></i>
-                            </button>
-                            <button
-                                class="categoryBtn"
-                                onclick="deleteSubCategory('#subCategory.subcategoryId#','#url.categoryId#')"
-                            >
-                                <i class="fa-solid fa-trash categoryfns"></i></button>
-                            <a 
-                                class="categoryBtn"
-                                href="./product.cfm?subCategoryId=#URLEncodedFormat(subcategory.subcategoryId)#&categoryId=#URLEncodedFormat(url.categoryId)#"
-                            >
-                                <i class="fa-solid fa-circle-arrow-right categoryfns"></i>
-                            </a>
+                <cfif arrayLen(variables.subcategoriesResult.subcategory)>
+                    <cfloop array="#variables.subcategoriesResult.subcategory#" item="subCategory">
+                        <div class="categoryItem" id="#subCategory.subcategoryId#">
+                            <div class="categoryItemText">#subCategory.subCategoryName#</div>
+                            <div class="categoryItemRight">
+                                <button data-bs-toggle="modal" data-bs-target="##subCategoryModal"
+                                    class="categoryBtn"
+                                    value="#subCategory.subcategoryId#"
+                                    onclick="editSubCategory({
+                                        subCategoryName: '#JSStringFormat(subCategory.subCategoryName)#',
+                                        subCategoryId: '#application.objUser.decryptId(subCategory.subcategoryId)#'
+                                    })">
+                                    <i class="fa-solid fa-pen-to-square categoryfns"></i>
+                                </button>
+                                <button
+                                    class="categoryBtn"
+                                    onclick="deleteSubCategory('#subCategory.subcategoryId#','#url.categoryId#')"
+                                >
+                                    <i class="fa-solid fa-trash categoryfns"></i></button>
+                                <a 
+                                    class="categoryBtn"
+                                    href="./product.cfm?subCategoryId=#URLEncodedFormat(subcategory.subcategoryId)#&categoryId=#URLEncodedFormat(url.categoryId)#"
+                                >
+                                    <i class="fa-solid fa-circle-arrow-right categoryfns"></i>
+                                </a>
+                            </div>
                         </div>
+                    </cfloop>
+                <cfelse>
+                    <div class="m-3">
+                        No subCategories
                     </div>
-                </cfloop>
+                </cfif>
+                
             </div>
         </div>
       <cfif LEN(trim(variables.message)) GT 0>

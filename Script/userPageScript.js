@@ -28,7 +28,7 @@ function filterPrices(subcategoryId,searchText) {
         minPrice = priceRange.dataset.start;
         maxPrice = priceRange.dataset.end;
     }
-    if(searchText)
+   /*  if(searchText)
     {
         getAndDisplayProducts({
             searchText: searchText,
@@ -38,12 +38,12 @@ function filterPrices(subcategoryId,searchText) {
         });
     }
     else
-    {
+    { */
         const urlParams = new URLSearchParams(window.location.search);
         urlParams.set('startPrice', minPrice);
         urlParams.set('endPrice', maxPrice);
         window.location.search = urlParams;
-    }
+  /*   } */
 }
 
 let searchElement = document.getElementById("searchForm");

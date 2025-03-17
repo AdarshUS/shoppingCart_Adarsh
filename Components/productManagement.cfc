@@ -126,7 +126,7 @@
             </cfif>
         <cfcatch>
             <cfset sendErrorEmail(
-                subject = "Error in function: editCategory "&cfcatch.message, 
+                subject = "Error in function: editCategory "&cfcatch.message,
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -546,7 +546,12 @@
                     <cfif structKeyExists(arguments, "subCategoryId") AND arguments.subCategoryId NEQ 0>
                         AND P.fldSubCategoryId = <cfqueryparam value="#local.subCategoryId#" cfsqltype="integer">
                     </cfif>
-                    <cfif structKeyExists(arguments, "startPrice") AND structKeyExists(arguments, "endPrice") AND arguments.startIndex NEQ "" AND arguments.endPrice NEQ "">
+                    <cfif
+                        structKeyExists(arguments, "startPrice")
+                        AND structKeyExists(arguments, "endPrice")
+                        AND arguments.startPrice NEQ ""
+                        AND arguments.endPrice NEQ ""
+                    >
                         AND P.fldUnitPrice BETWEEN <cfqueryparam value='#arguments.startPrice#' cfsqltype="integer">
                         AND <cfqueryparam value='#arguments.endPrice#' cfsqltype="integer">
                     </cfif>
@@ -685,8 +690,6 @@
         <cfreturn local.result>
     </cffunction>
 
-    
-
     <cffunction name="updateProduct" access="public" returntype="struct">
         <cfargument name="productId" required="true" type="string">
         <cfargument name="subCategoryId" required="true" type="string">
@@ -799,7 +802,7 @@
                     fldCreatedBy,
                     fldDefaultImage
                 ) 
-                VALUES 
+                VALUES
                     <cfloop array="#local.newPath#" item = "image" index="i">
                         (
                             <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">,

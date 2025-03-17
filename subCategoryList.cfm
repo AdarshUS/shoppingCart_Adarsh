@@ -12,7 +12,9 @@
         searchText = url.searchText,
         startIndex = startIndex,
         limit = 4,
-        sort = url.sort
+        sort = url.sort,
+        startPrice = url.startPrice,
+        endPrice = url.endPrice
     )>
 <cfelse>
     <cfif structKeyExists(url,"startPrice") AND url.startPrice NEQ "" AND structKeyExists(url,"endPrice") AND url.endPrice NEQ "">
@@ -26,9 +28,9 @@
         )>
     <cfelse>
         <cfset variables.productDetails = application.objProductManagement.fetchProducts(
-        subCategoryId = url.subCategoryId,
-        limit = 4,
-        sort = url.sort
+            subCategoryId = url.subCategoryId,
+            limit = 4,
+            sort = url.sort
     )>
     </cfif>
 </cfif>
@@ -70,23 +72,23 @@
                         <div class="dropdown-menu" aria-labelledby="filterDropdown">
                             <h6 class="dropdown-header">Select Price Range</h6>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="filterPrice" id="price1" data-start="0" data-end="1000">
+                                <input class="form-check-input filterRadio" type="radio" name="filterPrice" id="price1" data-start="0" data-end="1000">
                                 <label class="form-check-label" for="price1">0 to 1,000</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="filterPrice" id="price2" data-start="1000" data-end="10000">
+                                <input class="form-check-input filterRadio" type="radio" name="filterPrice" id="price2" data-start="1000" data-end="10000">
                                 <label class="form-check-label" for="price2">1,000 to 10,000</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="filterPrice" id="price3" data-start="10000" data-end="15000">
+                                <input class="form-check-input filterRadio" type="radio" name="filterPrice" id="price3" data-start="10000" data-end="15000">
                                 <label class="form-check-label" for="price3">10,000 to 15,000</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="filterPrice" id="price4" data-start="15000" data-end="25000">
+                                <input class="form-check-input filterRadio" type="radio" name="filterPrice" id="price4" data-start="15000" data-end="25000">
                                 <label class="form-check-label" for="price4">15,000 to 25,000</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="filterPrice" id="customFilterInput" value="custom">
+                                <input class="form-check-input filterRadio" type="radio" name="filterPrice" id="customFilterInput" value="custom">
                                 <label class="form-check-label" for="custom">Custom</label>
                             </div>
                             <div class="d-flex gap-2">

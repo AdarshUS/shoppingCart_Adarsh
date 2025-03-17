@@ -577,3 +577,7 @@ footer {
   color: yellow;
 }
 
+.form-check-input:checked {
+    background-color: #333232;
+    border-color: #353434;
+}

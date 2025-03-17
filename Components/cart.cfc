@@ -202,7 +202,7 @@
                 <cfset local.totalPrice = getPriceDetails.fldunitPrice * arguments.quantity>
                 <cfset local.totalTax = arguments.quantity * (getPriceDetails.fldunitPrice * getPriceDetails.fldunitTax)/100>
                 <cfquery datasource="#application.datasource#">
-                    INSERT INTO  tblorder (
+                    INSERT INTO tblorder (
                         fldOrder_Id,
                         fldUserId,
                         fldAddressId,
@@ -238,7 +238,7 @@
                     )
                 </cfquery>
                 <cfquery datasource="#application.datasource#">
-                    DELETE 
+                    DELETE
                     FROM
                         tblcart
                     WHERE
@@ -330,8 +330,8 @@
                         tblorder
                     WHERE
                         fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="varchar">
-                    ORDER BY fldOrderDate DESC
-                    Limit 5
+                        ORDER BY fldOrderDate DESC
+                        Limit 5
                     <cfif structKeyExists(arguments,"page") AND arguments.page NEQ 0>
                         OFFSET <cfqueryparam value="#local.startIndex#" cfsqltype="integer">;
                     </cfif>
