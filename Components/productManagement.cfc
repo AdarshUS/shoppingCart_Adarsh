@@ -368,16 +368,16 @@
                 <cfif findNoCase("existing",arguments.defaultImageIndex)>
                     <cfset local.encryptedProductImageId = listLast(arguments.defaultImageIndex,"-")>
                     <cfset local.ProductImageId = application.objUser.decryptId(local.encryptedProductImageId)>
-                    <cfquery datasource="#application.datasource#" result="updateDefaultImage">
+                    <cfquery datasource="#application.datasource#" result="local.updateDefaultImage">
                         UPDATE
                             tblproductimages
                         SET
                             fldDefaultImage = 1
-                        WHERE 
+                        WHERE
                             fldProductImage_Id = <cfqueryparam value="#local.ProductImageId#" cfsqltype="integer">
                             AND fldDefaultImage = 0
                     </cfquery>
-                    <cfif updateDefaultImage.recordCount EQ 0>
+                    <cfif local.updateDefaultImage.recordCount EQ 0>
                         <cftransaction action = "rollback">
                     </cfif>
                 </cfif>
@@ -547,7 +547,7 @@
                         AND P.fldSubCategoryId = <cfqueryparam value="#local.subCategoryId#" cfsqltype="integer">
                     </cfif>
                     <cfif structKeyExists(arguments, "startPrice") AND structKeyExists(arguments, "endPrice") AND arguments.startIndex NEQ "" AND arguments.endPrice NEQ "">
-                        AND P.fldUnitPrice BETWEEN <cfqueryparam value='#arguments.startPrice#' cfsqltype="integer"> 
+                        AND P.fldUnitPrice BETWEEN <cfqueryparam value='#arguments.startPrice#' cfsqltype="integer">
                         AND <cfqueryparam value='#arguments.endPrice#' cfsqltype="integer">
                     </cfif>
                     <cfif structKeyExists(arguments, "searchText") AND len(arguments.searchText)>
@@ -704,7 +704,7 @@
             "success": false,
             "message": ""
         }>
-       <!---  <cftry> --->
+        <cftry>
             <cfif len(trim(arguments.productId))
                 AND len(trim(arguments.subCategoryId))
                 AND len(trim(arguments.productName))
@@ -763,14 +763,14 @@
                     <cfset local.result.message = "successful Operation">
                 </cfif>
             </cfif>
-        <!--- <cfcatch>
+        <cfcatch>
             <cfset local.result.message = "some error occured">
             <cfset sendErrorEmail(
                 subject = "Error in function: updateProduct "&cfcatch.message,
                 body = "#cfcatch#"
             )>
         </cfcatch>
-        </cftry> --->
+        </cftry>
         <cfreturn local.result>
     </cffunction>
 
@@ -842,7 +842,7 @@
                     PI.fldDeactivatedBy = <cfqueryparam value = #application.objUser.decryptId(session.loginAdminId)# cfsqltype="integer">,
                     PI.fldDeactivatedDate = now()
                 WHERE
-                    P.fldProduct_Id  = <cfqueryparam value="#local.decryptedProductId#" cfsqltype="integer">
+                    P.fldProduct_Id = <cfqueryparam value="#local.decryptedProductId#" cfsqltype="integer">
                     AND P.fldActive = 1
                     AND PI.fldActive = 1
             </cfquery>
@@ -857,8 +857,6 @@
         </cfcatch>
         </cftry>
     </cffunction>
-
-    
 
     <cffunction name="deleteProductImage" access="remote" returntype="void">
         <cfargument name="productImage" required="true" type="string">

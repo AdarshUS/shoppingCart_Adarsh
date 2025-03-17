@@ -274,7 +274,6 @@ function editProduct(editObj) {
                 type: 'POST',
                 success: function(result) {
                     let product = JSON.parse(result);
-                    console.log(product);
                     let defaultImage = product.DATA.defaultImagePath;
                     for (let i = 0; i < product.DATA.images.length; i++) {
                         let imageId = product.DATA.images[i].imageId;
@@ -333,7 +332,6 @@ function editProduct(editObj) {
             });
         }
     })
-
 }
 
 function deleteProduct(productId) {
@@ -389,7 +387,6 @@ function displayImagePreview(input) {
         for (let i = 0; i < input.files.length; i++) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                console.log(reader.result)
                 let isDefault = false;
                 let imageId = "image"+i;
                 if($("input[name = defaultImg]:checked").length == 0)
@@ -410,14 +407,14 @@ function displayImagePreview(input) {
                 )
                 mainContainer.appendChild(imageControlsCntr);
                 document.getElementById("imageCntr").appendChild(mainContainer);
-                if (isDefault)   
+                if (isDefault)
                 {
-                setClassForDefault(imageId);
+                    setClassForDefault(imageId);
                 }
             };
             reader.readAsDataURL(input.files[i]);
         }
-    } 
+    }
 }
 
 function createImageContainer(imageId, imageSrc, isExisting, imagePath) {

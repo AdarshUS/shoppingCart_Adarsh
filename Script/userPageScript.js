@@ -28,29 +28,21 @@ function filterPrices(subcategoryId,searchText) {
         minPrice = priceRange.dataset.start;
         maxPrice = priceRange.dataset.end;
     }
-
-    /* document.getElementById("productContainer").innerHTML = "";
-    document.getElementById("viewMoreBtn").style.display = "none";
-    document.getElementById("priceSort").innerHTML = ""; */
     if(searchText)
     {
         getAndDisplayProducts({
             searchText: searchText,
             startPrice: minPrice,
-            endPrice: maxPrice
+            endPrice: maxPrice,
+            limit:4
         });
     }
     else
     {
-    getAndDisplayProducts({
-        subcategoryId: subcategoryId,
-        startPrice: minPrice,
-        endPrice: maxPrice
-    });
-    const urlParams = new URLSearchParams(window.location.search);
-    urlParams.set('startPrice', minPrice);
-    urlParams.set('endPrice', maxPrice);
-    window.location.search = urlParams;
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('startPrice', minPrice);
+        urlParams.set('endPrice', maxPrice);
+        window.location.search = urlParams;
     }
 }
 
@@ -72,7 +64,6 @@ async function getAndDisplayProducts(parameters) {
         });
         const parsedResult = JSON.parse(result);
         const products = parsedResult.products;
-        console.log(products);
         const productContainer = document.getElementById("productContainer");
         if(parameters.startindex + 4 >= products[0].totalProducts)
         {
@@ -127,10 +118,9 @@ async function getAndDisplayProducts(parameters) {
     }
 }
 
-function loadMoreProducts(subcategoryId,sort,searchText) 
+function loadMoreProducts(subcategoryId,sort,searchText,startPrice,endPrice)
 {
     startindex+=4;
-    console.log(startindex);
     if(searchText)
     {
         getAndDisplayProducts({
@@ -138,6 +128,17 @@ function loadMoreProducts(subcategoryId,sort,searchText)
             searchText: searchText,
             sort: sort,
             limit: 4
+        });
+    }
+    else if(startPrice !== undefined && endPrice !== undefined)
+    {
+        getAndDisplayProducts({
+        subcategoryId: subcategoryId,
+        sort: sort,
+        limit: 4,
+        startindex: startindex,
+        startPrice:startPrice,
+        endPrice:endPrice
         });
     }
     else

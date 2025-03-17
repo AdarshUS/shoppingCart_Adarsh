@@ -15,7 +15,7 @@
         sort = url.sort
     )>
 <cfelse>
-    <cfif structKeyExists(url,"startPrice")  AND url.startPrice NEQ "" AND structKeyExists(url,"endPrice") AND url.endPrice NEQ "">
+    <cfif structKeyExists(url,"startPrice") AND url.startPrice NEQ "" AND structKeyExists(url,"endPrice") AND url.endPrice NEQ "">
         <cfset variables.productDetails = application.objProductManagement.fetchProducts(
             subCategoryId = url.subCategoryId,
             startIndex = startIndex,
@@ -124,7 +124,7 @@
                         id="viewMoreBtn"
                     >
                         <button
-                            onclick="loadMoreProducts('#url.subcategoryId#','#url.sort#','#searchText#')" 
+                            onclick="loadMoreProducts('#url.subcategoryId#','#url.sort#','#searchText#','#url.startPrice#','#url.endPrice#')" 
                             class="btn btn-primary">view More
                         </button>
                     </div>
