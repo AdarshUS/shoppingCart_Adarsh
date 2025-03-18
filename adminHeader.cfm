@@ -4,7 +4,7 @@
         <div class="headerLeftItem-2">Admin DashBoard</div>
     </a>
     <div class="headerRightItem">
-        <button class="logout">
+        <button class="logout" onclick="logoutUser(2)">
             <span class="headerRightItem-1">LogOut</span>
             <i class="fa-solid fa-right-from-bracket"></i>
         </button>

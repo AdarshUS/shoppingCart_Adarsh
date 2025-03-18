@@ -143,32 +143,6 @@ function loadMoreProducts(subcategoryId,sort,searchText,startPrice,endPrice)
     }
 }
 
-function logoutUser() {
-
-    Swal.fire({
-        title: "Are you sure you want to logout?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "logout"
-    }).then((result) => {
-  if (result.isConfirmed) {
-    
-        $.ajax({
-            url: 'components/User.cfc?method=logoutUser',
-            type: 'POST',
-            success: function(result) {
-                location.reload();
-            },
-            error: function() {
-                alert("Error in LogOut");
-            }
-        });
-  }
-})
-}
-
  function handleCartAction(productId) {
         $.ajax({
             url: 'components/cart.cfc?method=addTocart',

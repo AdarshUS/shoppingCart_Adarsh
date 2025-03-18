@@ -2,20 +2,31 @@ function resetErrorMsg() {
     document.getElementById("categoryError").innerHTML = " ";
 }
 
-$(".logout").click(function() {
-    if (confirm("Are you sure you want to Logout")) {
+function logoutUser(roleId) {
+    Swal.fire({
+        title: "Are you sure you want to logout?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "logout"
+    }).then((result) => {
+  if (result.isConfirmed) {
+    
         $.ajax({
             url: 'components/User.cfc?method=logoutUser',
             type: 'POST',
-            success: function(result) {
+            data: {roleId :roleId},
+            success: function() {
                 location.reload();
             },
-            error: function() {
-                alert("error occured in logout");
+            error: function(e) {
+                alert("Error in LogOut"+e);
             }
         });
-    }
-});
+  }
+})
+}
 
 $(document).on("click", function() {
     $("#user_error").hide();
@@ -173,7 +184,7 @@ $("#categoryNameSelectPr").change(function() {
     getSubcategory();
 });
 
-function getSubcategory(urlSubCategoryId) {
+function getSubcategory(subCategoryId) {
     let categorySelected = $('#categoryNameSelectPr').val();
     let subCategoryElement = document.getElementById("selectSubCategory");
     if (categorySelected === "--") {
@@ -192,8 +203,8 @@ function getSubcategory(urlSubCategoryId) {
                 for (let i = 0; i < subcategories.length; i++) {
                     let opt = document.createElement('option');
                     opt.value = subcategories[i].subCategoryId;
-                    if (urlSubCategoryId != undefined) {
-                        if (urlSubCategoryId === opt.value) {
+                    if (subCategoryId != undefined) {
+                        if (subCategoryId === opt.value) {
                             opt.selected = true;
                         }
                     }
@@ -279,16 +290,16 @@ function editProduct(editObj) {
                         let imageId = product.DATA.images[i].imageId;
                         let imageSrc = `./Assets/uploads/product${decryptedId}/${product.DATA.images[i].imagePath}`
                         let mainContainer = createImageContainer(
-                            imageId = imageId,
-                            imageSrc = imageSrc,
-                            isExisting = true,
-                            imagePath = product.DATA.images[i].imagePath
+                            imageId,
+                            imageSrc,
+                            true,
+                            product.DATA.images[i].imagePath
                         );
                         let imageControlsCntr = createDefaultImageSelector(
-                            imageId = imageId,
-                            isDefault = product.DATA.images[i].imagePath === defaultImage,
-                            isExisting = true,
-                            productImageId = product.DATA.images[i].imageId
+                            imageId,
+                            product.DATA.images[i].imagePath === defaultImage,
+                            true,
+                            product.DATA.images[i].imageId
                         )
                         mainContainer.appendChild(imageControlsCntr);
                         imageContainer.appendChild(mainContainer);
@@ -393,17 +404,16 @@ function displayImagePreview(input) {
                 {
                     isDefault = true;
                 }
-                    
                 let mainContainer = createImageContainer(
-                    imageId = imageId,
-                    imageSrc = e.target.result,
-                    isExisting = false,
-                    imagePath = input.files[i].name
+                    imageId,
+                    e.target.result,
+                    false,
+                    input.files[i].name
                 );
                 let imageControlsCntr = createDefaultImageSelector(
-                    imageId = imageId,
-                    isDefault = isDefault,
-                    isExisting = false
+                    imageId,
+                    isDefault,
+                    false
                 )
                 mainContainer.appendChild(imageControlsCntr);
                 document.getElementById("imageCntr").appendChild(mainContainer);

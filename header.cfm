@@ -36,7 +36,7 @@
             </a>
             <div class="logoutContainer">
                 <cfif structKeyExists(session,"loginuserId")>
-                    <button onclick="logoutUser()">
+                    <button onclick="logoutUser(1)">
                         <i class="fa-solid fa-right-from-bracket"></i>
                         <div class="header_menutext">LogOut</div>
                     </button>
@@ -49,6 +49,7 @@
             </div>
         </div>
     </header>
+    <script src="./Script/script.js"></script>
 </body>
 </cfoutput>
 </html>

@@ -141,7 +141,16 @@
     </cffunction>
 
     <cffunction name="logoutUser" access="remote" returntype="void">
-        <cfset StructClear(Session)>
+        <cfargument name="roleId" required="true" type="integer">
+        <cfif arguments.roleId EQ 1>
+            <cfset structDelete(session,"loginuserId")>
+            <cfset structDelete(session,"loginuserfirstName")>
+            <cfset structDelete(session,"loginuserlastName")>
+            <cfset structDelete(session,"loginuserMail")>
+            <cfset structDelete(session,"cartItemCount")>
+        <cfelse>
+            <cfset structDelete(session,"loginAdminId")>
+        </cfif>
     </cffunction>
 
     <cffunction name="fetchUserDetails" access="public" returntype="struct">
@@ -206,7 +215,7 @@
             </cfif>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = "Error in function: updateProfile", 
+                subject = "Error in function: updateProfile",
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -220,19 +229,19 @@
             'message':''
         }>
         <cftry>
-            <cfif 
+            <cfif
                 len(trim(arguments.addressData.firstName))
-                AND 
+                AND
                 len(trim(arguments.addressData.lastName))
-                AND 
+                AND
                 len(trim(arguments.addressData.address1))
-                AND 
+                AND
                 len(trim(arguments.addressData.city))
-                AND 
+                AND
                 len(trim(arguments.addressData.state))
-                AND 
+                AND
                 len(trim(arguments.addressData.phone))
-                AND 
+                AND
                 len(trim(arguments.addressData.pincode))
             >
                 <cfquery datasource="#application.datasource#">
@@ -268,7 +277,7 @@
             </cfif>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = "Error in function: addAddress", 
+                subject = "Error in function: addAddress",
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -322,7 +331,7 @@
             <cfset local.result.message = "successful Operation">
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = "Error in function: fetchAddress", 
+                subject = "Error in function: fetchAddress",
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -346,7 +355,7 @@
             </cfquery>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject ="Error in function: deleteAddress", 
+                subject ="Error in function: deleteAddress",
                 body = "#cfcatch#"
             )>
         </cfcatch>

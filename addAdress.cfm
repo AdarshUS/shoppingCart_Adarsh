@@ -20,11 +20,11 @@
 </head>
 <body>
     <div 
-        class="modal fade" 
-        id="addressAddModal" 
-        tabindex="-1" 
+        class="modal fade"
+        id="addressAddModal"
+        tabindex="-1"
         aria-labelledby="exampleModalLabel"
-        aria-hidden="true" 
+        aria-hidden="true"
         data-bs-backdrop="static"
     >
         <div class="modal-dialog">

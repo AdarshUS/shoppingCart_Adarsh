@@ -126,8 +126,9 @@
     </div>
     <script src="./Script/bootstrapScript.js"></script>
     <script src="./Script/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="./Script/script.js"></script>
-     <script src="./Script/validation.js"></script>
+    <script src="./Script/validation.js"></script>
 </body>
 </html>
 </cfoutput>
