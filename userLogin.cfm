@@ -59,7 +59,7 @@
                         <cflocation url="productDetails.cfm?productId=#urlEncodedFormat(url.productId)#" addtoken="no">
                     </cfif>
                 <cfelse>
-                    <cflocation url="homePage.cfm" addtoken="no">
+                    <cflocation url="index.cfm" addtoken="no">
                 </cfif>
                 </cfif>
             </cfif>

@@ -140,7 +140,7 @@
         <cfreturn local.result>
     </cffunction>
 
-    <cffunction name="logoutUser" access="remote" returntype="void">
+    <cffunction name="logout" access="remote" returntype="void">
         <cfargument name="roleId" required="true" type="integer">
         <cfif arguments.roleId EQ 1>
             <cfset structDelete(session,"loginuserId")>

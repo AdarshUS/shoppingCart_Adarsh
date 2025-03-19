@@ -94,7 +94,7 @@ function checkout(addressId, productId) {
                                     timer: 1500
                                 });
                             setTimeout(() => {
-                                location.href = "homePage.cfm";
+                                location.href = "orderHistory.cfm";
                             }, 1700);
                             },
                             error: function() {
@@ -124,7 +124,7 @@ function checkout(addressId, productId) {
                                     timer: 1500
                                 });
                                 setTimeout(() => {
-                                location.href = "homePage.cfm";
+                                location.href = "orderHistory.cfm";
                             }, 1700); 
                             },
                             error: function() {

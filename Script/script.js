@@ -14,7 +14,7 @@ function logoutUser(roleId) {
   if (result.isConfirmed) {
     
         $.ajax({
-            url: 'components/User.cfc?method=logoutUser',
+            url: 'components/User.cfc?method=logout',
             type: 'POST',
             data: {roleId :roleId},
             success: function() {

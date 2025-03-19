@@ -561,13 +561,15 @@
                             OR P.fldProductName LIKE <cfqueryparam value="%#arguments.searchText#%" cfsqltype="varchar">
                             OR  SC.fldSubCategoryName LIKE <cfqueryparam value="%#arguments.searchText#%" cfsqltype="varchar">)
                     </cfif>
+                    ORDER BY
                     <cfif structKeyExists(arguments,"sort") AND arguments.sort EQ "ASC">
-                        ORDER BY fldUnitPrice ASC
+                        fldUnitPrice ASC
                     <cfelseif structKeyExists(arguments,"sort") AND arguments.sort EQ "DESC">
-                        ORDER BY fldUnitPrice DESC
-                    </cfif>
-                    <cfif structKeyExists(arguments,"random")>
-                        ORDER BY RAND()
+                        fldUnitPrice DESC
+                    <cfelseif structKeyExists(arguments,"random")>
+                        RAND()
+                    <cfelse>
+                        P.fldProductName
                     </cfif>
                     <cfif structKeyExists(arguments,"limit") AND len(arguments.limit)>
                         LIMIT <cfqueryparam value="#arguments.limit#" cfsqltype="integer">

@@ -16,7 +16,7 @@
         <main>
             <cfloop array = "#variables.subCategoriesResult.subcategory#" item="subCategory">
                 <a 
-                    class="subcategoryName p-3" 
+                    class="subcategoryName p-3"
                     href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(subCategory.subcategoryId)#">#subCategory.subcategoryName#
                 </a>
                 <div class="productContainer d-flex gap-3 p-3">

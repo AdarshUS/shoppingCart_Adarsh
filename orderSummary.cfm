@@ -91,7 +91,7 @@
                 </div>
             </div>
         </cfif>
-        <button class="cancel-order" onclick="window.location.href='#variables.cancelOrderPath#'" type="button">cancelOrder</button>
+        <button class="cancel-order" onclick="window.location.href='#variables.cancelOrderPath#'" type="button">Cancel Order</button>
         <button class="place-order" data-bs-toggle="modal" data-bs-target="##cardModal">Place Order</button>
     </div>
     <div class="modal fade" id="cardModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">

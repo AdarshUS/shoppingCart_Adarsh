@@ -24,7 +24,7 @@
 	    </cfif> 
         <cfset local.Userpages = ["orderSummary.cfm","orderSearchResult.cfm","orderhistory.cfm","orderConfirmation.cfm"]>
         <cfif NOT structKeyExists(session,"loginuserid") AND arrayFindNoCase(local.Userpages, ListLast(CGI.SCRIPT_NAME,'/'))>
-	    	<cflocation url="homePage.cfm" addToken="no">
+	    	<cflocation url="index.cfm" addToken="no">
 	    </cfif>
     </cffunction>
 </cfcomponent>

@@ -8,7 +8,7 @@
 </head>
 <body>
     <header>
-        <a class="header_logo" href="homePage.cfm">
+        <a class="header_logo" href="index.cfm">
             <img src="./Assets/Images/cart1.jpeg" alt="logo" width="60">
             <span class="header_logoText">My Cart</span>
         </a>
