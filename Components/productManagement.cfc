@@ -514,6 +514,7 @@
         <cfargument name="sort" type="string" required="false">
         <cfargument name="random" type="string" required="false">
         <cfargument name="startIndex" type="integer" required="false" default="0">
+        <cfargument name="productId" type="string" required="false">
         <cfif structKeyExists(arguments,"subCategoryId")>
             <cfset local.subCategoryId = application.objUser.decryptId(arguments.subCategoryId)>
         </cfif>
@@ -522,27 +523,40 @@
             "products": [],
             "message":""
          }>
+         <cfset local.images = []>
         <cftry>
             <cfquery name="local.fetchProducts" datasource="#application.datasource#">
                 SELECT
                     P.fldProduct_Id,
-                    P.fldSubCategoryId,
                     P.fldProductName,
-                    B.fldBrandName,
                     P.fldDescription,
                     P.fldUnitPrice,
                     P.fldUnitTax,
-                    PI.fldImageFilePath,
+                    P.fldSubCategoryId,
+                    B.fldBrandName,
+                    B.fldBrand_Id,
                     SC.fldSubCategoryName,
+                    C.fldCategory_Id,
+                    C.fldCategoryName,
+                    PI.fldImageFilePath,
+                    PI.fldProductImage_Id,
+                    PI.fldDefaultImage,
                     count(*) over() AS totalProducts
                 FROM
                     tblproduct P
                     INNER JOIN tblbrand B ON P.fldBrandId = B.fldBrand_Id
-                    INNER JOIN  tblsubcategory SC ON P.fldSubCategoryId = SC.fldSubCategory_Id
-                    INNER JOIN  tblproductimages PI ON PI.fldProductId = P.fldProduct_Id
-                    AND PI.fldDefaultImage = 1
+                    INNER JOIN tblsubcategory SC ON SC.fldSubCategory_Id = P.fldSubCategoryId
+                    INNER JOIN tblcategory C ON C.fldCategory_Id = SC.fldCategoryId
+                    INNER JOIN  tblproductimages PI ON P.fldProduct_Id = PI.fldProductId
+                    <cfif NOT structKeyExists(arguments,"productId")>
+                        AND PI.fldDefaultImage = 1
+                    </cfif>
                 WHERE
                     P.fldActive = 1
+                    AND PI.fldActive = 1
+                     <cfif structKeyExists(arguments,"productId") AND len(arguments.productId)>
+                        AND fldProduct_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">
+                    </cfif>
                     <cfif structKeyExists(arguments, "subCategoryId") AND arguments.subCategoryId NEQ 0>
                         AND P.fldSubCategoryId = <cfqueryparam value="#local.subCategoryId#" cfsqltype="integer">
                     </cfif>
@@ -573,120 +587,53 @@
                     </cfif>
                     <cfif structKeyExists(arguments,"limit") AND len(arguments.limit)>
                         LIMIT <cfqueryparam value="#arguments.limit#" cfsqltype="integer">
-                        <cfif structKeyExists(arguments,"startIndex") AND len(arguments.startIndex)>
+                        <cfif structKeyExists(arguments,"startIndex")>
                             OFFSET <cfqueryparam value="#arguments.startIndex#" cfsqltype="integer">
                         </cfif>
                     </cfif>
             </cfquery>
             <cfif local.fetchProducts.recordCount gt 0>
-                <cfloop query="local.fetchProducts">
+                <cfif structKeyExists(arguments,"productId")>
+                    <cfloop query="local.fetchProducts">
+                        <cfset arrayAppend(local.images, {
+                            "imageId": application.objUser.encryptId(local.fetchProducts.fldProductImage_Id),
+                            "imagePath": local.fetchProducts.fldImageFilePath
+                        })>
+                        <cfif local.fetchProducts.fldDefaultImage EQ 1>
+                            <cfset local.defaultImagePath = local.fetchProducts.fldImageFilePath> 
+                        </cfif>
+                    </cfloop>
+                </cfif>
+                <cfloop query="local.fetchProducts" group="fldproduct_Id">
                     <cfset arrayAppend(local.result.products, {
                         "productId": application.objUser.encryptId(local.fetchProducts.fldProduct_Id),
                         "subCategoryId": application.objUser.encryptId(local.fetchProducts.fldSubCategoryId),
                         "productName": local.fetchProducts.fldProductName,
                         "brandName": local.fetchProducts.fldBrandName,
+                        "brandId" : application.objUser.encryptId(local.fetchProducts.fldBrand_Id),
                         "description": local.fetchProducts.fldDescription,
                         "unitPrice": local.fetchProducts.fldUnitPrice,
                         "unitTax": local.fetchProducts.fldUnitTax,
                         "imageFilePath": local.fetchProducts.fldImageFilePath,
                         "subcategoryName": local.fetchProducts.fldSubCategoryName,
-                        "totalProducts" : local.fetchProducts.totalProducts
+                        "totalProducts" : local.fetchProducts.totalProducts,
+                        "categoryId": application.objUser.encryptId(local.fetchProducts.fldcategory_Id),
+                        "categoryName" : local.fetchProducts.fldCategoryName
                     })>
                 </cfloop>
+                 <cfif structKeyExists(arguments,"productId")>
+                    <cfset local.result.products[1]["images"] = local.images>
+                    <cfset local.result.products[1]["imageFilePath"] = local.defaultImagePath>
+                </cfif>
             </cfif>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset sendErrorEmail(
-            subject = "Error in function: fetchProducts "&cfcatch.message, 
+            subject = "Error in function: fetchProducts "&cfcatch.message,
             body = "#cfcatch#"
         )>
-        </cfcatch>
-        </cftry>
-        <cfreturn local.result>
-    </cffunction>
-
-    <cffunction name="getProductDetails" access="remote" returntype="struct" returnformat="JSON">
-        <cfargument name="productId" required="true" type="string">
-        <cfset local.productId = application.objUser.decryptId(arguments.productId)>
-        <cfset local.result = {
-            success: false,
-            message: "",
-            data: {}
-        }>
-        <cfset local.images = []>
-        <cfset local.defaultImagePath = "">
-        <cftry>
-            <cfquery name="local.fetchProduct" datasource="#application.datasource#">
-                SELECT
-                    TP.fldProduct_Id,
-                    TP.fldProductName,
-                    TP.fldDescription,
-                    TP.fldUnitPrice,
-                    TP.fldUnitTax,
-                    TPI.fldProductImage_Id,
-                    TPI.fldImageFilePath,
-                    TPI.fldDefaultImage,
-                    TB.fldBrandName,
-                    TB.fldBrand_Id,
-                    TC.fldCategory_Id,
-                    TC.fldCategoryName,
-                    SC.fldSubCategoryName,
-                    TP.fldSubCategoryId
-                FROM
-                    tblproduct AS TP
-                    INNER JOIN tblbrand AS TB ON TB.fldBrand_Id = TP.fldBrandId
-                    INNER JOIN tblsubcategory AS SC ON SC.fldSubCategory_Id = TP.fldSubCategoryId
-                    INNER JOIN tblcategory AS TC ON TC.fldCategory_Id = SC.fldCategoryId
-                    INNER JOIN tblProductImages AS TPI ON TP.fldProduct_Id = TPI.fldProductId
-                WHERE
-                    TP.fldProduct_Id = <cfqueryparam value="#local.productId#" cfsqltype="integer">
-                    AND TP.fldActive = 1
-                    AND TPI.fldActive = 1
-            </cfquery>
-            <cfif local.fetchProduct.recordCount>
-                <cfloop query="local.fetchProduct">
-                    <cfif local.fetchProduct.fldImageFilePath NEQ "">
-                        <cfset arrayAppend(local.images, {
-                            "imageId": application.objUser.encryptId(local.fetchProduct.fldProductImage_Id),
-                            "imagePath": local.fetchProduct.fldImageFilePath
-                        })>
-                    </cfif>
-                    <cfif local.fetchProduct.fldDefaultImage EQ 1>
-                        <cfset local.defaultImagePath = local.fetchProduct.fldImageFilePath> 
-                    </cfif>
-                </cfloop>
-    
-                <cfif local.defaultImagePath EQ "" AND arrayLen(local.images) GT 0>
-                    <cfset local.defaultImagePath = local.images[1]["imagePath"]>
-                </cfif>
-                <cfset local.result.success = true>
-                <cfset local.result.message = "Successful operation">
-                <cfset local.result.data = {
-                    "productId": application.objUser.encryptId(local.fetchProduct.fldProduct_Id),
-                    "productName": local.fetchProduct.fldProductName,
-                    "description": local.fetchProduct.fldDescription,
-                    "unitPrice": local.fetchProduct.fldUnitPrice,
-                    "unitTax": local.fetchProduct.fldUnitTax,
-                    "images": local.images,
-                    "defaultImagePath": local.defaultImagePath,
-                    "brandName": local.fetchProduct.fldBrandName,
-                    "brandId": application.objUser.encryptId(local.fetchProduct.fldBrand_Id),
-                    "categoryName": local.fetchProduct.fldCategoryName,
-                    "categoryId": application.objUser.encryptId(local.fetchProduct.fldCategory_Id),
-                    "subcategoryName": local.fetchProduct.fldSubCategoryName,
-                    "subcategoryId": application.objUser.encryptId(local.fetchProduct.fldSubCategoryId)
-                }>
-            <cfelse>
-                <cfset local.result.message = "No product found">
-            </cfif>
-        <cfcatch>
-            <cfset local.result.message = "An error occurred">
-            <cfset sendErrorEmail(
-                subject = "Error in function: getProductDetails "&cfcatch.message,
-                body = "#cfcatch#"
-            )>
         </cfcatch>
         </cftry>
         <cfreturn local.result>

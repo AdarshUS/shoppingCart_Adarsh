@@ -1,5 +1,5 @@
 <cfinclude template="addAdress.cfm">
-<cfset variables.productDetails = application.objProductManagement.getProductDetails(productId = url.productId)>
+<cfset variables.productDetails = application.objProductManagement.fetchProducts(productId = url.productId)>
 <cfset addresses = {}>
 <cfif structKeyExists(session, "loginuserId")>
     <cfset addresses = application.objUser.fetchAddress()>
@@ -23,17 +23,17 @@
                <div class="productImageBox">
                   <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel"> 
                        <div class="carousel-inner">
-                           <cfloop array="#variables.productDetails.data.images#" item = image>
-                              <cfif image.imagePath EQ variables.productDetails.data.defaultImagePath>
+                           <cfloop array="#variables.productDetails.products[1].images#" item = image>
+                              <cfif image.imagePath EQ variables.productDetails.products[1].imageFilePath>
                                  <div class="carousel-item active">
                                     <img 
-                                        src="#'./Assets/uploads/product'&application.objUser.decryptId(variables.productDetails.data.productId)#/#image.imagePath#"
+                                        src="#'./Assets/uploads/product'&application.objUser.decryptId(variables.productDetails.products[1].productId)#/#image.imagePath#"
                                     >
                                  </div>
                                  <cfelse>
                                  <div class="carousel-item">
                                     <img 
-                                        src="#'./Assets/uploads/product'&application.objUser.decryptId(variables.productDetails.data.productId)#/#image.imagePath#"
+                                        src="#'./Assets/uploads/product'&application.objUser.decryptId(variables.productDetails.products[1].productId)#/#image.imagePath#"
                                     >
                                  </div>
                               </cfif>
@@ -52,25 +52,25 @@
                <div class="productDetail">
                     <div class="pathtext">
                         <a 
-                            href="./categoryList.cfm?categoryId=#URLEncodedFormat(variables.productDetails.data.categoryId)#"
+                            href="./categoryList.cfm?categoryId=#URLEncodedFormat(variables.productDetails.products[1].categoryId)#"
                         >
-                            #variables.productDetails.data.categoryName#
+                            #variables.productDetails.products[1].categoryName#
                         </a>
                         <i class="fa-solid fa-angle-right"></i>
                         <a 
-                            href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(variables.productDetails.data.subcategoryId)#"
+                            href="subCategoryList.cfm?subcategoryId=#URLEncodedFormat(variables.productDetails.products[1].subcategoryId)#"
                         >
-                            #variables.productDetails.data.subcategoryName#
+                            #variables.productDetails.products[1].subcategoryName#
                         </a>
                         <i class="fa-solid fa-angle-right"></i>
-                        <span>#variables.productDetails.data.productName#</span>
+                        <span>#variables.productDetails.products[1].productName#</span>
                     </div>
-                    <h4 class="productName">#variables.productDetails.data.productName#</h4>
-                    <div class="brandName">#variables.productDetails.data.brandName#</div>
-                    <p class="productDescription"><span>description:</span>#variables.productDetails.data.description#</p>
+                    <h4 class="productName">#variables.productDetails.products[1].productName#</h4>
+                    <div class="brandName">#variables.productDetails.products[1].brandName#</div>
+                    <p class="productDescription"><span>description:</span>#variables.productDetails..products[1].description#</p>
                     <div class="pricecontainer">
-                        <div class="price"><i class="fa-solid fa-indian-rupee-sign"></i>#variables.productDetails.data.unitPrice#</div>
-                        <div class="tax">Tax:#variables.productDetails.data.unitTax#%</div>
+                        <div class="price"><i class="fa-solid fa-indian-rupee-sign"></i>#variables.productDetails..products[1].unitPrice#</div>
+                        <div class="tax">Tax:#variables.productDetails..products[1].unitTax#%</div>
                     </div>
                     <form method="post">
                         <div class="buttonContainer">
@@ -78,7 +78,7 @@
                                 <button
                                     type="button"
                                     class="btn btn-info p-2"
-                                    onclick="window.location.href='userLogin.cfm?productId=#URLEncodedFormat(variables.productDetails.data.productId)#&redirect=product'"
+                                    onclick="window.location.href='userLogin.cfm?productId=#URLEncodedFormat(variables.productDetails.products[1].productId)#&redirect=product'"
                                 >
                                     Buy Now
                                 </button>
@@ -86,7 +86,7 @@
                                     type="button"
                                     class="btn btn-success p-2" 
                                     id="cartButton"
-                                    onclick="window.location.href='userLogin.cfm?productId=#URLEncodedFormat(variables.productDetails.data.productId)#&redirect=cart'"
+                                    onclick="window.location.href='userLogin.cfm?productId=#URLEncodedFormat(variables.productDetails.products[1].productId)#&redirect=cart'"
                                 >
                                     Add to Cart
                                 </button>
@@ -98,7 +98,7 @@
                                     type="button" 
                                     class="btn btn-success p-2" 
                                     id="cartButton" 
-                                    onclick="handleCartAction('#variables.productDetails.data.productId#')"
+                                    onclick="handleCartAction('#variables.productDetails.products[1].productId#')"
                                 >
                                     Add to Cart
                                 </button>

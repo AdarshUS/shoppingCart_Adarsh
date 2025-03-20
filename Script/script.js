@@ -248,7 +248,7 @@ function resetProducterror() {
 }
 
 function setClassForDefault(imageId)
-{ 
+{
     $(".defaultImage").removeClass("defaultImage").find(".imageBox").css("border", "1px solid gray");
 
     $(".imgLabel").each(function () {
@@ -278,41 +278,43 @@ function editProduct(editObj) {
         success: function(decryptResult) {
             decryptedId = JSON.parse(decryptResult);
             $.ajax({
-                url: 'components/ProductManagement.cfc?method=getProductDetails',
+                url: 'components/ProductManagement.cfc?method=fetchProducts',
                 data: {
                     productId: editObj.productId
                 },
                 type: 'POST',
                 success: function(result) {
                     let product = JSON.parse(result);
-                    let defaultImage = product.DATA.defaultImagePath;
-                    for (let i = 0; i < product.DATA.images.length; i++) {
-                        let imageId = product.DATA.images[i].imageId;
-                        let imageSrc = `./Assets/uploads/product${decryptedId}/${product.DATA.images[i].imagePath}`
+                    console.log(product);
+                    let defaultImage = product.products[0].imageFilePath;
+                    console.log(defaultImage)
+                    for (let i = 0; i < product.products[0].images.length; i++) {
+                        let imageId = product.products[0].images[i].imageId;
+                        let imageSrc = `./Assets/uploads/product${decryptedId}/${product.products[0].images[i].imagePath}`
                         let mainContainer = createImageContainer(
                             imageId,
                             imageSrc,
                             true,
-                            product.DATA.images[i].imagePath
+                            product.products[0].images[i].imagePath
                         );
                         let imageControlsCntr = createDefaultImageSelector(
                             imageId,
-                            product.DATA.images[i].imagePath === defaultImage,
+                            product.products[0].images[i].imagePath === defaultImage,
                             true,
-                            product.DATA.images[i].imageId
+                            product.products[0].images[i].imageId
                         )
                         mainContainer.appendChild(imageControlsCntr);
                         imageContainer.appendChild(mainContainer);
-                        if(product.DATA.images[i].imagePath === defaultImage)
+                        if(product.products[0].images[i].imagePath === defaultImage)
                         {
                             setClassForDefault(imageId)
                         }
                     }
-                    document.getElementById("productName").value = product.DATA.productName;
-                    document.getElementById("brandName").value = product.DATA.brandId;
-                    document.getElementById("productDesc").value = product.DATA.description;
-                    document.getElementById("unitPrice").value = product.DATA.unitPrice;
-                    document.getElementById("unitTax").value = product.DATA.unitTax;
+                    document.getElementById("productName").value = product.products[0].productName;
+                    document.getElementById("brandName").value = product.products[0].brandId;
+                    document.getElementById("productDesc").value = product.products[0].description;
+                    document.getElementById("unitPrice").value = product.products[0].unitPrice;
+                    document.getElementById("unitTax").value = product.products[0].unitTax;
                     document.getElementById("categoryNameSelectPr").value = editObj.categoryId;
                     document.getElementById("hiddenValue").value = editObj.productId;
                     $.ajax({

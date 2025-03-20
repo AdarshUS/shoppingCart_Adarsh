@@ -69,7 +69,7 @@
             </div>
         <cfelse>
             <cfset variables.payableAmount = 0>
-            <cfset variables.product = application.objProductManagement.getProductDetails(url.productId)>
+            <cfset variables.product = application.objProductManagement.fetchProducts(url.productId)>
             <cfset variables.payableAmount = variables.product.data.unitPrice + 
                 ( variables.product.data.unitPrice * variables.product.data.unitTax / 100)
             >
