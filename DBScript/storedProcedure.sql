@@ -1,5 +1,4 @@
 DELIMITER $$
-
 CREATE DEFINER=`root`@`localhost` PROCEDURE `placeOrder`(
     IN userId INTEGER,
     IN addressId INTEGER,

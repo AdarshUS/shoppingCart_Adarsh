@@ -23,7 +23,7 @@ function validateAdminLogin() {
     
     if(isEmpty(userName,userNameError,"userName"))
     {
-         validInput = false;
+        validInput = false;
     }
    
     if(isEmpty(password,passwordError,"password"))
@@ -136,6 +136,7 @@ function validateAddress() {
     {
         validAddress = false;
     }
+
     if (isEmpty(phone, phoneError, "Phone")) {
         validAddress = false;
     }
@@ -148,6 +149,7 @@ function validateAddress() {
     {
         validAddress = false;
     }
+
     if(isEmpty(city,cityError,"city"))
     {
         validAddress = false;
@@ -162,7 +164,6 @@ function validateAddress() {
     {
         validAddress = false;
     }
-
     return validAddress;
 }
 
@@ -302,6 +303,11 @@ function validateProduct() {
                 
             }
         }
+    }
+    if ($("input[name='defaultImg']:checked").length === 0) 
+    {
+        setError(productImageError, "select atleast one image");
+        validProduct = false;
     }
     return validProduct;
 }

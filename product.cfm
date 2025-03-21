@@ -121,11 +121,13 @@
                         <select class="form-control" id="categoryNameSelectPr" name = "categoryNameSelectPr">
                             <option>--</option> 
                             <cfloop array="#variables.categoriesResult.categories#" item="category">
-                               <option value="#category.categoryId#"
+                                <option value="#category.categoryId#"
                                     <cfif category.categoryId EQ url.categoryId>
-                                            selected
+                                        selected
                                     </cfif>
-                               >#category.categoryName#</option>
+                                >
+                                    #category.categoryName#
+                                </option>
                             </cfloop>
                         </select>
                         <div id="categorySelectError" class="error"></div>

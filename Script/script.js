@@ -525,7 +525,7 @@ $( "#productForm").on( "submit", function() {
                     productImageId: productImage.imageId
                 },
                 success: function() {
-                    document.getElementById(productImageId).remove();
+                    
                 },
                 error: function() {
                     alert("Error deleting image.");

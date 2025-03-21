@@ -15,13 +15,13 @@
             <div id="carouselExampleControlsNoTouching" class="carousel slide" data-bs-touch="false" data-bs-ride="carousel">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="./Assets/Images/sliderimage4.png" class="d-block w-100" alt="...">
+                        <img src="./Assets/Images/sliderimage1.png" class="d-block w-100" alt="corousalImage1">
                     </div>
                     <div class="carousel-item">
-                        <img src="./Assets/Images/sliderimage1.png" class="d-block w-100" alt="...">
+                        <img src="./Assets/Images/sliderimage2.png" class="d-block w-100" alt="corousalImage2">
                     </div>
                     <div class="carousel-item">
-                        <img src="./Assets/Images/sliderimage2.png" class="d-block w-100" alt="...">
+                        <img src="./Assets/Images/sliderimage4.png" class="d-block w-100" alt="corousalImage3">
                     </div>
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="##carouselExampleControlsNoTouching" data-bs-slide="prev">
@@ -35,7 +35,7 @@
             <cfloop array = "#variables.randomProducts.products#" item = product>
                 <a class="productBox" href="productDetails.cfm?productId=#URLEncodedFormat(product.productId)#">
                     <div class="productImage">
-                        <img 
+                        <img
                             src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilePath#"
                             alt="productImage"
                             class="prodimg"

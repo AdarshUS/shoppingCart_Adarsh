@@ -817,7 +817,7 @@
         <cfset local.productId = application.objUser.decryptId(arguments.productId)>
         <cfset local.productImageId = application.objUser.decryptId(arguments.productimageId)>
         <cftry>
-            <cfquery datasource="#application.datasource#">
+            <cfquery datasource="#application.datasource#" result="imageDeletion">
                 UPDATE
                     tblproductimages
                 SET
@@ -827,12 +827,15 @@
                 WHERE
                     fldProductImage_Id = <cfqueryparam value="#local.productImageId#" cfsqltype="integer">
                     AND fldActive = 1
+                    AND fldDefaultImage = 0
             </cfquery>
             <cfset local.imagePath = expandPath('../Assets/uploads/product' & local.productId & '/' & arguments.productImage)>
-            <cffile
-                action = "delete"
-                file = "#local.imagePath#"
-            >
+            <cfif imageDeletion.RecordCount>
+                <cffile
+                    action = "delete"
+                    file = "#local.imagePath#"
+                >
+            </cfif>
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message>
             <cfset sendErrorEmail(

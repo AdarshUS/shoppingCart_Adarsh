@@ -69,19 +69,19 @@
             </div>
         <cfelse>
             <cfset variables.payableAmount = 0>
-            <cfset variables.product = application.objProductManagement.fetchProducts(url.productId)>
-            <cfset variables.payableAmount = variables.product.data.unitPrice + 
-                ( variables.product.data.unitPrice * variables.product.data.unitTax / 100)
+            <cfset variables.productsData = application.objProductManagement.fetchProducts(productId = url.productId)>
+            <cfset variables.payableAmount = variables.productsData.products[1].unitPrice + 
+                ( variables.productsData.products[1].unitPrice * variables.productsData.products[1].unitTax / 100)
             >
-            <cfset variables.cancelOrderPath = "productDetails.cfm?productId=#urlEncodedFormat(variables.product.data.productId)#">
+            <cfset variables.cancelOrderPath = "productDetails.cfm?productId=#urlEncodedFormat(variables.productsData.products[1].productId)#">
             <div class="product">
                 <img 
-                    src="#'./Assets/uploads/product'&application.objUser.decryptId(variables.product.data.productId)#/#variables.product.data.defaultImagePath#" 
+                    src="#'./Assets/uploads/product'&application.objUser.decryptId(variables.productsData.products[1].productId)#/#variables.productsData.products[1].imageFilePath#" 
                     alt="productImage">
                 <div class="details">
-                    <p><strong>#variables.product.data.productName#</strong></p>
-                    <p class="price">Actual Price: <i class="fa-solid fa-indian-rupee-sign"></i> #variables.product.data.unitPrice#</p>
-                    <p>Tax: #variables.product.data.unitTax#%</p>
+                    <p><strong>#variables.productsData.products[1].productName#</strong></p>
+                    <p class="price">Actual Price: <i class="fa-solid fa-indian-rupee-sign"></i> #variables.productsData.products[1].unitPrice#</p>
+                    <p>Tax: #variables.productsData.products[1].unitTax#%</p>
                     <p class="payable">Payable amount: <i class="fa-solid fa-indian-rupee-sign"></i><span id="payableAmt">#variables.payableAmount#</span></p>
                     <div class="quantity">
                         <button onclick="decreaseQuantityOrder()" id="decreaseQntyBtnCart">-</button>
@@ -122,8 +122,8 @@
                     <cfif structKeyExists(url,"type") AND url.type EQ "single">
                         <button class="cardButton cardproceedBtn" onclick="checkout('#url.addressId#',
                             '#url.productId#',
-                            #product.data.unitPrice#,
-                            #product.data.unitTax#)"
+                            #variables.productsData.products[1].unitPrice#,
+                            #variables.productsData.products[1].unitTax#)"
                         >
                             Proceed
                         </button>
