@@ -741,7 +741,7 @@
             productDirectory = local.productDirectory
         )>
         <cfif structKeyExists(arguments,"defaultImageIndex")>
-            <cfset local.imageIndex = ListLast(arguments.defaultImageIndex, "-")> 
+            <cfset local.imageIndex = ListLast(arguments.defaultImageIndex, "-")>
         </cfif>
         <cftry>
             <cfquery datasource="#application.datasource#">
@@ -782,7 +782,7 @@
         <cfset local.decryptedProductId = application.objUser.decryptId(arguments.productId)>
         <cfset local.result = {success = false}>
         <cftry>
-            <cfquery datasource = "#application.datasource#">
+            <cfquery datasource = "#application.datasource#" result="productDeletion">
                 UPDATE
                     tblproduct P
                     LEFT JOIN tblproductimages PI ON P.fldProduct_Id = PI.fldProductId
@@ -798,6 +798,14 @@
                     AND P.fldActive = 1
                     AND PI.fldActive = 1
             </cfquery>
+            <cfif productDeletion.RecordCount>
+                <cfset local.productImagePath = expandPath('../Assets/uploads/product' & local.decryptedProductId)>
+                <cfdirectory
+                    directory = "#local.productImagePath#"
+                    action = "delete"
+                    recurse = "true"
+                >
+            </cfif>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
         <cfcatch>
