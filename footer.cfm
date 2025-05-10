@@ -2,7 +2,7 @@
     <div class="footer_Container">
         <div class="footerItem">
             <div class="footerItemCaption">ABOUT</div>
-            <ul class="">
+            <ul class="p-0">
                 <li Contact Us</li>
                 <li>About Us</li>
                 <li> </li>
@@ -21,7 +21,7 @@
         </div>
         <div class="footerItem">
             <div class="footerItemCaption">HELP</div>
-            <ul class="">
+            <ul class="p-0">
                 <li>Payments</li>
                 <li>Shipping</li>
                 <li>Cancellation & returns</li>
@@ -31,7 +31,7 @@
         </div>
         <div class="footerItem">
             <div class="footerItemCaption">CONSUMER POLICY</div>
-            <ul class="">
+            <ul class="p-0">
                 <li>Cancellation & Returns</li>
                 <li>Terms Of Use</li>
                 <li>Security</li>
@@ -56,7 +56,7 @@
     </div>
     <div class="footerBottom_container">
         <div>
-            <i class="fa-solid fa-suitcase suitcase"></i><span>Become a Seller</span>
+            <i class="fa-solid fa-suitcase suitcase"></i><a href = "admin.cfm">Login as Admin</a>
         </div>
         <div>
             <i class="fa-solid fa-circle-star star"></i><span>Advertise</span>
@@ -69,9 +69,6 @@
         </div>
         <div>
             <i class="fa-regular fa-copyright cpright"></i><span>2007-2024 Flipkart.com</span>
-        </div>
-        <div>
-            <img src="./Assets/images/paymentimage.svg" alt="">
         </div>
     </div>
     <div>

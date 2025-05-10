@@ -10,7 +10,6 @@
         "pincode" : form.pincode
     }>
     <cfset application.objUser.addAddress(argumentCollection={ "addressData" = addressData })>
-    <cflocation url="#cgi.script_name#?#cgi.QUERY_STRING#" addtoken="false">
 </cfif>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,12 +19,25 @@
     <title>Document</title>
 </head>
 <body>
-    <div class="modal fade" id="addressAddModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static">
+    <div 
+        class="modal fade"
+        id="addressAddModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+        data-bs-backdrop="static"
+    >
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addressAddModal">Add Address</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button 
+                        type="button" 
+                        class="btn-close" 
+                        data-bs-dismiss="modal"
+                        aria-label="Close"
+                    >
+                    </button>
                 </div>
                 <form method="post" onsubmit="return validateAddress()">
                     <div class="modal-body">

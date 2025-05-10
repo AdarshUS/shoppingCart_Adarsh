@@ -19,12 +19,12 @@
             <cfset onApplicationStart()>
         </cfif>
         <cfset local.Adminpages = ["category.cfm","subcategory.cfm","product.cfm"]>
-        <cfif NOT structKeyExists(session,"loginadminid") AND  arrayFindNoCase(local.Adminpages, ListLast(CGI.SCRIPT_NAME,'/'))>
+        <cfif NOT structKeyExists(session,"loginadminid") AND arrayFindNoCase(local.Adminpages, ListLast(CGI.SCRIPT_NAME,'/'))>
 	    	<cflocation url="admin.cfm" addToken="no">
-	    </cfif>
+	    </cfif> 
         <cfset local.Userpages = ["orderSummary.cfm","orderSearchResult.cfm","orderhistory.cfm","orderConfirmation.cfm"]>
         <cfif NOT structKeyExists(session,"loginuserid") AND arrayFindNoCase(local.Userpages, ListLast(CGI.SCRIPT_NAME,'/'))>
-	    	<cflocation url="homePage.cfm" addToken="no">
+	    	<cflocation url="index.cfm" addToken="no">
 	    </cfif>
     </cffunction>
-</cfcomponent> 
+</cfcomponent>

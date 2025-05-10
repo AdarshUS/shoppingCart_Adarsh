@@ -2,10 +2,10 @@
     <cfif structKeyExists(url,"redirect")>
         <cflocation url="userLogin.cfm?redirect=cartpage" addtoken="no">
     </cfif>
-   <cflocation url="userLogin.cfm" addtoken="no">
+<cfelse>
+    <cfset variables.addresses = application.objUser.fetchAddress()>
+    <cfset variables.cart = application.objCart.fetchCart()>
 </cfif>
-<cfset variables.addresses = application.objUser.fetchAddress()>
-<cfset variables.cart = application.objCart.fetchCart()>
 <!DOCTYPE html>
 <cfoutput>
 <html lang="en">
@@ -13,7 +13,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Your Cart</title>
-        <link rel="stylesheet" href="./Style/bootstrap.css">
+        <link rel="stylesheet" href="./Style/bootstrap.css"> 
         <link rel="stylesheet" href="./Style/fontawesome.css">
         <link rel="stylesheet" href="Style/homestyle.css">
     </head>
@@ -21,7 +21,9 @@
         <cfinclude template = "header.cfm">
         <h1 class="cart_heading">Your Cart</h1>
         <cfif arrayIsEmpty(variables.cart.data)>
-            <h1>Your Cart is Empty</h1>
+            <div class="d-flex justify-content-center">
+                <img src="./Assets/Images/emptyCart.png" alt="emptycart">
+            </div>
         <cfelse>
             <div class="cartBox">
             <div class="cart-container">
@@ -39,22 +41,43 @@
                         <cfloop array = #variables.cart.data# item = product>
                             <tr id="#product.cartId#">
                                 <td>
-                                   <img src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilepath#" alt="Analog Magazine Rack">
-                                   #product.productName#<br>
-                                   <small></small>
+                                   <img 
+                                        src="#'./Assets/uploads/product'&application.objUser.decryptId(product.productId)#/#product.imageFilepath#"
+                                        alt="Analog Magazine Rack"
+                                    >
+                                   <a href="productDetails.cfm?productId=#urlEncodedFormat(product.productId)#" class="productLink">#product.productName#</a><br>
                                 </td>
-                                <td class="cartProductPrice"><div><i class="fa-solid fa-indian-rupee-sign"></i><span id="productPrice#product.cartId#">#(product.unitPrice + (product.unitPrice * (product.unittax / 100)))#
-                                    </span></div><span id="actualprice#product.cartId#" class="actualPric">actualprice:<span class="actualPriceCart">#product.unitPrice#</span></span><span id="productTax#product.cartId#" class="productTaxes">Tax:<span class="productTax">#product.unittax#</span>%</span>
+                                <td class="cartProductPrice">
+                                    <div>
+                                        <i class="fa-solid fa-indian-rupee-sign"></i>
+                                        <span id="productPrice#product.cartId#">
+                                            #(product.unitPrice + (product.unitPrice * (product.unittax / 100)))#
+                                        </span>
+                                    </div>
+                                    <span id="actualprice#product.cartId#" class="actualPrice">
+                                        actualprice:
+                                        <span class="actualPriceCart">#product.unitPrice#</span>
+                                    </span>
+                                    <span id="productTax#product.cartId#" class="productTaxes">
+                                        Tax:<span class="productTax">#product.unittax#</span>%
+                                    </span>
                                 </td>
                                 <td>
                                     <div class="quantity-controls">
-                                       <button onclick="decreaseQuantity('#product.cartId#','decrement')" id="decreaseQntyBtn">-</button>
-                                       <input type="text" value="#product.quantity#" id="qntyNo#product.cartId#" class="qntyNo">
-                                       <button onclick="increaseQuantity('#product.cartId#','increment')">+</button>
+                                       <button onclick="updateQuantity('#product.cartId#',-1)" id="decreaseQntyBtn">-</button>
+                                       <input type="text" value="#product.quantity#" id="qntyNo#product.cartId#" class="qntyNo" readonly>
+                                       <button onclick="updateQuantity('#product.cartId#',1)" id="increaseQntyBtn">+</button>
                                     </div>
                                 </td>
-                                <td><i class="fa-solid fa-indian-rupee-sign"></i><span id="totalPrice#product.cartId#" class="totalPrice">#(product.unitPrice + (product.unitPrice * (product.unittax / 100))) * product.quantity#</span></td>
-                                <td><button class="remove-item" onclick = "deleteCartItem('#product.cartId#')"><i class="fa-solid fa-xmark"></i></button></td>
+                                <td>
+                                <i class="fa-solid fa-indian-rupee-sign"></i>
+                                    <span id="totalPrice#product.cartId#" class="totalPrice">
+                                        #(product.unitPrice + (product.unitPrice * (product.unittax / 100))) * product.quantity#
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="remove-item" onclick = "deleteCartItem('#product.cartId#')"><i class="fa-solid fa-xmark"></i></button>
+                                </td>
                             </tr>
                         </cfloop>
                     </tbody>
@@ -98,8 +121,25 @@
                         </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success addressAddBtn" id="addAddressBtn" name="submit" data-bs-toggle="modal" data-bs-target="##addressAddModal">Add Address</button>
-                        <button type="button" class="btn btn-primary" id="submit" name="submit" onclick="redirectCartToorder()">Payment Details</button>
+                        <button 
+                            type="button"
+                            class="btn btn-success addressAddBtn"
+                            id="addAddressBtn"
+                            name="submit"
+                            data-bs-toggle="modal"
+                            data-bs-target="##addressAddModal"
+                        >
+                        Add Address
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            id="submit"
+                            name="submit"
+                            onclick="placeOrder()"
+                        >
+                        Payment Details
+                        </button>
                     </div>
                 </div>
             </div>
@@ -107,7 +147,9 @@
         <cfinclude template="addAdress.cfm">
         <script src="./Script/jquery-3.7.1.min.js"></script>
         <script src="./Script/bootstrapScript.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="./Script/userPageScript.js"></script>
+        <script src="./Script/validation.js"></script>
     </body>
 </html>
 </cfoutput>

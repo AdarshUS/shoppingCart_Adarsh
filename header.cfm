@@ -1,13 +1,21 @@
-<header>
-    <cfoutput >
-        <a class="header_logo" href="homePage.cfm">
+<!DOCTYPE html>
+<cfoutput>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <a class="header_logo" href="index.cfm">
             <img src="./Assets/Images/cart1.jpeg" alt="logo" width="60">
             <span class="header_logoText">My Cart</span>
         </a>
         <div class="header_searchBar">
-            <i class="fa-solid fa-magnifying-glass"></i>  
-            <form method="post" action="searchResult.cfm">
-                <input type="text" name = "searchInput" placeholder="Search for Products, Brands and More">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <form method="post" id="searchForm">
+                <input type="text" name = "searchInput" placeholder="Search for Products, Brands and More" id="searchInput" required>
                 <button class="searchBtn" name="searchBtn" type="submit">Search</button>
             </form>
         </div>
@@ -19,7 +27,7 @@
             <a class="cartContainer" href="cart.cfm?redirect=cartpage">
                 <i class="fa-solid fa-cart-shopping">
                     <cfif structKeyExists(session,"loginuserId")>
-                        <cfset numberOfCartItems = application.objCart.getNumberOfCartItems()>
+                        <cfset numberOfCartItems = session.cartItemCount>
                         <div class="itemcount" id="itemcount">
                             #numberOfCartItems#
                         </div>
@@ -28,7 +36,7 @@
             </a>
             <div class="logoutContainer">
                 <cfif structKeyExists(session,"loginuserId")>
-                    <button onclick="logoutUser()">
+                    <button onclick="logoutUser(1)">
                         <i class="fa-solid fa-right-from-bracket"></i>
                         <div class="header_menutext">LogOut</div>
                     </button>
@@ -40,5 +48,8 @@
                 </cfif>
             </div>
         </div>
-    </cfoutput>
-</header>
+    </header>
+    <script src="./Script/script.js"></script>
+</body>
+</cfoutput>
+</html>

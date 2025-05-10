@@ -1,110 +1,68 @@
-function validateUserDetails() {
-    let validDetails = true;
-    const firstName = document.getElementById("firstName").value;
-    const lastName = document.getElementById("lastName").value;
-    const userEmail = document.getElementById("userEmail").value;
-    const userPhone = document.getElementById("userPhone").value;
-    const userPassword = document.getElementById("userPassword").value;
-
-    document.getElementById("firstNameError").innerHTML = "";
-    document.getElementById("lastNameError").innerHTML = "";
-    document.getElementById("userEmailError").innerHTML = "";
-    document.getElementById("userPhoneError").innerHTML = "";
-    document.getElementById("userPasswordError").innerHTML = "";
-
-    if (firstName.trim() === "") {
-        document.getElementById("firstNameError").innerHTML = "Enter the FirstName";
-        validDetails = false;
-    }
-
-    if (lastName.trim() === "") {
-        document.getElementById("lastNameError").innerHTML = "Enter the LastName";
-        validDetails = false;
-    }
-
-    if (userEmail.trim() === "" || !(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(userEmail))) {
-        document.getElementById("userEmailError").innerHTML = "Please enter a valid email address";
-        validDetails = false;
-    }
-
-    if (userPhone.trim() === "" || !(userPhone.length == 10)) {
-        document.getElementById("userPhoneError").innerHTML = "Please enter a valid 10-digit phone number";
-        validDetails = false;
-    }
-
-    if (userPassword.trim() === "" || userPassword.search(/[a-z]/i) < 0 || userPassword.search(/[0-9]/) < 0 || userPassword.length < 6) {
-        document.getElementById("userPasswordError").innerHTML = "Password must be at least 6 characters long & should contain 1 letter and digit";
-        validDetails = false;
-    }
-
-    return validDetails;
-}
-
-function validateUserLogin() {
-    let validUserInput = true;
-    const userName = document.getElementById("userName").value.trim();
-    const password = document.getElementById("userPassword").value.trim();
-
-    document.getElementById("userNameError").innerHTML = "";
-    document.getElementById("userPasswordError").innerHTML = "";
-
-    if (userName === "") {
-        document.getElementById("userNameError").innerHTML = "Enter the UserName";
-        validUserInput = false;
-    } else if (
-        !isValidEmail(userName) && !isValidPhone(userName)
-    ) {
-        document.getElementById("userNameError").innerHTML = "UserName must be a valid email or phone number";
-        validUserInput = false;
-    }
-
-    if (password === "") {
-        document.getElementById("userPasswordError").innerHTML = "Enter the Password";
-        validUserInput = false;
-    }
-    return validUserInput;
-}
-
-function isValidEmail(email) {
-    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    return emailRegex.test(email);
-}
-
-function isValidPhone(phone) {
-    const phoneRegex = /^[0-9]{10}$/;
-    return phoneRegex.test(phone);
-}
-
-
-function filterPrices(subcategoryId) {
+let startindex = 0;
+function filterPrices() {
     let priceRange = document.querySelector('input[name="filterPrice"]:checked');
-    let priceRangeValue;
-    document.getElementById("productContainer").innerHTML = "";
-
-    if (priceRange.value != null & priceRange.value != 0) {
-        priceRangeValue = priceRange.value;
-    } else {
-        let minvalue = document.getElementById("minimumPrice").value;
-        let maxvalue = document.getElementById("maxPrice").value;
-        priceRangeValue = minvalue + " AND " + maxvalue;
+    let minPrice;
+    let maxPrice;
+    if(priceRange.value === "custom")
+    {
+        minPrice = document.getElementById("minimumPrice").value;
+        maxPrice = document.getElementById("maxPrice").value;
+        if(minPrice.trim() === "" || maxPrice.trim() === "")
+        {
+            alert("Please enter the price range");
+            return;
+        }
+        if(parseInt(minPrice) > parseInt(maxPrice))
+        {
+            alert("Minimum price should be less than Maximum price");
+            return;
+        }
+        if(parseInt(minPrice) < 0 || parseInt(maxPrice) < 0)
+        {
+            alert("enter positive range");
+            return;
+        }
     }
-    fetchProductsRemote("fetchProducts", {
-        subcategoryId: subcategoryId,
-        priceRange: priceRangeValue
+    else
+    {
+        minPrice = priceRange.dataset.start;
+        maxPrice = priceRange.dataset.end;
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set('startPrice', minPrice);
+    urlParams.set('endPrice', maxPrice);
+    window.location.search = urlParams;
+}
+
+let searchElement = document.getElementById("searchForm");
+if(searchElement)
+{
+    document.getElementById("searchForm").addEventListener("submit", function(event) {
+    window.location.href = "subCategorylist.cfm?searchText=" + document.getElementById("searchInput").value;
+    event.preventDefault();
     });
 }
 
-async function fetchProductsRemote(methodName, parameters) {
+async function getAndDisplayProducts(parameters) {
     try {
         const result = await $.ajax({
-            url: `components/ProductManagement.cfc?method=${methodName}`,
+            url: `components/ProductManagement.cfc?method=fetchProducts`,
             type: 'POST',
             data: parameters,
         });
         const parsedResult = JSON.parse(result);
         const products = parsedResult.products;
         const productContainer = document.getElementById("productContainer");
-        productContainer.innerHTML = "";
+        if(parameters.startindex + 4 >= products[0].totalProducts)
+        {
+            document.getElementById("viewMoreBtn").style.display = "none";
+        }
+        if(!parameters.startindex)
+        {
+            productContainer.innerHTML = "";
+        }
+        
         for (const item of products) {
             try {
                 const decryptResult = await $.ajax({
@@ -145,55 +103,58 @@ async function fetchProductsRemote(methodName, parameters) {
             }
         }
     } catch (fetchError) {
-        alert("Error fetching products:", fetchError);
+        console.error(fetchError);
     }
 }
 
-function logoutUser() {
-    if (confirm("Are you sure you want to Logout")) {
-        $.ajax({
-            url: 'components/User.cfc?method=logoutUser',
-            type: 'POST',
-            success: function(result) {
-                location.reload();
-            },
-            error: function() {
-                alert("Error in LogOut");
-            }
+function loadMoreProducts(subcategoryId,sort,searchText,startPrice,endPrice)
+{
+    startindex+=4;
+    if(searchText)
+    {
+        getAndDisplayProducts({
+            startindex: startindex,
+            searchText: searchText,
+            sort: sort,
+            limit: 4,
+            startPrice:startPrice,
+            endPrice:endPrice
         });
     }
-}
-
-function toggleProducts(subcategoryId, sort) {
-    fetchProductsRemote("fetchProducts", {
+    else if(startPrice !== undefined && endPrice !== undefined)
+    {
+        getAndDisplayProducts({
         subcategoryId: subcategoryId,
-        sort: sort
-    });
-    document.getElementById("viewMoreBtn").style.display = "none";
-    document.getElementById("viewLessBtn").style.display = "flex";
-}
-
-function toggleLessProducts(subcategoryId) {
-    fetchProductsRemote("fetchProducts", {
-        subcategoryId: subcategoryId,
+        sort: sort,
         limit: 4,
-        sort: 'ASC'
-    });
-    document.getElementById("viewLessBtn").style.display = "none";
-    document.getElementById("viewMoreBtn").style.display = "flex";
+        startindex: startindex,
+        startPrice:startPrice,
+        endPrice:endPrice
+        });
+    }
+    else
+    {
+        getAndDisplayProducts({
+        subcategoryId: subcategoryId,
+        sort: sort,
+        limit: 4,
+        startindex: startindex
+        });
+    }
 }
 
  function handleCartAction(productId) {
         $.ajax({
             url: 'components/cart.cfc?method=addTocart',
             type: 'POST',
-            data: {productId : productId,quantity:1},
+            data: {productId : productId},
             success: function(response) {
                 let result = JSON.parse(response);
-                if(result.message === "quantity Added")
+                if(result.message === "product added")
                 {
-                    if(document.getElementById("itemcount").innerHTML === "")
+                    if(document.getElementById("itemcount").innerHTML == 0)
                     {
+                        document.getElementById("itemcount").style.display="flex";
                         document.getElementById("itemcount").innerHTML = 1;
                     }
                     else
@@ -201,6 +162,14 @@ function toggleLessProducts(subcategoryId) {
                         document.getElementById("itemcount").innerHTML = parseInt( document.getElementById("itemcount").innerHTML) +1;
                     }
                 }
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "Added to cart",
+                    showConfirmButton: false,
+                    timer: 1500,
+                    toast: true
+                });
             },
             error: function() {
                 alert("Error in addTocart");
@@ -213,14 +182,14 @@ function toggleLessProducts(subcategoryId) {
         };
     }
 
-    function increaseQuantity(cartId, step) {
+    function updateQuantity(cartId, step) {
         document.getElementById("decreaseQntyBtn").disabled = false;
-        let qnty = document.getElementById("qntyNo" + cartId).value;
-        qnty++;
+        let qnty = parseInt(document.getElementById("qntyNo" + cartId).value);
+        qnty+=step;
         document.getElementById("qntyNo" + cartId).value = qnty;
-    
+
         $.ajax({
-            url: 'components/cart.cfc?method=updateCart',
+            url: 'components/cart.cfc?method=updateCartQnty',
             type: 'POST',
             data: {
                 cartId: cartId,
@@ -233,36 +202,12 @@ function toggleLessProducts(subcategoryId) {
             }
         });
         document.getElementById("totalPrice" + cartId).innerHTML =
-            document.getElementById("qntyNo" + cartId).value *
-            document.getElementById("productPrice" + cartId).innerHTML;
+            (document.getElementById("qntyNo" + cartId).value *
+            document.getElementById("productPrice" + cartId).innerHTML).toFixed(2);
         checkQnty();
         calculateTotalPrice();
     }
-
-function decreaseQuantity(cartId, step) {
-    let qnty = document.getElementById("qntyNo" + cartId).value;
-    qnty--;
-    document.getElementById("qntyNo" + cartId).value = qnty;
-    $.ajax({
-        url: 'components/cart.cfc?method=updateCart',
-        type: 'POST',
-        data: {
-            cartId: cartId,
-            step: step
-        },
-        success: function(result) {
-        },
-        error: function() {
-            alert("failed")
-        }
-    });
-    document.getElementById("totalPrice" + cartId).innerHTML =
-        document.getElementById("qntyNo" + cartId).value *
-        document.getElementById("productPrice" + cartId).innerHTML;
-    checkQnty();
-    calculateTotalPrice();
-}
-
+    
 function checkQnty() {
     let qnty = $(".qntyNo");
     for (let index = 0; index < qnty.length; index++) {
@@ -275,21 +220,45 @@ function checkQnty() {
 }
 
 $(document).ready(function() {
-    checkQnty();
-    calculateTotalPrice();
+
+    if( $(".qntyNo").length >0)
+    {
+        checkQnty();
+        calculateTotalPrice();
+    }
+    let itemCountElement = document.getElementById("itemcount");
+    if (itemCountElement) {
+        let cartItemCount = parseInt(itemCountElement.innerHTML, 10) || 0;
+        if (cartItemCount <= 0) {
+            itemCountElement.style.display = "none";
+        }
+    }
 });
 
 function deleteCartItem(cartId) {
-    if (confirm("Are you sure you want to delete")) {
+    Swal.fire({
+        title: "Are you sure you want to remove from cart?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "remove"
+    }).then((result) => {
+  if (result.isConfirmed) {
         $.ajax({
             url: 'components/cart.cfc?method=deleteCart',
             type: 'POST',
             data: {
                 cartId: cartId
             },
-            success: function(result) {
+            success: function(response) {
                 document.getElementById(cartId).remove();
                 document.getElementById("itemcount").innerHTML = parseInt( document.getElementById("itemcount").innerHTML) - 1;
+                let remainingCount = JSON.parse(response);
+                if(remainingCount === 0)
+                {
+                    location.reload();
+                }
                 calculateTotalPrice();
             },
             error: function() {
@@ -297,6 +266,7 @@ function deleteCartItem(cartId) {
             }
         });
     }
+    });
 }
 
 function togglePassword() {
@@ -327,7 +297,7 @@ function calculateTotalPrice() {
         let actualPrice = parseFloat(actualPrices[index].innerHTML);
         let quantity = parseInt(quantities[index].value);
         let taxPercentage = parseFloat(taxes[index].innerHTML);
-        
+
         let actualTotal = actualPrice * quantity;
         let taxAmount = (taxPercentage / 100) * actualTotal;
         let totalItemPrice = actualTotal + taxAmount;
@@ -342,61 +312,6 @@ function calculateTotalPrice() {
     document.getElementById("subtotal").innerHTML = totalPrice.toFixed(2);
 }
 
-
-function validateAddress() {
-    let validAddress = true;
-    const firstName = document.getElementById("firstName").value;
-    const phone = document.getElementById("phone").value;
-    const address1 = document.getElementById("address1").value;
-    const city = document.getElementById("city").value;
-    const state = document.getElementById("state").value;
-    const pincode = document.getElementById("pincode").value;
-
-    document.getElementById("firstNameError").innerHTML = "";
-    document.getElementById("phoneError").innerHTML = "";
-    document.getElementById("address1Error").innerHTML = "";
-    document.getElementById("cityError").innerHTML = "";
-    document.getElementById("stateError").innerHTML = "";
-    document.getElementById("pincodeError").innerHTML = "";
-
-    if (firstName.trim() === "") {
-        document.getElementById("firstNameError").innerHTML = "firstName cannot be empty";
-        validAddress = false;
-    }
-
-    if (phone.trim() === "") {
-        document.getElementById("phoneError").innerHTML = "phone cannot be empty";
-        validAddress = false;
-    } else if (!/^[0-9]{10}$/.test(phone)) {
-        document.getElementById("phoneError").innerHTML = "Enter valid phoneNumber";
-        validAddress = false;
-    }
-
-    if (address1.trim() === "") {
-        document.getElementById("address1Error").innerHTML = "address cannot be empty";
-        validAddress = false;
-    }
-
-    if (city.trim() === "") {
-        document.getElementById("cityError").innerHTML = "city cannot be empty";
-        validAddress = false;
-    }
-
-    if (state.trim() === "") {
-        document.getElementById("stateError").innerHTML = "state cannot be empty";
-        validAddress = false;
-    }
-
-    if (pincode.trim() === "") {
-        document.getElementById("pincodeError").innerHTML = "pincode cannot be empty";
-        validAddress = false;
-    } else if (!/^[0-9]{6}$/.test(pincode)) {
-        document.getElementById("pincodeError").innerHTML = "Enter a valid pincode";
-        validAddress = false;
-    }
-    return validAddress;
-}
-
 function resetAddresseror()
 {
     document.getElementById("firstNameError").innerHTML = "";
@@ -408,8 +323,16 @@ function resetAddresseror()
 }
 
 function deleteAddress(addressId) {
-    if (confirm("Are you sure you want to delete")) {
-        $.ajax({
+    Swal.fire({
+  title: "Are you sure you want to delete?",
+  icon: "warning",
+  showCancelButton: true,
+  confirmButtonColor: "#3085d6",
+  cancelButtonColor: "#d33",
+  confirmButtonText: "delete"
+}).then((result) => {
+  if (result.isConfirmed) {
+    $.ajax({
             url: 'components/User.cfc?method=deleteAddress',
             type: 'POST',
             data: {
@@ -422,7 +345,8 @@ function deleteAddress(addressId) {
                 alert("failed")
             }
         });
-    }
+    } 
+});
 }
 
 $(document).ready(function() {
@@ -437,23 +361,44 @@ $(document).ready(function() {
     });
 })
 
-function redirectToOrder(productId) {
+function placeOrder(productId) {
     let selectedAddress = document.querySelector('input[name="address"]:checked');
     let addressId = selectedAddress.value;
-    handleCartAction(productId);
-    window.location.href = `orderSummary.cfm?addressId=${addressId}&productId=${encodeURIComponent(productId)}&type=single`;
+    if(productId)
+    {
+        handleCartAction(productId);
+        window.location.href = `orderSummary.cfm?addressId=${addressId}&productId=${encodeURIComponent(productId)}&type=single`;
+    }
+    else
+    {
+        window.location.href = `orderSummary.cfm?addressId=${addressId}&type=cart`;
+    }
 }
 
-function redirectCartToorder() {
-    let selectedAddress = document.querySelector('input[name="address"]:checked');
-    let addressId = selectedAddress.value;
-    window.location.href = `orderSummary.cfm?addressId=${addressId}&type=cart`;
-}
-
-const input = document.getElementById('customFilterInput');
-input.addEventListener('input', () => {
+var input = document.getElementById('customFilterInput');
+if(input)
+{
+    input.addEventListener('input', () => {
     if (input.checked) {
         document.getElementById("minimumPrice").disabled = false;
         document.getElementById("maxPrice").disabled = false;
     }
+});
+}
+
+function clearProfilErrorMsg()
+{
+    let firstNameError = document.getElementById("userFirstNameError");
+    let lastNameError = document.getElementById("userLastNameError");
+    let emailError = document.getElementById("userEmailError");
+    let phoneError = document.getElementById("userPhoneError");
+
+    firstNameError.innerHTML = "";
+    lastNameError.innerHTML = "";
+    emailError.innerHTML = "";
+    phoneError.innerHTML = "";
+}
+
+$(document).on("click", function() {
+    $(".userLoginError").hide();
 });

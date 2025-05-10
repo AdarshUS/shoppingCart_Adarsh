@@ -1,4 +1,4 @@
-function decreaseQuantity() {
+function decreaseQuantityOrder() {
     let qnty = document.getElementById("orderInput").value;
     if (qnty == 1) {
         document.getElementById("decreaseQntyBtnCart").disabled = true;
@@ -10,7 +10,7 @@ function decreaseQuantity() {
     document.getElementById("payableAmt").innerHTML = actualPrice * qnty;
 }
 
-function increaseQuantity() {
+function increaseQuantityOrder() {
     document.getElementById("decreaseQntyBtnCart").disabled = false;
     let qnty = document.getElementById("orderInput").value;
     let actualPrice = parseInt(document.getElementById("payableAmt").innerHTML) / qnty;
@@ -19,7 +19,7 @@ function increaseQuantity() {
     document.getElementById("payableAmt").innerHTML = actualPrice * qnty;
 }
 
-function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
+function checkout(addressId, productId) {
     let isValidData = true;
     let cardNumber = document.getElementById("cardNumber").value.trim();
     let cardYear = parseInt(document.getElementById("cardYear").value.trim(), 10);
@@ -32,6 +32,7 @@ function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
     document.getElementById("cardMonthError").innerHTML = "";
     document.getElementById("cardCvvError").innerHTML = "";
     document.getElementById("cardYearError").innerHTML = "";
+    document.getElementById("cardVerify").innerHTML = " ";
 
     if (cardNumber === "") {
         document.getElementById("cardNoError").innerHTML = "Enter Card Number";
@@ -42,7 +43,7 @@ function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
     }
 
     if (isNaN(cardYear) || cardYear < today.getFullYear()) {
-        document.getElementById("cardYearError").innerHTML = "Enter year";
+        document.getElementById("cardYearError").innerHTML = "Enter valid year";
         isValidData = false;
     }
 
@@ -93,26 +94,26 @@ function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
                                     timer: 1500
                                 });
                             setTimeout(() => {
-                                location.href = "homePage.cfm";
-                            }, 1700); 
+                                location.href = "orderHistory.cfm";
+                            }, 1700);
                             },
                             error: function() {
 
                             }
                         });
                     } else {
+                        if (isNaN(qnty) || qnty <= 0)
+                        {
+                            alert("invalid qnty");
+                        }
                         $.ajax({
                             url: 'components/cart.cfc?method=addOrder',
                             type: 'POST',
                             data: {
                                 addressId: addressId,
                                 cardnumber: cardNumber,
-                                totalPrice: totalAmnt,
-                                totalTax: totalTax,
                                 productId: productId,
-                                quantity: qnty,
-                                unitPrice: unitPrice,
-                                unitTax: totalTax
+                                quantity: qnty
                             },
                             success: function(result) {
                                 Swal.fire({
@@ -123,7 +124,7 @@ function checkout(addressId, productId, totalAmnt, unitPrice, totalTax) {
                                     timer: 1500
                                 });
                                 setTimeout(() => {
-                                location.href = "homePage.cfm";
+                                location.href = "orderHistory.cfm";
                             }, 1700); 
                             },
                             error: function() {
@@ -147,25 +148,3 @@ $('.place-order').click(function() {
     document.getElementById("cardYearError").innerHTML = "";
 })
 
-function getOrderInvoicePdf(orderId)
-{
-     $.ajax({
-        url: 'components/cart.cfc?method=getOrderHistoryPdf',
-        type: 'POST',
-        data: {
-            orderId : orderId
-        },
-        success: function(result) {
-            let jsonObj = JSON.parse(result);
-		    let a = document.createElement("a");
-		    a.download = jsonObj.FILENAME;
-		    a.href = jsonObj.FILEPATH;
-		    a.click();
-        },
-        error: function()
-        {
-
-        }
-        })
-    
-}

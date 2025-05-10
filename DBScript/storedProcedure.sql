@@ -1,5 +1,4 @@
 DELIMITER $$
-
 CREATE DEFINER=`root`@`localhost` PROCEDURE `placeOrder`(
     IN userId INTEGER,
     IN addressId INTEGER,
@@ -11,27 +10,27 @@ BEGIN
     DECLARE totalTax DECIMAL(10, 2);
     DECLARE cartItemCount INTEGER;
    
-    SELECT COUNT(*) INTO cartItemCount 
-    FROM tblCart 
+    SELECT COUNT(*) INTO cartItemCount
+    FROM tblCart
     WHERE fldUserId = userId;
 
     IF cartItemCount = 0 THEN
-        SIGNAL SQLSTATE '45000' 
+        SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Cart is empty, order cannot be placed.';
     END IF;
    
-    SELECT 
+    SELECT
         IFNULL(SUM(C.fldQuantity * P.fldunitPrice), 0),
         IFNULL(SUM(C.fldQuantity * (P.fldunitPrice * P.fldunitTax)/100), 0)
-    INTO 
-        totalPrice, 
+    INTO
+        totalPrice,
         totalTax
-    FROM 
+    FROM
         tblCart C
-    INNER JOIN tblProduct P 
-        ON P.fldProduct_ID = C.fldProductId 
+        INNER JOIN tblProduct P
+        ON P.fldProduct_ID = C.fldProductId
         AND P.fldActive = 1
-    WHERE 
+    WHERE
         C.fldUserId = userId;
   
     START TRANSACTION;

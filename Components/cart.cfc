@@ -1,24 +1,25 @@
 <cfcomponent>
     <cffunction name="addTocart" access="remote" returntype="struct" returnformat="JSON">
         <cfargument name = "productId" required="true" type="string">
-        <cfargument name = "quantity" required="true" type="integer">
         <cfset local.result = {
             success = false,
             "message" = ""
         }>
         <cftry>
+            <cfset local.productId = application.objUser.decryptId(arguments.productId)>
+            <cfset local.userId = application.objUser.decryptId(session.loginuserId)>
             <cfquery name = "local.checkProductExist" datasource="#application.datasource#">
                 SELECT
                     fldCart_Id AS cartId
                 FROM
                     tblcart
                 WHERE
-                    fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">
+                    fldProductId = <cfqueryparam value="#local.productId#" cfsqltype="integer">
                     AND
-                    fldProductId = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">
+                    fldUserId = <cfqueryparam value="#local.userId#" cfsqltype="integer">
             </cfquery>
             <cfif local.checkProductExist.RecordCount>
-                <cfset updateCart(cartId = application.objUser.encryptId(checkProductExist.cartId), step="increment")>
+                <cfset updateCartQnty(cartId = application.objUser.encryptId(checkProductExist.cartId), step = 1)>
                 <cfset local.result.message = "product updated">
             <cfelse>
                 <cfquery datasource="#application.datasource#">
@@ -28,19 +29,20 @@
                         fldQuantity
                         )
                     VALUES(
-                        <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">,
-                        <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">,
-                        <cfqueryparam value="#arguments.quantity#" cfsqltype="integer">
+                        <cfqueryparam value="#local.userId#" cfsqltype="integer">,
+                        <cfqueryparam value="#local.productId#" cfsqltype="integer">,
+                        1
                     )
                 </cfquery>
-                <cfset local.result.message = "quantity Added">
+                <cfset local.result.message = "product added">
+                <cfset session.cartItemCount+=1>
             </cfif>
             <cfset local.result.success = true>
         <cfcatch>
             <cfset local.result.message = "Database error: " & cfcatch.message> 
             <cfset application.objProductManagement.sendErrorEmail(
-               subject = "error in function: addTocart", 
-               body = "#cfcatch#"
+                subject = "error in function: addTocart",
+                body = "#cfcatch#"
            )>
         </cfcatch>
         </cftry>
@@ -65,8 +67,8 @@
                     C.fldCart_Id
                 FROM
                     tblcart C 
-                INNER JOIN tblproduct P ON C.fldProductId = P.fldProduct_Id
-                LEFT JOIN tblproductimages PI ON P.fldProduct_Id = PI.fldProductId AND fldDefaultImage = 1
+                    INNER JOIN tblproduct P ON C.fldProductId = P.fldProduct_Id
+                    INNER JOIN tblproductimages PI ON P.fldProduct_Id = PI.fldProductId AND fldDefaultImage = 1
                 WHERE 
                     fldUserId = <cfqueryparam value = #application.objUser.decryptId(session.loginuserId)# cfsqltype="integer">
             </cfquery>
@@ -96,50 +98,62 @@
         <cfreturn local.result>
     </cffunction>
 
-    <cffunction name="updateCart" access="remote" returntype="void"> 
+    <cffunction name="updateCartQnty" access="remote" returntype="void"> 
         <cfargument name="cartId" required = "true" type = "string">
-        <cfargument name="step" required="true" type="string">
+        <cfargument name="step" required="true" type="integer">
         <cftry>
             <cfquery datasource="#application.datasource#">
-                UPDATE 
-                    tblcart
-                SET 
-                    fldQuantity = 
-                CASE 
-                    WHEN <cfqueryparam value="#arguments.step#" cfsqltype="varchar"> = 'increment' THEN fldQuantity + 1
-                    WHEN fldQuantity > 1 THEN fldQuantity - 1
-                    ELSE fldQuantity
-                END
-                WHERE fldCart_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.cartId)#" cfsqltype="integer">
+                UPDATE tblcart
+                    SET fldQuantity = 
+                        CASE 
+                            WHEN <cfqueryparam value="#arguments.step#" cfsqltype="cf_sql_integer"> = 1 
+                                THEN fldQuantity + 1
+                            WHEN fldQuantity > 1 AND <cfqueryparam value="#arguments.step#" cfsqltype="cf_sql_integer"> = -1
+                                THEN fldQuantity - 1
+                            ELSE fldQuantity
+                        END
+                    WHERE fldCart_Id = <cfqueryparam value="#application.objUser.decryptId(arguments.cartId)#" cfsqltype="cf_sql_integer">
             </cfquery>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = "error in function: updateCart", 
+                subject = "error in function: updateCartQnty",
                 body = "#cfcatch#"
             )>
         </cfcatch>
         </cftry>
     </cffunction>
 
-    <cffunction name="deleteCart" access="remote" returntype="void">
-        <cfargument name="cartId" required="false" type="string">
+    <cffunction name="deleteCart" access="remote" returntype="numeric" returnformat="JSON">
+        <cfargument name="cartId" required="false" type="string"> 
         <cftry>
-            <cfquery datasource="#application.datasource#">
-                DELETE FROM tblcart
-            WHERE 
-                <cfif structKeyExists(arguments, "cartId") AND len(arguments.cartId)>
-                    fldCart_Id = <cfqueryparam value = "#application.objUser.decryptId(arguments.cartId)#" cfsqltype="integer">
-                <cfelseif structKeyExists(arguments, "productId") AND len(arguments.productId)>
-                    tblproductId = <cfqueryparam value = "#arguments.productId#" cfsqltype="integer">
-                </cfif>
-            </cfquery>
+            <cfset local.userId = application.objUser.decryptId(session.loginuserId)>
+            <cftransaction>
+                <cfquery datasource="#application.datasource#">
+                    DELETE FROM 
+                        tblcart
+                    WHERE
+                        fldUserId = <cfqueryparam value="#local.userId#" cfsqltype="integer">
+                        AND fldCart_Id = <cfqueryparam value = "#application.objUser.decryptId(arguments.cartId)#" cfsqltype="integer">
+                </cfquery>
+
+                <cfquery name="local.remainingCartCount" datasource="#application.datasource#">
+                    SELECT 
+                        count(*) AS remainingCount
+                    FROM
+                        tblcart
+                    WHERE
+                        fldUserId = <cfqueryparam value="#local.userId#" cfsqltype="integer">
+                </cfquery>
+                <cfset session.cartItemCount-=1>
+            </cftransaction>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = "error in function: deleteCart", 
+                subject = "error in function: deleteCart",
                 body = "#cfcatch#"
             )>
         </cfcatch>
         </cftry>
+        <cfreturn local.remainingCartCount.remainingCount>
     </cffunction>
 
     <cffunction name="getNumberOfCartItems" access="public" returntype="numeric">
@@ -167,64 +181,75 @@
     <cffunction name="addOrder" access="remote" returntype="void">
         <cfargument name="addressId" type="string" required="true">
         <cfargument name="cardnumber" type="string" required="true">
-        <cfargument name="totalPrice" type="integer" required="true">
-        <cfargument name="totalTax" type="integer" required="true">
         <cfargument name="productId" type="string" required="true">
-        <cfargument name="quantity" type="integer" required="true" >
-        <cfargument name="unitPrice" type="integer" required="true">
-        <cfargument name="unitTax" type="integer" required="true">
+        <cfargument name="quantity" type="integer" required="true">
         <cfset local.orderId = createUUID()>
         <cfset local.cardDigits = right(arguments.cardnumber,4)>
-        <cfset local.totalTax = Round((arguments.unitTax/100)*arguments.unitPrice*arguments.quantity)>
-        <cfset local.totalPrice = Round(arguments.unitPrice * arguments.quantity)>
         <cftry>
-            <cfquery datasource="#application.datasource#">
-                INSERT INTO  tblorder (
-                    fldOrder_Id,
-                    fldUserId,
-                    fldAddressId,
-                    fldCardNumber,
-                    fldTotalPrice,
-                    fldTotalTax,
-                    fldOrderDate
-                )
-                VALUES(
-                    <cfqueryparam value="#local.orderId#" cfsqltype="varchar">,
-                    <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">,
-                    <cfqueryparam value="#application.objUser.decryptId(arguments.addressId)#" cfsqltype="integer">,
-                    <cfqueryparam value="#local.cardDigits#" cfsqltype="varchar">,
-                    <cfqueryparam value="#local.totalPrice#" cfsqltype="integer">,
-                    <cfqueryparam value="#local.totalTax#" cfsqltype="integer">,
-                    now()
-                )
-            </cfquery>
-            <cfquery datasource="#application.datasource#">
-                INSERT INTO tblorderitems (
-                    fldOrderId,
-                    fldProductId,
-                    fldQuantity,
-                    fldUnitPrice,
-                    fldUnitTax
-                )
-                VALUES (
-                    <cfqueryparam value="#local.orderId#" cfsqltype="varchar">,
-                    <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#" cfsqltype="integer">,
-                    <cfqueryparam value="#arguments.quantity#" cfsqltype="integer">,
-                    <cfqueryparam value="#arguments.unitPrice#" cfsqltype="integer">,
-                    <cfqueryparam value="#arguments.unitTax#" cfsqltype="integer">
-                )
-            </cfquery>
-            <cfquery datasource="#application.datasource#">
-                DELETE 
-                FROM
-                    tblcart
-                WHERE
-                    fldProductId = <cfqueryparam value="#application.objUser.decryptId(arguments.productId)#">
-            </cfquery>
+            <cfset local.productId = application.objUser.decryptId(arguments.productId)>
+            <cftransaction>
+                <cfquery name="getPriceDetails" datasource="#application.datasource#">
+                    SELECT
+                        fldunitPrice,
+                        fldunitTax
+                    FROM
+                        tblproduct
+                    WHERE
+                        fldProduct_Id = <cfqueryparam value="#local.productId#">
+                </cfquery>
+                <cfset local.unitPrice = getPriceDetails.fldunitPrice>
+                <cfset local.unitTax = getPriceDetails.fldunitTax>
+                <cfset local.totalPrice = getPriceDetails.fldunitPrice * arguments.quantity>
+                <cfset local.totalTax = arguments.quantity * (getPriceDetails.fldunitPrice * getPriceDetails.fldunitTax)/100>
+                <cfquery datasource="#application.datasource#">
+                    INSERT INTO tblorder (
+                        fldOrder_Id,
+                        fldUserId,
+                        fldAddressId,
+                        fldCardNumber,
+                        fldTotalPrice,
+                        fldTotalTax,
+                        fldOrderDate
+                    )
+                    VALUES(
+                        <cfqueryparam value="#local.orderId#" cfsqltype="varchar">,
+                        <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="integer">,
+                        <cfqueryparam value="#application.objUser.decryptId(arguments.addressId)#" cfsqltype="integer">,
+                        <cfqueryparam value="#local.cardDigits#" cfsqltype="varchar">,
+                        <cfqueryparam value="#local.totalPrice#" cfsqltype="integer">,
+                        <cfqueryparam value="#local.totalTax#" cfsqltype="integer">,
+                        now()
+                    )
+                </cfquery>
+                <cfquery datasource="#application.datasource#">
+                    INSERT INTO tblorderitems (
+                        fldOrderId,
+                        fldProductId,
+                        fldQuantity,
+                        fldUnitPrice,
+                        fldUnitTax
+                    )
+                    VALUES (
+                        <cfqueryparam value="#local.orderId#" cfsqltype="varchar">,
+                        <cfqueryparam value="#local.productId#" cfsqltype="integer">,
+                        <cfqueryparam value="#arguments.quantity#" cfsqltype="integer">,
+                        <cfqueryparam value="#local.unitPrice#" cfsqltype="integer">,
+                        <cfqueryparam value="#local.unitTax#" cfsqltype="integer">
+                    )
+                </cfquery>
+                <cfquery datasource="#application.datasource#">
+                    DELETE
+                    FROM
+                        tblcart
+                    WHERE
+                        fldProductId = <cfqueryparam value="#local.productId#">
+                </cfquery>
+            </cftransaction>
+            <cfset session.cartItemCount-=1>
             <cfset sendOrderConfirmationMail(local.orderId)>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = "error in function: addOrder", 
+                subject = "error in function: addOrder",
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -245,10 +270,11 @@
                     '#local.orderId#'
                 );
             </cfquery>
+            <cfset session.cartItemCount = 0>
             <cfset sendOrderConfirmationMail(local.orderId)>
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = "error in function: placeOrder", 
+                subject = "error in function: placeOrder",
                 body = "#cfcatch#"
             )>
         </cfcatch>
@@ -257,23 +283,63 @@
 
     <cffunction name="sendOrderConfirmationMail" access="public" returntype="void">
         <cfargument name="orderId" type="string" required="true">
+        <cfset local.orderDetails = getOrderedItems(arguments.orderId)>
         <cfset local.sender = "adarshus1999@gmail.com">
         <cfset local.receiver = "#session.loginuserMail#">
         <cfset local.subject = "order confirmation mail">
 
-        <cfmail from="#local.sender#" subject="#local.subject#" to="#local.receiver#">
-            Your order with orderId : #arguments.orderId# is confirmed.
+        <cfmail from="#local.sender#" subject="#local.subject#" to="#local.receiver#" type="html">
+            <html>
+                <body>
+                    <p><strong>Your Order Confirmation</strong></p>
+                    <p>Order ID: <strong>#arguments.orderId#</strong></p>
+                    <p><strong>Order Details:</strong></p>
+                    <ul>
+                        <cfloop array="#local.orderDetails.orders[1].products#" item="product">
+                            <li>
+                                <p>Product: <strong>#product.productName#</strong></p>
+                                <p>Quantity: <strong>#product.quantity#</strong></p>
+                            </li>
+                        </cfloop>
+                    </ul>
+                    <p><strong>Total Price:</strong> Rs. #local.orderDetails.orders[1].totalPrice + local.orderDetails.orders[1].totalTax#</p>
+                    <p>Thank you for shopping with us!</p>
+                </body>
+            </html>
         </cfmail>
     </cffunction>
 
     <cffunction name="getOrderedItems" access="public" returntype="struct">
         <cfargument name="orderId" type="string" required="false">
+        <cfargument name="page" type="integer" required="false">
+        <cfif structKeyExists(arguments,"page")>
+             <cfset local.startIndex = (arguments.page - 1) * 5>
+        </cfif>
         <cfset local.result = {
             "success": false,
-            "orderDetails": [],
+            "orders": [],
             "message":""
          }>
+         <cfset local.orderSet = []>
         <cftry>
+            <cfif structKeyExists(arguments,"page")>
+                <cfquery name="local.getDistinctOrders" datasource="#application.datasource#">
+                    SELECT
+                        fldOrder_Id
+                    FROM
+                        tblorder
+                    WHERE
+                        fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="varchar">
+                        ORDER BY fldOrderDate DESC
+                        Limit 5
+                    <cfif structKeyExists(arguments,"page") AND arguments.page NEQ 0>
+                        OFFSET <cfqueryparam value="#local.startIndex#" cfsqltype="integer">;
+                    </cfif>
+                </cfquery>
+                <cfloop query="local.getDistinctOrders">
+                    <cfset arrayAppend(local.orderSet,local.getDistinctOrders.fldOrder_Id)>
+                </cfloop>
+            </cfif>
             <cfquery name="local.fetchOrderItems" datasource="#application.datasource#">
                 SELECT
 	                O.fldOrder_Id,
@@ -297,113 +363,67 @@
                     B.fldBrandName
                 FROM
                 	tblorder O
-                INNER JOIN tblorderitems OI ON OI.fldOrderId = O.fldOrder_Id
-                INNER JOIN tbladdress A ON A.fldAddress_Id = O.fldAddressId
-                INNER JOIN tblproduct P ON P.fldProduct_Id = OI.fldProductId
-                INNER JOIN tblbrand B ON B.fldBrand_Id = P.fldBrandId
-                LEFT JOIN tblproductimages PI ON PI.fldProductId = P.fldProduct_Id AND fldDefaultImage = 1
+                    INNER JOIN tblorderitems OI ON OI.fldOrderId = O.fldOrder_Id
+                    INNER JOIN tbladdress A ON A.fldAddress_Id = O.fldAddressId
+                    INNER JOIN tblproduct P ON P.fldProduct_Id = OI.fldProductId
+                    INNER JOIN tblbrand B ON B.fldBrand_Id = P.fldBrandId
+                    INNER JOIN tblproductimages PI ON PI.fldProductId = P.fldProduct_Id AND fldDefaultImage = 1
                 WHERE
                     O.fldUserId = <cfqueryparam value="#application.objUser.decryptId(session.loginuserId)#" cfsqltype="varchar">
-                <cfif structKeyExists(arguments,"orderId") AND arguments.orderId NEQ 0>
-                    AND  O.fldOrder_Id LIKE <cfqueryparam value="%#arguments.orderId#%" cfsqltype="varchar">
+                <cfif structKeyExists(arguments,"orderId")>
+                    AND O.fldOrder_Id LIKE <cfqueryparam value="%#arguments.orderId#%" cfsqltype="varchar">
                 </cfif>
-                ORDER BY O.fldOrderDate DESC
+                <cfif structKeyExists(arguments,"page")>
+                    AND O.fldOrder_Id IN (<cfqueryparam value='#arrayToList(local.orderSet)#' list="true">)
+                </cfif>
+                    ORDER BY O.fldOrderDate DESC
             </cfquery>
+            <cfset local.orderItem = {}>
+            <cfset local.orderIds = []>
             <cfif local.fetchOrderItems.recordCount>
                 <cfloop query="local.fetchOrderItems">
-                    <cfset arrayAppend(local.result.orderDetails, {
-                        "orderId": local.fetchOrderItems.fldOrder_Id,
-                        "orderDate": dateTimeFormat(local.fetchOrderItems.fldOrderDate.toString()),
+                    <cfset local.currentOrderId = local.fetchOrderItems.fldOrder_Id>
+                    <cfif NOT structKeyExists(local.orderItem,local.currentOrderId)>
+                        <cfset arrayAppend(local.orderIds,local.currentOrderId)>
+                        <cfset local.orderItem[local.currentOrderId] = {
+                            "orderId": local.fetchOrderItems.fldOrder_Id,
+                            "orderDate": dateTimeFormat(local.fetchOrderItems.fldOrderDate.toString()),
+                            "totalPrice": local.fetchOrderItems.fldTotalPrice,
+                            "totalTax": local.fetchOrderItems.fldTotalTax,
+                            "firstName": local.fetchOrderItems.fldFirstName,
+                            "lastName": local.fetchOrderItems.fldLastName,
+                            "address1": local.fetchOrderItems.fldAddressLine1,
+                            "address2": local.fetchOrderItems.fldAddressLine2,
+                            "city": local.fetchOrderItems.fldCity,
+                            "state": local.fetchOrderItems.fldState,
+                            "pincode": local.fetchOrderItems.fldPincode,
+                            "products":[]
+                        }>
+                    </cfif>
+                    <cfset arrayAppend(local.orderItem[local.currentOrderId].products, {
                         "imagefilepath": local.fetchOrderItems.fldImageFilePath,
                         "productName": local.fetchOrderItems.fldProductName,
                         "productId": local.fetchOrderItems.fldProduct_Id,
                         "brandName": local.fetchOrderItems.fldBrandName,
                         "quantity": local.fetchOrderItems.fldQuantity,
                         "unitPrice": local.fetchOrderItems.fldunitPrice,
-                        "unittax": local.fetchOrderItems.fldunitTax,
-                        "totalPrice": local.fetchOrderItems.fldTotalPrice,
-                        "totalTax": local.fetchOrderItems.fldTotalTax,
-                        "firstName": local.fetchOrderItems.fldFirstName,
-                        "lastName": local.fetchOrderItems.fldLastName,
-                        "address1": local.fetchOrderItems.fldAddressLine1,
-                        "address2": local.fetchOrderItems.fldAddressLine2,
-                        "city": local.fetchOrderItems.fldCity,
-                        "state": local.fetchOrderItems.fldState,
-                        "pincode": local.fetchOrderItems.fldPincode
+                        "unittax": local.fetchOrderItems.fldunitTax
                     })>
+                </cfloop>
+                <cfloop  array="#local.orderIds#" item="key">
+                    <cfset arrayAppend(local.result.orders, local.orderItem[key])>
                 </cfloop>
             </cfif>
             <cfset local.result.success = true>
             <cfset local.result.message = "successful Operation">
         <cfcatch>
             <cfset application.objProductManagement.sendErrorEmail(
-                subject = "error in function: getOrderedItems", 
+                subject = "error in function: getOrderedItems",
                 body = "#cfcatch#"
             )>
         </cfcatch>
         </cftry>
         <cfreturn local.result>
     </cffunction>
-
-    <cffunction name="getOrderHistoryPdf" access="remote" returntype="struct" returnformat="JSON">
-        <cfargument name="orderId" required="true" type="string">
-        <cfset local.orderHistory = getOrderedItems( orderId = arguments.orderId)>
-        <cfset local.fileName = "orderSummary.pdf">
-        <cfset local.pdfFilePath = "../Assets/Files/" & local.fileName>
-        <cfset local.pdfdownloadStruct = {}>
-        <cfoutput>
-            <cfdocument 
-                format="PDF" 
-                filename="#local.pdfFilePath#" 
-                overwrite="yes">
-                <h1 style="text-align: center;">Order Invoice</h1>
-                <div class="order_container">
-                    <div class="order-header">
-                        <p><strong>Name:</strong>#local.orderHistory.orderDetails[1].firstName# #local.orderHistory.orderDetails[1].lastName#</p>
-                        <p><strong>Order Number:</strong> #local.orderHistory.orderDetails[1].orderId#</p>
-                        <p><strong>Order Date:</strong> #local.orderHistory.orderDetails[1].orderDate#</p>
-                        <p><strong>Total Amount:</strong> #local.orderHistory.orderDetails[1].totalPrice+local.orderHistory.orderDetails[1].totalTax#</p>
-                        <p class="order-status text-success"><strong>Status:</strong> Paid</p>
-                    </div>
-                    <table border="1" cellspacing="0" cellpadding="5" width="100%">
-                        <thead>
-                            <tr>
-                                <th>Product Name</th>
-                                <th>Brand</th>
-                                <th>Quantity</th>
-                                <th>Unit Price</th>
-                                <th>Tax (%)</th>
-                                <th>Total Price</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <cfloop array="#local.orderHistory.orderDetails#" item="product" index="i">
-                                <cfset totalPrice = (product.unitPrice + (product.unitTax / 100) * product.unitPrice) * product.quantity>
-                                <tr>
-                                    <td>#product.productName#</td>
-                                    <td>#product.brandName#</td>
-                                    <td>#product.quantity#</td>
-                                    <td>#product.unitPrice#</td>
-                                    <td>#product.unitTax#%</td>
-                                    <td>#totalPrice#</td>
-                                </tr>
-                            </cfloop>
-                        </tbody>
-                    </table>
-                    <div class="order-footer">
-                        <h3>Shipping Address:</h3>
-                        <p>#local.orderHistory.orderDetails[1].address1#</p>
-                        <p>#local.orderHistory.orderDetails[1].address2#</p>
-                        <p>#local.orderHistory.orderDetails[1].city#, #local.orderHistory.orderDetails[1].state# - #local.orderHistory.orderDetails[1].pincode#</p>
-                    </div>
-                </div>
-            </cfdocument>
-        </cfoutput>
-      <cfset local.currentTime= dateTimeFormat(now(),"dd-mm-yyyy-HH-nn-ss")>
-      <cfset local.pdfFileName = "#session.loginuserfirstName# #session.loginuserlastName# #local.currentTime#">
-      <cfset local.pdfdownloadStruct.fileName = local.pdfFileName>
-      <cfset local.pdfdownloadStruct.filepath = "./Assets/Files/" & local.fileName>
-      <cfreturn local.pdfdownloadStruct>
-   </cffunction>
-
+    
 </cfcomponent>

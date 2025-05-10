@@ -1,76 +1,42 @@
-function validate() {
-    let validInput = true;
-    let username = document.getElementById("userName").value;
-    let passsword = document.getElementById("password").value;
-    let usernameError = document.getElementById("userNameError");
-    let passswordError = document.getElementById("passwordError");
-
-    usernameError.textContent = "";
-    passswordError.textContent = "";
-
-    if (username.trim() === "") {
-        usernameError.textContent = "userName cannot be empty";
-        validInput = false;
-    }
-
-    if (passsword.trim() === "") {
-        passswordError.textContent = "password cannot be empty";
-        validInput = false;
-    }
-
-    return validInput;
-}
-
-function resetErrorMsg()
-{
+function resetErrorMsg() {
     document.getElementById("categoryError").innerHTML = " ";
 }
 
-function validateSubCategory() {
-    let validSubCategory = true;
-    let categoryName = document.getElementById("categoryNameSelect").value;
-    let subCategoryName = document.getElementById("subCategoryName").value;
-
-    let categorySelectError = document.getElementById("categorySelectError");
-    let subCategoryNameError = document.getElementById("subCategoryNameError");
-
-    categorySelectError.innerHTML = "";
-    subCategoryNameError.innerHTML = "";
-
-    if (categoryName === "" || categoryName === "--") {
-        categorySelectError.innerHTML = "Category Cannot be Empty"
-        validSubCategory = false;
-    }
-    if (subCategoryName.trim() === "") {
-        subCategoryNameError.innerHTML = "Subcategory Cannot be Empty"
-        validSubCategory = false;
-    }
-    return validSubCategory;
-}
-
-$(".logout").click(function() {
-    if (confirm("Are you sure you want to Logout")) {
+function logoutUser(roleId) {
+    Swal.fire({
+        title: "Are you sure you want to logout?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "logout"
+    }).then((result) => {
+  if (result.isConfirmed) {
+    
         $.ajax({
-            url: 'components/User.cfc?method=logoutAdmin',
+            url: 'components/User.cfc?method=logout',
             type: 'POST',
-            success: function(result) {
+            data: {roleId :roleId},
+            success: function() {
                 location.reload();
             },
-            error: function() {
-                alert("error occured in logout");
+            error: function(e) {
+                alert("Error in LogOut"+e);
             }
         });
-    }
-});
+  }
+})
+}
 
 $(document).on("click", function() {
     $("#user_error").hide();
+    $(".subcategoryMsg").hide();
+    $(".productMsg").hide();
 });
 
-$(".subcategoryAddbtn").click(function() {
-    document.getElementById("categorySelectError").innerHTML = "";
+function resetSubcategoryError() {
     document.getElementById("subCategoryNameError").innerHTML = "";
-});
+}
 
 function insertEditCategory() {
     let inputValue = $("#categoryInput").val();
@@ -97,7 +63,7 @@ function insertEditCategory() {
 
             },
             error: function() {
-                onsole.error("Error in insertion.");
+                console.error("Error in insertion.");
             }
         });
     } else {
@@ -137,7 +103,7 @@ function editCategory(editBtn) {
             let parsedResult = JSON.parse(result);
             let categoryId = parsedResult.CATEGORIES[0].categoryId;
             let categoryName = parsedResult.CATEGORIES[0].categoryName;
-            
+
             $.ajax({
                 url: 'components/User.cfc?method=decryptId',
                 data: {
@@ -218,7 +184,7 @@ $("#categoryNameSelectPr").change(function() {
     getSubcategory();
 });
 
-function getSubcategory(urlSubCategoryId){
+function getSubcategory(subCategoryId) {
     let categorySelected = $('#categoryNameSelectPr').val();
     let subCategoryElement = document.getElementById("selectSubCategory");
     if (categorySelected === "--") {
@@ -237,10 +203,8 @@ function getSubcategory(urlSubCategoryId){
                 for (let i = 0; i < subcategories.length; i++) {
                     let opt = document.createElement('option');
                     opt.value = subcategories[i].subCategoryId;
-                    if(urlSubCategoryId != undefined)
-                    {
-                        if(urlSubCategoryId === opt.value)
-                        {
+                    if (subCategoryId != undefined) {
+                        if (subCategoryId === opt.value) {
                             opt.selected = true;
                         }
                     }
@@ -254,137 +218,133 @@ function getSubcategory(urlSubCategoryId){
         });
     }
 }
-function validateProduct() {
-    let validProduct = true;
-    let categoryName = document.getElementById("categoryNameSelectPr").value;
-    let subCategoryName = document.getElementById("selectSubCategory").value;
-    let productName = document.getElementById("productName").value;
-    let brandName = document.getElementById("brandName").value;
-    let productDesc = document.getElementById("productDesc").value;
-    let unitPrice = document.getElementById("unitPrice").value;
-    let unitTax = document.getElementById("unitTax").value;
-    let productImage = document.getElementById("productImages");
-
-    let categorySelectError = document.getElementById("categorySelectError");
-    let subCategorySelectError = document.getElementById("subCategorySelectError");
-    let productNameError = document.getElementById("productNameError");
-    let brandNameError = document.getElementById("brandNameError");
-    let productDescError = document.getElementById("productDescError");
-    let unitPriceError = document.getElementById("unitPriceError");
-    let unitTaxError = document.getElementById("unitTaxError");
-    let productImageError = document.getElementById("productImageError");
-
-    categorySelectError.innerHTML = "";
-    subCategorySelectError.innerHTML = "";
-    productNameError.innerHTML = "";
-    brandNameError.innerHTML = "";
-    productDescError.innerHTML = "";
-    unitPriceError.innerHTML = "";
-    unitTaxError.innerHTML = "";
-    productImageError.innerHTML = "";
-
-    if (categoryName.trim() === "" || categoryName.trim() === "--") {
-        categorySelectError.innerHTML = "Select Any Category";
-        validProduct = false;
-    }
-
-    if (subCategoryName.trim() === "" || subCategoryName.trim() === "--") {
-        subCategorySelectError.innerHTML = "Select Any SubCategory";
-        validProduct = false;
-    }
-
-    if (productName.trim() === "") {
-        productNameError.innerHTML = "Enter the ProductName";
-        validProduct = false;
-    }
-
-    if (brandName.trim() === "" || brandName.trim() === "--") {
-        brandNameError.innerHTML = "Select Any Brand";
-        validProduct = false;
-    }
-
-    if (productDesc.trim() === "") {
-        productDescError.innerHTML = "Enter the pro Desc";
-        validProduct = false;
-    }
-
-    if (unitPrice.trim() === "") {
-        unitPriceError.innerHTML = "Enter the UnitPrice";
-        validProduct = false;
-    }
-
-    if (unitTax.trim() === "") {
-        unitTaxError.innerHTML = "Enter the unit Tax";
-        validProduct = false;
-    }
-
-    return validProduct;
-}
 
 function createproduct(subCategoryId) {
-    let categorySelectError = document.getElementById("categorySelectError");
-    let subCategorySelectError = document.getElementById("subCategorySelectError");
-    let productNameError = document.getElementById("productNameError");
-    let brandNameError = document.getElementById("brandNameError");
-    let productDescError = document.getElementById("productDescError");
-    let unitPriceError = document.getElementById("unitPriceError");
-    let unitTaxError = document.getElementById("unitTaxError");
-    let productImageError = document.getElementById("productImageError");
-
-    categorySelectError.innerHTML = "";
-    subCategorySelectError.innerHTML = "";
-    productNameError.innerHTML = "";
-    brandNameError.innerHTML = "";
-    productDescError.innerHTML = "";
-    unitPriceError.innerHTML = "";
-    unitTaxError.innerHTML = "";
-    productImageError.innerHTML = "";
-    document.getElementById('productForm').reset();
     getSubcategory(subCategoryId);
 }
 
-function editProduct(editObj) {
-    let subCategoryElement = document.getElementById("selectSubCategory");
-    $.ajax({
-        url: 'components/ProductManagement.cfc?method=getProductDetails',
-        data: {
-            productId: editObj.productId
-        },
-        type: 'POST',
-        success: function(result) {
-            let product = JSON.parse(result);
-            document.getElementById("productName").value = product.DATA.productName;
-            document.getElementById("brandName").value = product.DATA.brandId;
-            document.getElementById("productDesc").value = product.DATA.description;
-            document.getElementById("unitPrice").value = product.DATA.unitPrice;
-            document.getElementById("unitTax").value = product.DATA.unitTax;
-            document.getElementById("categoryNameSelectPr").value = editObj.categoryId;
-            document.getElementById("hiddenValue").value = editObj.productId;
-            $.ajax({
-                url: 'components/ProductManagement.cfc?method=fetchSubCategories',
-                type: 'POST',
-                data: {
-                    categoryId: editObj.categoryId
-                },
-                success: function(result) {
-                    let subcategories = JSON.parse(result).SUBCATEGORY;
-                    subCategoryElement.innerHTML = "";
-                    for (let i = 0; i < subcategories.length; i++) {
-                        let opt = document.createElement('option');
-                        opt.value = subcategories[i].subCategoryId;
-                        opt.innerHTML = subcategories[i].subCategoryName;
-                        subCategoryElement.appendChild(opt);
-                    }
-                },
-                error: function() {
-                    alert("Error fetching SubCategory");
-                }
-            });
-        },
-        error: function() {
-            alert("Failed to edit product");
+function resetProducterror() {
+    let categorySelectError = document.getElementById("categorySelectError");
+    let subCategorySelectError = document.getElementById("subCategorySelectError");
+    let productNameError = document.getElementById("productNameError");
+    let brandNameError = document.getElementById("brandNameError");
+    let productDescError = document.getElementById("productDescError");
+    let unitPriceError = document.getElementById("unitPriceError");
+    let unitTaxError = document.getElementById("unitTaxError");
+    let productImageError = document.getElementById("productImageError");
+
+    categorySelectError.innerHTML = "";
+    subCategorySelectError.innerHTML = "";
+    productNameError.innerHTML = "";
+    brandNameError.innerHTML = "";
+    productDescError.innerHTML = "";
+    unitPriceError.innerHTML = "";
+    unitTaxError.innerHTML = "";
+    productImageError.innerHTML = "";
+    document.getElementById("imageCntr").innerHTML = "";
+    document.getElementById("productModalLabel").innerHTML = "Add Product";
+    document.getElementById("productForm").reset();
+    markedImages = [];
+}
+
+function setClassForDefault(imageId)
+{
+    $(".defaultImage").removeClass("defaultImage").find(".imageBox").css("border", "1px solid gray");
+
+    $(".imgLabel").each(function () {
+        if ($(this).text().trim() === "Current Default") {
+            $(this).text("Set Default");
         }
     });
+
+    let selectedImage = document.getElementById(imageId);
+    selectedImage.classList.add("defaultImage");
+    
+    $(selectedImage).find(".imageBox").css("border", "2px solid green");
+    $(selectedImage).find(".imgLabel").text("Current Default");
+}
+
+function editProduct(editObj) {
+    document.getElementById("productModalLabel").innerHTML = "Edit Product";
+    let subCategoryElement = document.getElementById("selectSubCategory");
+    let imageContainer = document.getElementById("imageCntr");
+    let decryptedId;
+    $.ajax({
+        url: 'components/User.cfc?method=decryptId',
+        data: {
+            encryptedId: editObj.productId
+        },
+        type: 'POST',
+        success: function(decryptResult) {
+            decryptedId = JSON.parse(decryptResult);
+            $.ajax({
+                url: 'components/ProductManagement.cfc?method=fetchProducts',
+                data: {
+                    productId: editObj.productId
+                },
+                type: 'POST',
+                success: function(result) {
+                    let product = JSON.parse(result);
+                    console.log(product);
+                    let defaultImage = product.products[0].imageFilePath;
+                    console.log(defaultImage)
+                    for (let i = 0; i < product.products[0].images.length; i++) {
+                        let imageId = product.products[0].images[i].imageId;
+                        let imageSrc = `./Assets/uploads/product${decryptedId}/${product.products[0].images[i].imagePath}`
+                        let mainContainer = createImageContainer(
+                            imageId,
+                            imageSrc,
+                            true,
+                            product.products[0].images[i].imagePath
+                        );
+                        let imageControlsCntr = createDefaultImageSelector(
+                            imageId,
+                            product.products[0].images[i].imagePath === defaultImage,
+                            true,
+                            product.products[0].images[i].imageId
+                        )
+                        mainContainer.appendChild(imageControlsCntr);
+                        imageContainer.appendChild(mainContainer);
+                        if(product.products[0].images[i].imagePath === defaultImage)
+                        {
+                            setClassForDefault(imageId)
+                        }
+                    }
+                    document.getElementById("productName").value = product.products[0].productName;
+                    document.getElementById("brandName").value = product.products[0].brandId;
+                    document.getElementById("productDesc").value = product.products[0].description;
+                    document.getElementById("unitPrice").value = product.products[0].unitPrice;
+                    document.getElementById("unitTax").value = product.products[0].unitTax;
+                    document.getElementById("categoryNameSelectPr").value = editObj.categoryId;
+                    document.getElementById("hiddenValue").value = editObj.productId;
+                    $.ajax({
+                        url: 'components/ProductManagement.cfc?method=fetchSubCategories',
+                        type: 'POST',
+                        data: {
+                            categoryId: editObj.categoryId
+                        },
+                        success: function(result) {
+                            let subcategories = JSON.parse(result).SUBCATEGORY;
+                            subCategoryElement.innerHTML = "";
+                            for (let i = 0; i < subcategories.length; i++) {
+                                let opt = document.createElement('option');
+                                opt.value = subcategories[i].subCategoryId;
+                                opt.innerHTML = subcategories[i].subCategoryName;
+                                subCategoryElement.appendChild(opt);
+                            }
+                            subCategoryElement.value = editObj.subCategoryId;
+                        },
+                        error: function() {
+                            alert("Error fetching SubCategory");
+                        }
+                    });
+                },
+                error: function() {
+                    alert("Failed to edit product");
+                }
+            });
+        }
+    })
 }
 
 function deleteProduct(productId) {
@@ -405,102 +365,173 @@ function deleteProduct(productId) {
     }
 }
 
-function editImages(productId) {
-    $.ajax({
-        url: 'components/ProductManagement.cfc?method=getProductDetails',
-        data: {
-            productId: productId
-        },
-        type: 'POST',
-        success: function(result) {
-            let productData = JSON.parse(result).DATA;
-            let images = productData.images;
-            let defaultImage = productData.defaultImagePath;
+function deleteProductImage(productImageId, productImage, productId) {
+    Swal.fire({
+        title: "Are you sure you want to delete Image?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "remove"
+    }).then((result) => {
+        if (result.isConfirmed) {
             $.ajax({
-                url: 'components/User.cfc?method=decryptId',
-                data: {
-                    encryptedId: productId
-                },
+                url: 'components/ProductManagement.cfc?method=deleteProductImage',
                 type: 'POST',
-                success: function(decryptResult) {
-                    let decryptedId = JSON.parse(decryptResult);
-
-                    let carouselContainer = document.getElementById("carouselContainer");
-                    carouselContainer.innerHTML = '';
-
-                    images.forEach((image, i) => {
-                        let div = document.createElement("div");
-                        div.setAttribute('class', image === defaultImage ? 'carousel-item active' : 'carousel-item');
-
-                        const img = document.createElement('img');
-                        img.src = `./Assets/uploads/product${decryptedId}/${image}`;
-                        img.alt = `Product Image ${i + 1}`;
-
-                        if (image !== defaultImage) {
-                            let setThumbnailBtn = document.createElement('button');
-                            setThumbnailBtn.innerHTML = "Set Thumbnail";
-                            setThumbnailBtn.className = 'thumbnailBtn btn btn-success m-2';
-                            setThumbnailBtn.onclick = function() {
-                                setThumbnail(image, productId);
-                            };
-
-                            let deleteImageBtn = document.createElement('button');
-                            deleteImageBtn.innerHTML = "Delete Image";
-                            deleteImageBtn.className = 'deleteImageBtn btn btn-danger m-2';
-                            deleteImageBtn.onclick = function() {
-                                deleteProductImage(image, productId);
-                            };
-
-                            div.appendChild(setThumbnailBtn);
-                            div.appendChild(deleteImageBtn);
-                        }
-
-                        div.appendChild(img);
-                        carouselContainer.appendChild(div);
-                    });
+                data: {
+                    productImage: productImage,
+                    productId: productId,
+                    productImageId: productImageId
+                },
+                success: function() {
+                    document.getElementById(productImageId).remove();
                 },
                 error: function() {
-                    alert("Failed to decrypt product ID.");
+                    alert("Error deleting image.");
                 }
             });
-        },
-        error: function() {
-            alert("Failed to fetch product details.");
         }
-    });
+    })
 }
 
-function setThumbnail(productImage, productId) {
-    $.ajax({
-        url: 'components/ProductManagement.cfc?method=updateDefaultImage',
-        type: 'POST',
-        data: {
-            productImage: productImage,
-            productId: productId
-        },
-        success: function() {
-            editImages(productId);
-            location.reload()
-        },
-        error: function() {
-            alert("Error setting thumbnail.");
+function displayImagePreview(input) {
+    $(".newImage").remove();
+    if (input.files && input.files.length > 0) {
+        for (let i = 0; i < input.files.length; i++) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let isDefault = false;
+                let imageId = "image"+i;
+                if($("input[name = defaultImg]:checked").length == 0)
+                {
+                    isDefault = true;
+                }
+                let mainContainer = createImageContainer(
+                    imageId,
+                    e.target.result,
+                    false,
+                    input.files[i].name
+                );
+                let imageControlsCntr = createDefaultImageSelector(
+                    imageId,
+                    isDefault,
+                    false
+                )
+                mainContainer.appendChild(imageControlsCntr);
+                document.getElementById("imageCntr").appendChild(mainContainer);
+                if (isDefault)
+                {
+                    setClassForDefault(imageId);
+                }
+            };
+            reader.readAsDataURL(input.files[i]);
         }
-    });
+    }
 }
 
-function deleteProductImage(productImage, productId) {
-    $.ajax({
-        url: 'components/ProductManagement.cfc?method=deleteProductImage',
-        type: 'POST',
-        data: {
-            productImage: productImage,
-            productId: productId
-        },
-        success: function() {
-            editImages(productId);
-        },
-        error: function() {
-            alert("Error deleting image.");
-        }
-    });
+function createImageContainer(imageId, imageSrc, isExisting, imagePath) {
+    let mainContainer = document.createElement('div');
+    mainContainer.classList.add(isExisting ? "existingImage" : "newImage");
+    mainContainer.id = imageId;
+    let imageBox = document.createElement('div');
+    imageBox.classList.add("imageBox");
+    let img = document.createElement("img");
+    img.classList.add("ProdImg");
+    img.src = imageSrc;
+    imageBox.appendChild(img);
+
+    let dltBtn = document.createElement('div');
+    dltBtn.classList.add("deleteBtn");
+    let removeBtn = document.createElement('i');
+    removeBtn.classList.add("fa-solid", "fa-trash", "removeBtn");
+
+    if (isExisting) {
+        removeBtn.onclick = function() {
+            markImagesForDeletion(imageId, imagePath);
+        };
+    } else {
+        removeBtn.onclick = function() {
+            deleteImage(imagePath,imageId);
+        };
+    }
+
+    imageBox.appendChild(dltBtn);
+    dltBtn.appendChild(removeBtn);
+    mainContainer.appendChild(imageBox);
+    
+    return mainContainer;
 }
+
+function createDefaultImageSelector(imageId, isDefault, isExisting,productImageId) {
+    let imageControlsCntr = document.createElement('div');
+    imageControlsCntr.classList.add("imageControlsCntr");
+
+    let label = document.createElement('label');
+    label.innerHTML = isDefault ? "Current Default" : "Set Default";
+    label.classList.add('imgLabel');
+    imageControlsCntr.appendChild(label);
+
+    let radioInput = document.createElement('input');
+    radioInput.onclick = function() {
+        setClassForDefault(imageId);
+    };
+    radioInput.setAttribute('type', 'radio');
+    radioInput.setAttribute('name', "defaultImg");
+    radioInput.setAttribute('value', isExisting?"existing-"+productImageId:"new-"+imageId.replace(/^\D+/g, ''));
+    
+    if (isDefault) {
+        radioInput.checked = true;
+    }
+
+    imageControlsCntr.appendChild(radioInput);
+    return imageControlsCntr;
+}
+
+function deleteImage(fileName, ImageContainerId) {
+    let imageData = new DataTransfer();
+    let images = document.getElementById("productImages").files;
+    for (let index = 0; index < images.length; index++) {
+        if (images[index].name != fileName) {
+            imageData.items.add(images[index]);
+        }
+
+    }
+    document.getElementById("productImages").files = imageData.files;
+    document.getElementById(ImageContainerId).remove();
+   displayImagePreview(document.getElementById("productImages"));
+}
+
+let markedImages = [];
+function markImagesForDeletion(productImageId,imagePath)
+{
+    if(!markedImages.includes(productImageId))
+    {
+        markedImages.push({imageId:productImageId,imagePath:imagePath});
+        document.getElementById(productImageId).remove();
+    }
+}
+
+$( "#productForm").on( "submit", function() {
+    let productId = document.getElementById("hiddenValue").value;
+    if(markedImages.length > 0)
+    {
+        markedImages.forEach(productImage => {
+            $.ajax({
+                url: 'components/ProductManagement.cfc?method=deleteProductImage',
+                type: 'POST',
+                data: {
+                    productImage: productImage.imagePath,
+                    productId: productId,
+                    productImageId: productImage.imageId
+                },
+                success: function() {
+                    
+                },
+                error: function() {
+                    alert("Error deleting image.");
+                }
+            });
+            
+        })
+    }
+});

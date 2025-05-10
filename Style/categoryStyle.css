@@ -16,6 +16,7 @@ header{
    display: flex;
    align-items: center;
    gap: 10px;
+   text-decoration: none;
 }
 
 .headerRightItem{
@@ -52,6 +53,7 @@ main{
     height: fit-content;
     padding-bottom: 30px;
     margin-top: 120px;
+    margin-bottom: 30px;
 }
 
 .categoryItem{
